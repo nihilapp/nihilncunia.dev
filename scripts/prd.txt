@@ -1,0 +1,250 @@
+# 개인 블로그 프로젝트 PRD
+
+## 프로젝트 개요
+개인용 블로그 웹사이트 개발 프로젝트입니다. 웹 기반 마크다운 에디터를 통한 블로그 포스팅 시스템과 SEO 최적화에 중점을 둔 블로그 플랫폼을 구축합니다.
+
+### 핵심 목표
+- 웹 인터페이스를 통한 마크다운 기반 글 작성 및 관리
+- 데이터베이스 기반 콘텐츠 저장 및 동적 렌더링
+- SEO 최적화를 통한 검색 엔진 노출 극대화
+- 관리자 전용 보안 시스템 구현
+
+## 중요 사항
+- 각 태스크를 제발 한국어로 적어주세요...
+- app 내부의 라우트 폴더는 (common), (auth), (admin)으로 구성됩니다. 모든 페이지들은 이 아래에 위치하게 됩니다.
+- 라우트 폴더 안에, 페이지를 폴더를 만들어야 할 때에는 _components 폴더를 함께 만들고, 그 안에 index.ts 파일을 만들어야만 합니다.
+- 프리즈마 클라이언트는 /app/_prisma/client 폴더에 위치하고 있습니다. 타입을 가져와야 할 때에 여기서 가져오게끔 하면 됩니다.
+- api 라우트에서 사용되는 각종 유틸은 /app/api/_libs 폴더에 위치하고 있습니다. index.ts 파일을 확인하고 가져올 수 있습니다.
+- 프론트 라우트에서 사용되는 유틸은 /app/_libs 폴더에 위치하고 있습니다. index.ts 파일을 확인하고 가져올 수 있습니다.
+- api 라우트에서 프리즈마 클라이언트를 사용하기 위해서는 /app/api/_libs/prisma.ts 파일을 가져와야 합니다. index.ts에서 가져옵니다.
+- serverTools 는 /app/api/_libs/serverTools.ts 파일에 위치하고 있습니다. index.ts에서 가져옵니다.
+- tools 는 /app/_libs/tools.ts 파일에 위치하고 있습니다. index.ts에서 가져옵니다.
+- /app/_entities 폴더의 내부에 자원별로 폴더가 존재해야 합니다. common 폴더는 기본적으로 존재하는 폴더입니다. 또한 각 폴더들은 다음과 같은 규칙을 갖고 파일을 가져야 합니다.
+  - index.ts 파일은 기본적으로 존재해야 합니다.
+  - hooks 폴더: 자원의 hooks 정의 파일(보통 리액트 쿼리 커스텀 훅.)
+  - <자원>.types.ts: 자원의 타입 정의 파일
+  - <자원>.api.ts: 자원의 API 정의 파일
+  - <자원>.store.ts: 자원의 zustand store 정의 파일
+  - <자원>.keys.ts: 자원의 키(보통 리액트 쿼리 키) 정의 파일
+
+## 사용자 유형
+### 1. 관리자 (Admin)
+- **역할**: 블로그 콘텐츠 작성 및 관리
+- **권한**: 모든 기능 접근 가능
+- **접근 방식**: 인증을 통한 어드민 페이지 접근
+
+### 2. 일반 방문자 (Visitor)
+- **역할**: 블로그 콘텐츠 읽기
+- **권한**: 공개 블로그 포스트 및 카테고리 열람만 가능
+- **접근 방식**: 회원가입 없이 자유 접근
+
+## API 라우트 정리
+
+### 인증 관련
+- 로그인: POST /api/auth/sign-in
+- 로그아웃: POST /api/auth/sign-out
+- 리프레시 토큰: POST /api/auth/refresh
+- 토큰 검증: GET /api/auth/verify
+
+### 관리자 관련
+- 관리자 정보 조회: GET /api/admin/profile
+- 관리자 정보 수정: PUT /api/admin/profile
+- 관리자 비밀번호 변경: PUT /api/admin/password
+
+### 블로그 포스트 관련
+- 모든 포스트 조회: GET /api/posts
+- 포스트 상세 조회: GET /api/posts/:id
+- 포스트 작성: POST /api/posts (Admin)
+- 포스트 수정: PUT /api/posts/:id (Admin)
+- 포스트 삭제: DELETE /api/posts/:id (Admin)
+- 포스트 검색: GET /api/posts/search?q=검색어
+- 카테고리별 포스트: GET /api/posts?category=카테고리
+
+### 카테고리 관련
+- 모든 카테고리 조회: GET /api/categories
+- 카테고리 생성: POST /api/categories (Admin)
+- 카테고리 수정: PUT /api/categories/:id (Admin)
+- 카테고리 삭제: DELETE /api/categories/:id (Admin)
+
+### 해시태그 관련
+- 모든 해시태그 조회: GET /api/hashtags
+- 해시태그별 포스트: GET /api/posts?hashtag=태그명
+
+### SEO 관련
+- 사이트맵 생성: GET /api/sitemap.xml
+- RSS 피드: GET /api/rss.xml
+
+## 프론트엔드 페이지 구성
+
+### 공통 페이지 (common)
+- `/`: 홈페이지 - 최신 블로그 포스트 목록 및 소개
+- `/posts`: 전체 블로그 포스트 목록
+- `/posts/[id]`: 개별 블로그 포스트 상세 페이지
+- `/categories`: 카테고리 목록 페이지
+- `/categories/[category]`: 카테고리별 포스트 목록
+- `/search`: 블로그 검색 페이지
+- `/about`: 블로그 소개 페이지
+
+### 어드민 페이지 (admin) - 비공개
+- `/admin`: 어드민 대시보드
+- `/admin/posts`: 포스트 관리 페이지
+- `/admin/posts/new`: 새 포스트 작성 페이지
+- `/admin/posts/[id]/edit`: 포스트 수정 페이지
+- `/admin/categories`: 카테고리 관리 페이지
+- `/admin/profile`: 관리자 프로필 관리 페이지
+- `/admin/settings`: 블로그 설정 페이지
+
+### 인증 관련 페이지 (auth) - 비공개
+- `/auth/sign-in`: 관리자 로그인 페이지
+
+## 핵심 기능
+
+### 1. 콘텐츠 관리 시스템
+- **마크다운 에디터**: 실시간 프리뷰 지원
+- **이미지 업로드**: 드래그 앤 드롭 이미지 업로드
+- **카테고리 관리**: 웹 인터페이스를 통한 카테고리 CRUD
+- **해시태그 시스템**: 글당 최대 10개의 해시태그
+
+### 2. SEO 최적화
+- **동적 메타 태그**: 포스트별 커스텀 메타 데이터
+- **구조화된 데이터**: JSON-LD 스키마 적용
+- **사이트맵 자동 생성**: 새 포스트 작성 시 자동 업데이트
+- **RSS 피드**: 블로그 구독을 위한 RSS 피드 제공
+
+### 3. 보안 시스템
+- **JWT 인증**: 액세스 토큰 및 리프레시 토큰
+- **어드민 페이지 보안**: robots.txt 크롤링 차단
+- **CSRF 보호**: API 요청 보안 강화
+
+### 4. 사용자 경험
+- **반응형 디자인**: 모든 디바이스 지원
+- **다크 모드**: 사용자 선호도에 따른 테마 전환
+- **검색 기능**: 포스트 제목, 내용, 해시태그 검색
+- **카테고리 필터링**: 카테고리별 포스트 분류
+
+## 기술 스택
+- **프론트엔드**: React 18+, Next.js 14+ (App Router), TypeScript
+- **스타일링**: TailwindCSS v4, Styled Components, shadcn/ui
+- **상태 관리**: Zustand v5
+- **폼 관리**: React Hook Form + Yup
+- **API 통신**: Axios, TanStack React Query v5
+- **백엔드**: Next.js API Routes
+- **데이터베이스**: Prisma ORM v6
+- **인증**: JWT (JSON Web Token)
+- **보안**: bcrypt (비밀번호 해싱)
+- **패키지 관리**: pnpm
+
+## 디자인 요구사항
+- **반응형 디자인**: 모바일, 태블릿, 데스크톱 완벽 지원
+- **직관적 UI/UX**: shadcn/ui 기반 일관된 디자인 시스템
+- **다크 모드**: 시스템 테마 감지 및 수동 전환 지원
+- **접근성**: WAI-ARIA 가이드라인 준수
+- **성능**: 이미지 최적화, 코드 스플리팅 적용
+
+## API 인증 및 오류 처리
+
+### API 인증 방식
+- JWT(JSON Web Token) 기반 인증 사용
+- 액세스 토큰과 리프레시 토큰 사용
+- 액세스 토큰 유효 기간: 1시간
+- 리프레시 토큰 유효 기간: 7일
+- 토큰은 HTTP-only 쿠키를 통해 전달
+
+### 오류 처리
+- 모든 API는 표준화된 JSON 형식의 응답 반환
+- 오류 응답 형식: `{ message: "오류 메시지", response: null }`
+  - ApiError 인터페이스 사용
+- 성공 응답 형식: `{ message: "성공 메시지", response: 응답데이터 }`
+  - ApiResponse<T> 인터페이스 사용
+
+#### 주요 오류 코드
+- 400: 잘못된 요청 (Bad Request)
+- 401: 인증 실패 (Unauthorized)
+- 403: 권한 없음 (Forbidden)
+- 404: 리소스 없음 (Not Found)
+- 409: 충돌 (Conflict)
+- 500: 서버 오류 (Internal Server Error)
+
+## 보안 요구사항
+- **관리자 인증 및 권한 관리**: JWT 기반 보안 인증
+- **데이터 암호화**: 민감 정보 암호화 저장
+- **CSRF 보호**: Cross-Site Request Forgery 방지
+- **XSS 방지**: 입력 데이터 sanitization
+- **비밀번호 해싱**: bcrypt를 통한 안전한 비밀번호 저장
+- **어드민 페이지 보안**: robots.txt 및 사이트맵에서 제외
+
+## 성능 요구사항
+- **빠른 페이지 로딩**: Next.js SSR/SSG 활용
+- **이미지 최적화**: Next.js Image 컴포넌트 활용
+- **코드 스플리팅**: 라우트별 번들 분할
+- **캐싱 전략**: API 응답 캐싱 및 정적 자원 캐싱
+
+## 확장성 계획
+- **댓글 시스템**: 블로그 포스트 댓글 기능
+- **구독 기능**: 이메일 뉴스레터 구독
+- **분석 기능**: Google Analytics, 방문자 통계
+- **소셜 미디어 연동**: 포스트 공유 기능
+- **다국어 지원**: i18n을 통한 다국어 블로그
+
+## 마일스톤
+
+### 1단계: 기본 인프라 구축 (2주)
+1. **프로젝트 초기 설정**
+   - Next.js 프로젝트 생성 및 기본 구조 설정
+   - TypeScript, TailwindCSS, shadcn/ui 설정
+   - Prisma 데이터베이스 스키마 설계
+
+2. **인증 시스템 구현**
+   - JWT 기반 로그인/로그아웃 기능
+   - 관리자 전용 인증 미들웨어
+   - 보안 설정 (CSRF, XSS 방지)
+
+### 2단계: 콘텐츠 관리 시스템 (3주)
+1. **블로그 포스트 CRUD**
+   - 마크다운 에디터 구현
+   - 포스트 작성/수정/삭제 기능
+   - 이미지 업로드 시스템
+
+2. **카테고리 및 해시태그 시스템**
+   - 카테고리 관리 인터페이스
+   - 해시태그 자동 완성 기능
+   - 카테고리별/태그별 필터링
+
+### 3단계: 공개 블로그 페이지 (2주)
+1. **프론트엔드 블로그 페이지**
+   - 홈페이지 및 포스트 목록 페이지
+   - 개별 포스트 상세 페이지
+   - 검색 및 필터링 기능
+
+2. **반응형 디자인 구현**
+   - 모바일/태블릿/데스크톱 대응
+   - 다크 모드 지원
+
+### 4단계: SEO 최적화 및 배포 (1주)
+1. **SEO 최적화**
+   - 메타 태그 동적 생성
+   - 사이트맵 자동 생성
+   - RSS 피드 구현
+
+2. **배포 및 성능 최적화**
+   - Vercel 배포 설정
+   - 이미지 및 코드 최적화
+   - 성능 모니터링 설정
+
+## 데이터베이스 테이블 구조
+
+### 주요 테이블
+1. **Admin**: 관리자 정보
+2. **AdminAuth**: 관리자 인증 정보 (해시된 비밀번호, 리프레시 토큰)
+3. **Post**: 블로그 포스트
+4. **Category**: 카테고리
+5. **Hashtag**: 해시태그
+6. **PostHashtag**: 포스트-해시태그 연결 테이블
+
+### 관계 설정
+- Post ↔ Category: Many-to-One
+- Post ↔ Hashtag: Many-to-Many (PostHashtag 중간 테이블)
+- Admin ↔ AdminAuth: One-to-One
+- Post ↔ Admin: Many-to-One (작성자 관계)
+
+자세한 테이블 구조는 Prisma 스키마에 정의되어 있습니다.

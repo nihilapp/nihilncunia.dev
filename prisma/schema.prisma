@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/_prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// 관리자 정보
+model Admin {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  image_url    String?
+  last_sign_in DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  admin_auth AdminAuth? // 1:1 관계
+  posts      Post[] // 1:N 관계 (작성한 포스트들)
+
+  @@map("admins")
+}
+
+// 관리자 인증 정보
+model AdminAuth {
+  id              String   @id @default(uuid())
+  admin_id        String   @unique // Admin 모델과의 관계를 위한 외래 키
+  hashed_password String
+  refresh_token   String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  admin Admin @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+
+  @@map("admin_auths")
+}
+
+// 카테고리
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String? // 카테고리 색상 (HEX 코드)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  posts Post[] // 1:N 관계
+
+  @@map("categories")
+}
+
+// 해시태그
+model Hashtag {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  slug       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
+
+  @@map("hashtags")
+}
+
+// 블로그 포스트
+model Post {
+  id              String     @id @default(uuid())
+  title           String
+  slug            String     @unique
+  content         String // 마크다운 형태의 글 내용
+  excerpt         String? // 글 요약
+  featured_image  String? // 대표 이미지 URL
+  status          PostStatus @default(DRAFT)
+  published_at    DateTime?
+  views           Int        @default(0)
+  reading_time    Int? // 읽는 시간 (분)
+  seo_title       String? // SEO용 타이틀
+  seo_description String? // SEO용 설명
+  seo_keywords    String? // SEO용 키워드
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // 관계
+  admin_id    String
+  category_id String
+
+  admin    Admin    @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
+
+  @@map("posts")
+}
+
+// 포스트-해시태그 중간 테이블 (Many-to-Many 관계)
+model PostHashtag {
+  id         String   @id @default(uuid())
+  post_id    String
+  hashtag_id String
+  created_at DateTime @default(now())
+
+  post    Post    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  hashtag Hashtag @relation(fields: [hashtag_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_id, hashtag_id]) // 동일한 포스트-해시태그 조합 중복 방지
+  @@map("post_hashtags")
+}
