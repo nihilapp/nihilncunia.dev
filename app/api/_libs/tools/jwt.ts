@@ -1,5 +1,6 @@
-import { User } from '@/_prisma/client';
 import { jwtVerify, SignJWT } from 'jose';
+
+import { Admin } from '@/_prisma/client';
 import {
   type TokenMode,
   type TokenData,
@@ -14,15 +15,13 @@ export class Jwt {
   }
 
   // 토큰 생성
-  public async genTokens(
-    user: User
-  ): Promise<Tokens> {
+  public async genTokens(admin: Admin): Promise<Tokens> {
     const {
-      id, email, role,
-    } = user;
+      id, email, name,
+    } = admin;
 
     const tokenPayload = {
-      id, email, role,
+      id, email, name,
     };
 
     const accessTokenSecret = await this.setSecret(process.env.NEXT_PUBLIC_ACCESS_TOKEN_SECRET);

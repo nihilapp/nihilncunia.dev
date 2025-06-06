@@ -1,91 +1,187 @@
-import { NextResponse } from 'next/server';
-import { serverTools } from '@/api/_libs';
-import { refreshCheck } from '@/api/_libs/refreshCheck'; // refreshCheck 함수 임포트
-import type { ApiResponse, ApiError, RefreshApiResponse } from '@/_types'; // 필요한 타입 임포트
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST() {
+import { prisma } from '@/api/_libs';
+import { serverTools } from '@/api/_libs/tools';
+
+// GET: 토큰 검증
+export async function GET(_request: NextRequest) {
   try {
-    // refreshCheck 함수를 사용하여 토큰 갱신 시도 (forceRefresh = true)
-    const result = await refreshCheck(null, null, true);
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
 
-    if (result.error) {
-      // refreshCheck 내부에서 오류 발생 시
-      const errorResponse: ApiError = {
-        response: null,
-        message: result.message,
+    if (!accessToken) {
+      const errorResponse = {
+        success: false,
+        message: '액세스 토큰이 없습니다.',
       };
 
-      const response = NextResponse.json(
+      return NextResponse.json(
         errorResponse,
-        { status: result.status, } // refreshCheck에서 반환된 상태 코드 사용
+        { status: 401, }
       );
-
-      // refreshCheck 내부에서도 쿠키를 삭제하지만,
-      // 만일을 위해 응답에서도 확실히 삭제 (특히 401 오류 시)
-      if (result.status === 401) {
-        response.cookies.set(
-          'refreshToken',
-          '',
-          {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 0,
-            path: '/',
-          }
-        );
-        response.cookies.set(
-          'accessToken',
-          '',
-          {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 0,
-            path: '/',
-          }
-        );
-      }
-
-      return response;
     }
 
-    const newAccessTokenData = await serverTools.jwt.tokenInfo(
-      'accessToken',
-      result.newAccessToken!
-    );
+    // 액세스 토큰 검증
+    let tokenData;
+    try {
+      tokenData = await serverTools.adminJwt!.tokenInfo('accessToken', accessToken);
+    } catch (error: any) {
+      console.error('액세스 토큰 검증 실패:', error);
 
-    // 토큰 갱신 성공
-    const responseBody: ApiResponse<RefreshApiResponse> = {
-      message: result.message, // refreshCheck의 성공 메시지 사용
-      response: {
-        // refreshCheck 함수는 성공 시 newAccessToken을 반환
-        // 이를 클라이언트에게 전달할 access 토큰 정보로 구성
-        accessToken: {
-          token: result.newAccessToken!, // Non-null assertion 사용 (성공 시 항상 존재)
-          // 만료 시간은 refreshCheck 내부에서 쿠키에 설정되므로, 여기서는 토큰 값만 전달
-          // 필요하다면 exp 값도 전달할 수 있으나, 보통 클라이언트는 토큰 값만 필요로 함
-          exp: newAccessTokenData.exp,
-        },
+      const errorResponse = {
+        success: false,
+        message: '유효하지 않은 액세스 토큰입니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 401, }
+      );
+    }
+
+    // 관리자 계정 확인
+    const findAdmin = await prisma.admin.findUnique({
+      where: { id: tokenData.id, },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        created_at: true,
       },
-    };
+    });
 
-    // refreshCheck 내부에서 이미 새로운 토큰들이 쿠키에 설정되었으므로,
-    // 여기서는 성공 응답만 반환합니다.
+    if (!findAdmin) {
+      const errorResponse = {
+        success: false,
+        message: '존재하지 않는 관리자 계정입니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 404, }
+      );
+    }
+
+    // 토큰 만료 시간 확인
+    const remainingTime = serverTools.adminJwt!.expCheck(tokenData.exp);
+
+    if (remainingTime <= 0) {
+      const errorResponse = {
+        success: false,
+        message: '만료된 액세스 토큰입니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 401, }
+      );
+    }
+
     return NextResponse.json(
-      responseBody,
+      {
+        success: true,
+        message: '유효한 토큰입니다.',
+        admin: findAdmin,
+        remainingTime,
+      },
       { status: 200, }
     );
   } catch (error: any) {
-    // refreshCheck 함수 호출 자체에서 예외 발생 시 (예: 라이브러리 오류 등)
-    console.error(
-      '토큰 재발급 처리 중 예상치 못한 오류:',
-      error
+    console.error('토큰 검증 API 에러:', error);
+
+    const errorResponse = {
+      success: false,
+      message: '서버 내부 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 500, }
+    );
+  }
+}
+
+// POST: 토큰 갱신
+export async function POST(_request: NextRequest) {
+  try {
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get('refreshToken')?.value;
+
+    if (!refreshToken) {
+      const errorResponse = {
+        success: false,
+        message: '리프레시 토큰이 없습니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 401, }
+      );
+    }
+
+    // 리프레시 토큰 검증
+    let tokenData;
+    try {
+      tokenData = await serverTools.adminJwt!.tokenInfo('refreshToken', refreshToken);
+    } catch (error: any) {
+      console.error('리프레시 토큰 검증 실패:', error);
+
+      const errorResponse = {
+        success: false,
+        message: '유효하지 않은 리프레시 토큰입니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 401, }
+      );
+    }
+
+    // 관리자 계정 확인
+    const findAdmin = await prisma.admin.findUnique({
+      where: { id: tokenData.id, },
+    });
+
+    if (!findAdmin) {
+      const errorResponse = {
+        success: false,
+        message: '존재하지 않는 관리자 계정입니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 404, }
+      );
+    }
+
+    // 새로운 액세스 토큰 생성
+    const newTokens = await serverTools.adminJwt!.genTokens(findAdmin);
+
+    const response = NextResponse.json(
+      {
+        success: true,
+        message: '토큰이 갱신되었습니다.',
+      },
+      { status: 200, }
     );
 
-    const errorResponse: ApiError = {
-      response: null,
-      message: '토큰 재발급 처리 중 예상치 못한 오류가 발생했습니다.',
+    // 새로운 액세스 토큰 쿠키 설정
+    response.cookies.set('accessToken', newTokens.accessToken.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60, // 1시간
+      path: '/',
+    });
+
+    return response;
+  } catch (error: any) {
+    console.error('토큰 갱신 API 에러:', error);
+
+    const errorResponse = {
+      success: false,
+      message: '서버 내부 오류가 발생했습니다.',
     };
 
     return NextResponse.json(

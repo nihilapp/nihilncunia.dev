@@ -25,3 +25,16 @@ export type {
   RefreshCheckResult,
   RefreshApiResponse
 } from './user-auth.types';
+
+export type {
+  AdminTokenData,
+  AdminTokenMode,
+  AdminSignIn,
+  AdminSignOut,
+  AdminTokens,
+  AdminTokenInfo,
+  AdminRefreshToken,
+  AdminRefreshCheckResult,
+  AdminRefreshApiResponse,
+  AdminSession
+} from './admin-auth.types';

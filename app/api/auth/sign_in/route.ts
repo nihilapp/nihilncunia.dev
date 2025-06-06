@@ -1,124 +1,117 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+import { type AdminSignIn } from '@/_types';
 import { DB, serverTools } from '@/api/_libs';
-import type {
-  ApiResponse,
-  ApiError,
-  SignInUser,
-  Tokens,
-  UserSession
-} from '@/_types';
+import {
+  applySecurityMiddleware,
+  createSecurityErrorResponse
+} from '@/api/_libs';
 
 export async function POST(request: NextRequest) {
-  try {
-    const body: SignInUser = await request.json();
-    const { email, password, } = body;
+  // 보안 미들웨어 적용
+  const securityCheck = applySecurityMiddleware(request, {
+    enableCORS: true,
+    enableValidation: true,
+    enableCSRF: false, // 로그인은 CSRF 토큰 없이 허용
+  });
 
-    const findUser = await DB.users().findUnique({
-      where: {
-        email,
-      },
+  if (securityCheck.response) {
+    return securityCheck.response;
+  }
+
+  if (securityCheck.error) {
+    return createSecurityErrorResponse(securityCheck.error, 400);
+  }
+
+  try {
+    const requestData = await request.json() as AdminSignIn;
+
+    const { email, password, } = requestData;
+
+    // 이메일로 관리자 계정 찾기
+    const findAdmin = await DB.admin().findUnique({
+      where: { email, },
       include: {
-        user_auth: true,
+        admin_auth: true,
       },
     });
 
-    if (!findUser || !findUser.user_auth) {
-      const errorResponse: ApiError = {
-        response: null,
-        message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+    if (!findAdmin) {
+      const errorResponse = {
+        success: false,
+        message: '존재하지 않는 관리자 계정입니다.',
       };
 
       return NextResponse.json(
         errorResponse,
-        {
-          status: 401,
-        }
+        { status: 404, }
       );
     }
 
-    const isPasswordValid = await serverTools.bcrypt.dataCompare(
-      findUser.user_auth.hashed_password,
+    // 비밀번호 검증
+    const isValidPassword = await serverTools.bcrypt!.dataCompare(
+      findAdmin.admin_auth!.hashed_password,
       password
     );
 
-    if (!isPasswordValid) {
-      const errorResponse: ApiError = {
-        response: null,
-        message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+    if (!isValidPassword) {
+      const errorResponse = {
+        success: false,
+        message: '비밀번호가 일치하지 않습니다.',
       };
 
       return NextResponse.json(
         errorResponse,
-        {
-          status: 401,
-        }
+        { status: 401, }
       );
     }
 
-    const tokens: Tokens = await serverTools.jwt.genTokens(findUser);
-    const { accessToken, refreshToken, } = tokens;
+    // JWT 토큰 생성
+    const tokens = await serverTools.adminJwt!.genTokens(findAdmin);
 
-    await DB.client().$transaction(async (tx) => {
-      await tx.userAuth.update({
-        where: {
-          user_id: findUser.id,
+    // HTTP-only 쿠키에 토큰 저장
+    const response = NextResponse.json(
+      {
+        success: true,
+        message: '로그인에 성공했습니다.',
+        admin: {
+          id: findAdmin.id,
+          name: findAdmin.name,
+          email: findAdmin.email,
         },
-        data: {
-          refresh_token: refreshToken.token,
-        },
-      });
-
-      await tx.user.update({
-        where: {
-          id: findUser.id,
-        },
-        data: {
-          last_sign_in: new Date(),
-        },
-      });
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { user_auth, ...userWithoutAuth } = findUser;
-
-    const userSession: UserSession = {
-      ...userWithoutAuth,
-      access_token: accessToken,
-    };
-
-    await serverTools.cookie.set(
-      'refreshToken',
-      serverTools.common.string(refreshToken),
-      refreshToken.exp
-    );
-
-    await serverTools.cookie.set(
-      'accessToken',
-      serverTools.common.string(accessToken),
-      accessToken.exp
-    );
-
-    const responseData: ApiResponse<UserSession> = {
-      message: '로그인 성공',
-      response: userSession,
-    };
-
-    return NextResponse.json(
-      responseData,
+      },
       { status: 200, }
     );
-  } catch (error) {
-    console.error('로그인 처리 중 오류 발생:', error);
-    const errorResponse: ApiError = {
-      message: '로그인 처리 중 오류가 발생했습니다.',
-      response: null,
+
+    // 쿠키 설정
+    response.cookies.set('accessToken', tokens.accessToken.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60, // 1시간
+      path: '/',
+    });
+
+    response.cookies.set('refreshToken', tokens.refreshToken.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7, // 7일
+      path: '/',
+    });
+
+    return response;
+  } catch (error: any) {
+    console.error('로그인 API 에러:', error);
+
+    const errorResponse = {
+      success: false,
+      message: '서버 내부 오류가 발생했습니다.',
     };
 
     return NextResponse.json(
       errorResponse,
-      {
-        status: 500,
-      }
+      { status: 500, }
     );
   }
 }

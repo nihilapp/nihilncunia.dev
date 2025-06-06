@@ -12,38 +12,38 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 프로젝트 초기 설정
 
-- [ ] Next.js 14+ 프로젝트 생성 및 기본 구조 설정
-- [ ] TypeScript 설정 및 타입 안전성 확보
-- [ ] TailwindCSS v4 설정 및 기본 스타일링
-- [ ] shadcn/ui 설치 및 컴포넌트 라이브러리 구성
-- [ ] ESLint, Prettier 코드 품질 도구 설정
-- [ ] 라우트 그룹 생성 ((common), (auth), (admin))
+- [x] Next.js 14+ 프로젝트 생성 및 기본 구조 설정
+- [x] TypeScript 설정 및 타입 안전성 확보
+- [x] TailwindCSS v4 설정 및 기본 스타일링
+- [x] shadcn/ui 설치 및 컴포넌트 라이브러리 구성
+- [x] ESLint, Prettier 코드 품질 도구 설정
+- [x] 라우트 그룹 생성 ((common), (auth), (admin))
 
 #### 데이터베이스 및 백엔드 설정
 
 - [x] Prisma 스키마 설계 (Admin, Post, Category, Hashtag 등)
-- [ ] 데이터베이스 연결 및 마이그레이션
-- [ ] Prisma Client 생성 및 설정
-- [ ] API 라우트 기본 구조 생성
-- [ ] 환경 변수 설정 (.env.local)
+- [x] 데이터베이스 연결 및 마이그레이션
+- [x] Prisma Client 생성 및 설정
+- [x] API 라우트 기본 구조 생성
+- [x] 환경 변수 설정 (.env.local)
 
 #### 인증 시스템 구현
 
-- [ ] JWT 유틸리티 함수 구현 (/app/api/\_libs/tools/jwt.ts)
-- [ ] bcrypt 비밀번호 해싱 구현 (/app/api/\_libs/tools/bcrypt.ts)
-- [ ] 관리자 로그인 API (POST /api/auth/sign-in)
-- [ ] 로그아웃 API (POST /api/auth/sign-out)
-- [ ] 토큰 갱신 API (POST /api/auth/refresh)
-- [ ] 토큰 검증 API (GET /api/auth/verify)
-- [ ] 인증 미들웨어 구현
-- [ ] HTTP-only 쿠키 설정
+- [x] JWT 유틸리티 함수 구현 (/app/api/\_libs/tools/admin-jwt.ts)
+- [x] bcrypt 비밀번호 해싱 구현 (/app/api/\_libs/tools/bcrypt.ts)
+- [x] 관리자 로그인 API (POST /api/auth/sign_in)
+- [x] 로그아웃 API (POST /api/auth/sign_out)
+- [x] 토큰 갱신 & 검증 API (POST/GET /api/auth/refresh)
+- [x] 인증 미들웨어 구현 (/app/api/\_libs/middleware/auth.ts)
+- [x] HTTP-only 쿠키 설정
+- [x] Admin 전용 타입 정의 구현
 
 #### 보안 설정
 
-- [ ] CORS 설정
-- [ ] CSRF 보호 구현
-- [ ] XSS 방지 설정
-- [ ] API 요청 유효성 검사
+- [x] CORS 설정
+- [x] CSRF 보호 구현
+- [x] XSS 방지 설정
+- [x] API 요청 유효성 검사
 
 ### 📝 2단계: 콘텐츠 관리 시스템 (3주)
 
@@ -212,9 +212,10 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ### 🔐 보안 및 인증
 
-- **관리자 전용 인증**: 일반 사용자 회원가입 차단
+- **관리자 전용 시스템**: 일반 사용자 기능 없이 관리자만 콘텐츠 관리
 - **어드민 페이지 보안**: 외부 노출 완전 차단 및 검색 엔진 크롤링 방지
 - **JWT 기반 인증**: 액세스 토큰 및 리프레시 토큰 활용
+- **보안 미들웨어**: CORS, CSRF, XSS 방지 기능 내장
 
 ### 🚀 SEO 최적화
 
@@ -347,8 +348,10 @@ pnpm db:seed      # 시드 데이터 생성
 ### API 구조
 
 - 인증 API: `/app/api/auth/`
-- 사용자 API: `/app/api/users/`
 - 어드민 API: `/app/api/admin/`
+- 포스트 API: `/app/api/posts/`
+- 카테고리 API: `/app/api/categories/`
+- 해시태그 API: `/app/api/hashtags/`
 
 ## 🛡 보안 고려사항
 

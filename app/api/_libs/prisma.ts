@@ -17,11 +17,27 @@ export class DB {
     return prisma;
   }
 
-  static users() {
-    return this.client().user;
+  static admin() {
+    return this.client().admin;
   }
 
-  static userAuths() {
-    return this.client().userAuth;
+  static adminAuth() {
+    return this.client().adminAuth;
+  }
+
+  static categories() {
+    return this.client().category;
+  }
+
+  static hashtags() {
+    return this.client().hashtag;
+  }
+
+  static posts() {
+    return this.client().post;
+  }
+
+  static postHashtags() {
+    return this.client().postHashtag;
   }
 }
