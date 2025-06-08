@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { type AdminSignIn } from '@/_types';
+import { type SignInUser } from '@/_types';
 import { DB, serverTools } from '@/api/_libs';
 import {
   applySecurityMiddleware,
@@ -24,22 +24,22 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const requestData = await request.json() as AdminSignIn;
+    const requestData = await request.json() as SignInUser;
 
     const { email, password, } = requestData;
 
-    // 이메일로 관리자 계정 찾기
-    const findAdmin = await DB.admin().findUnique({
+    // 이메일로 사용자 계정 찾기
+    const findUser = await DB.user().findUnique({
       where: { email, },
       include: {
-        admin_auth: true,
+        user_auth: true,
       },
     });
 
-    if (!findAdmin) {
+    if (!findUser) {
       const errorResponse = {
         success: false,
-        message: '존재하지 않는 관리자 계정입니다.',
+        message: '존재하지 않는 사용자 계정입니다.',
       };
 
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // 비밀번호 검증
     const isValidPassword = await serverTools.bcrypt!.dataCompare(
-      findAdmin.admin_auth!.hashed_password,
+      findUser.user_auth!.hashed_password,
       password
     );
 
@@ -67,46 +67,50 @@ export async function POST(request: NextRequest) {
     }
 
     // JWT 토큰 생성
-    const tokens = await serverTools.adminJwt!.genTokens(findAdmin);
+    const tokens = await serverTools.jwt!.genTokens(findUser);
 
-    // HTTP-only 쿠키에 토큰 저장
-    const response = NextResponse.json(
-      {
-        success: true,
-        message: '로그인에 성공했습니다.',
-        admin: {
-          id: findAdmin.id,
-          name: findAdmin.name,
-          email: findAdmin.email,
-        },
-      },
-      { status: 200, }
+    // 리프레시 토큰을 데이터베이스에 저장
+    await DB.userAuth().update({
+      where: { user_id: findUser.id, },
+      data: { refresh_token: tokens.refreshToken.token, },
+    });
+
+    // 쿠키에 토큰 설정
+    await serverTools.cookie!.set(
+      'accessToken',
+      tokens.accessToken.token,
+      60 * 60 // 1시간
     );
 
-    // 쿠키 설정
-    response.cookies.set('accessToken', tokens.accessToken.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60, // 1시간
-      path: '/',
+    await serverTools.cookie!.set(
+      'refreshToken',
+      tokens.refreshToken.token,
+      60 * 60 * 24 * 7 // 7일
+    );
+
+    // 마지막 로그인 시간 업데이트
+    await DB.user().update({
+      where: { id: findUser.id, },
+      data: { last_sign_in: new Date(), },
     });
 
-    response.cookies.set('refreshToken', tokens.refreshToken.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7, // 7일
-      path: '/',
-    });
+    const successResponse = {
+      success: true,
+      message: '로그인 성공',
+      response: {
+        id: findUser.id,
+        email: findUser.email,
+        name: findUser.name,
+      },
+    };
 
-    return response;
-  } catch (error: any) {
-    console.error('로그인 API 에러:', error);
+    return NextResponse.json(successResponse);
+  } catch (error) {
+    console.error('로그인 에러:', error);
 
     const errorResponse = {
       success: false,
-      message: '서버 내부 오류가 발생했습니다.',
+      message: '로그인 처리 중 오류가 발생했습니다.',
     };
 
     return NextResponse.json(

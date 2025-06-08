@@ -1,17 +1,16 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { type AdminSession } from '@/_types';
-import { prisma } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { type UserSession } from '@/_types';
+import { DB, serverTools } from '@/api/_libs';
 
 export interface AuthenticatedRequest extends NextRequest {
-  admin?: AdminSession;
+  user?: UserSession;
 }
 
 export async function authenticate(request: NextRequest): Promise<{
   success: boolean;
-  admin?: AdminSession;
+  user?: UserSession;
   error?: string;
   status?: number;
 }> {
@@ -30,7 +29,7 @@ export async function authenticate(request: NextRequest): Promise<{
     // 액세스 토큰 검증
     let tokenData;
     try {
-      tokenData = await serverTools.adminJwt!.tokenInfo('accessToken', accessToken);
+      tokenData = await serverTools.jwt!.tokenInfo('accessToken', accessToken);
     } catch (error) {
       return {
         success: false,
@@ -39,8 +38,8 @@ export async function authenticate(request: NextRequest): Promise<{
       };
     }
 
-    // 관리자 계정 확인
-    const findAdmin = await prisma.admin.findUnique({
+    // 사용자 계정 확인
+    const findUser = await DB.user().findUnique({
       where: { id: tokenData.id, },
       select: {
         id: true,
@@ -49,16 +48,16 @@ export async function authenticate(request: NextRequest): Promise<{
       },
     });
 
-    if (!findAdmin) {
+    if (!findUser) {
       return {
         success: false,
-        error: '존재하지 않는 관리자 계정입니다.',
+        error: '존재하지 않는 사용자 계정입니다.',
         status: 404,
       };
     }
 
     // 토큰 만료 시간 확인
-    const remainingTime = serverTools.adminJwt!.expCheck(tokenData.exp);
+    const remainingTime = serverTools.jwt!.expCheck(tokenData.exp);
 
     if (remainingTime <= 0) {
       return {
@@ -70,9 +69,9 @@ export async function authenticate(request: NextRequest): Promise<{
 
     return {
       success: true,
-      admin: findAdmin,
+      user: findUser,
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error('인증 미들웨어 에러:', error);
 
     return {
@@ -112,9 +111,9 @@ export async function requireAuth(
     );
   }
 
-  // 인증된 관리자 정보를 request에 추가
+  // 인증된 사용자 정보를 request에 추가
   const authenticatedRequest = request as AuthenticatedRequest;
-  authenticatedRequest.admin = authResult.admin;
+  authenticatedRequest.user = authResult.user;
 
   return handler(authenticatedRequest);
 }

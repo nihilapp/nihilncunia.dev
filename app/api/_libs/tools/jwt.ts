@@ -1,6 +1,6 @@
 import { jwtVerify, SignJWT } from 'jose';
 
-import { Admin } from '@/_prisma/client';
+import { User } from '@/_prisma/client';
 import {
   type TokenMode,
   type TokenData,
@@ -15,10 +15,10 @@ export class Jwt {
   }
 
   // 토큰 생성
-  public async genTokens(admin: Admin): Promise<Tokens> {
+  public async genTokens(user: User): Promise<Tokens> {
     const {
       id, email, name,
-    } = admin;
+    } = user;
 
     const tokenPayload = {
       id, email, name,

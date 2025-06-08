@@ -1,17 +1,14 @@
-import type { User, UserRole } from '@/_prisma/client';
-import type { TokenInfo } from '@/_types/user-auth.types';
+// User 타입은 필요할 때 @/_prisma/client에서 import
 
 export interface CreateUser {
   email: string;
-  name?: string;
-  role?: UserRole;
+  name: string;
   password: string;
 }
 
 export interface UpdateUser {
   userId: string;
   name?: string;
-  role?: UserRole;
 }
 
 export interface UpdateUserPassword {
@@ -25,8 +22,4 @@ export interface UpdateUserImage {
 
 export interface DeleteUsers {
   ids: string[];
-}
-
-export interface UserSession extends User {
-  access_token: TokenInfo;
 }

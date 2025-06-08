@@ -21,9 +21,7 @@ const createUsersSlice: StateCreator<
   },
 });
 
-export const useUsersStore = create<UsersState>()(
-  immer(createUsersSlice)
-);
+export const useUsersStore = create<UsersState>()(immer(createUsersSlice));
 
 // 커스텀 훅 내보내기
 export const useUsersActions = () => useUsersStore((state) => state.actions);

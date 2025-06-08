@@ -3,7 +3,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
 
-import { SignOutButton } from '@/(common)/_components/SignOutButton';
 import { cn } from '@/_libs';
 
 interface Props
@@ -33,9 +32,6 @@ export function Home({ className, ...props }: Props) {
       {...props}
     >
       content
-      <div>
-        <SignOutButton />
-      </div>
     </div>
   );
 }

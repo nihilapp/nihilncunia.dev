@@ -1,8 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { prisma } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { DB, serverTools } from '@/api/_libs';
 
 // GET: 토큰 검증
 export async function GET(_request: NextRequest) {
@@ -25,8 +24,8 @@ export async function GET(_request: NextRequest) {
     // 액세스 토큰 검증
     let tokenData;
     try {
-      tokenData = await serverTools.adminJwt!.tokenInfo('accessToken', accessToken);
-    } catch (error: any) {
+      tokenData = await serverTools.jwt!.tokenInfo('accessToken', accessToken);
+    } catch (error) {
       console.error('액세스 토큰 검증 실패:', error);
 
       const errorResponse = {
@@ -40,8 +39,8 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    // 관리자 계정 확인
-    const findAdmin = await prisma.admin.findUnique({
+    // 사용자 계정 확인
+    const findUser = await DB.user().findUnique({
       where: { id: tokenData.id, },
       select: {
         id: true,
@@ -51,10 +50,10 @@ export async function GET(_request: NextRequest) {
       },
     });
 
-    if (!findAdmin) {
+    if (!findUser) {
       const errorResponse = {
         success: false,
-        message: '존재하지 않는 관리자 계정입니다.',
+        message: '존재하지 않는 사용자 계정입니다.',
       };
 
       return NextResponse.json(
@@ -64,7 +63,7 @@ export async function GET(_request: NextRequest) {
     }
 
     // 토큰 만료 시간 확인
-    const remainingTime = serverTools.adminJwt!.expCheck(tokenData.exp);
+    const remainingTime = serverTools.jwt!.expCheck(tokenData.exp);
 
     if (remainingTime <= 0) {
       const errorResponse = {
@@ -82,12 +81,12 @@ export async function GET(_request: NextRequest) {
       {
         success: true,
         message: '유효한 토큰입니다.',
-        admin: findAdmin,
+        user: findUser,
         remainingTime,
       },
       { status: 200, }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('토큰 검증 API 에러:', error);
 
     const errorResponse = {
@@ -123,8 +122,8 @@ export async function POST(_request: NextRequest) {
     // 리프레시 토큰 검증
     let tokenData;
     try {
-      tokenData = await serverTools.adminJwt!.tokenInfo('refreshToken', refreshToken);
-    } catch (error: any) {
+      tokenData = await serverTools.jwt!.tokenInfo('refreshToken', refreshToken);
+    } catch (error) {
       console.error('리프레시 토큰 검증 실패:', error);
 
       const errorResponse = {
@@ -138,15 +137,15 @@ export async function POST(_request: NextRequest) {
       );
     }
 
-    // 관리자 계정 확인
-    const findAdmin = await prisma.admin.findUnique({
+    // 사용자 계정 확인
+    const findUser = await DB.user().findUnique({
       where: { id: tokenData.id, },
     });
 
-    if (!findAdmin) {
+    if (!findUser) {
       const errorResponse = {
         success: false,
-        message: '존재하지 않는 관리자 계정입니다.',
+        message: '존재하지 않는 사용자 계정입니다.',
       };
 
       return NextResponse.json(
@@ -156,27 +155,28 @@ export async function POST(_request: NextRequest) {
     }
 
     // 새로운 액세스 토큰 생성
-    const newTokens = await serverTools.adminJwt!.genTokens(findAdmin);
+    const newTokens = await serverTools.jwt!.genTokens(findUser);
 
-    const response = NextResponse.json(
+    // 새로운 액세스 토큰 쿠키 설정
+    await serverTools.cookie!.set(
+      'accessToken',
+      newTokens.accessToken.token,
+      60 * 60 // 1시간
+    );
+
+    return NextResponse.json(
       {
         success: true,
         message: '토큰이 갱신되었습니다.',
+        response: {
+          id: findUser.id,
+          email: findUser.email,
+          name: findUser.name,
+        },
       },
       { status: 200, }
     );
-
-    // 새로운 액세스 토큰 쿠키 설정
-    response.cookies.set('accessToken', newTokens.accessToken.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60, // 1시간
-      path: '/',
-    });
-
-    return response;
-  } catch (error: any) {
+  } catch (error) {
     console.error('토큰 갱신 API 에러:', error);
 
     const errorResponse = {

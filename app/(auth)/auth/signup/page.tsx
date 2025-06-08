@@ -1,8 +1,7 @@
 import React from 'react';
-import { setMeta } from '@/_libs';
-import { SignUpForm } from '@/(auth)/_components';
 
-interface Props {}
+import { SignUpForm } from '@/(auth)/_components';
+import { setMeta } from '@/_libs';
 
 export const metadata = setMeta({
   title: `회원가입`,

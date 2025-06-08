@@ -10,8 +10,7 @@ export type {
   UpdateUser,
   UpdateUserPassword,
   DeleteUsers,
-  UpdateUserImage,
-  UserSession
+  UpdateUserImage
 } from './users.types';
 
 export type {
@@ -23,18 +22,6 @@ export type {
   TokenInfo,
   RefreshUserAccessToken,
   RefreshCheckResult,
-  RefreshApiResponse
+  RefreshApiResponse,
+  UserSession
 } from './user-auth.types';
-
-export type {
-  AdminTokenData,
-  AdminTokenMode,
-  AdminSignIn,
-  AdminSignOut,
-  AdminTokens,
-  AdminTokenInfo,
-  AdminRefreshToken,
-  AdminRefreshCheckResult,
-  AdminRefreshApiResponse,
-  AdminSession
-} from './admin-auth.types';

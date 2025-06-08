@@ -17,12 +17,12 @@ export class DB {
     return prisma;
   }
 
-  static admin() {
-    return this.client().admin;
+  static user() {
+    return this.client().user;
   }
 
-  static adminAuth() {
-    return this.client().adminAuth;
+  static userAuth() {
+    return this.client().userAuth;
   }
 
   static categories() {

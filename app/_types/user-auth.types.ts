@@ -40,3 +40,9 @@ export interface RefreshCheckResult {
 export interface RefreshApiResponse {
   accessToken: TokenInfo;
 }
+
+export interface UserSession {
+  id: string;
+  email: string;
+  name: string;
+}

@@ -1,12 +1,11 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
 import { redirect } from 'next/navigation';
-import type { AxiosError } from 'axios';
+import React from 'react';
+
+import { useAuthActions, useUserSession, useSignOut } from '@/_entities/auth';
 import { cn } from '@/_libs';
-import { useAuthActions, useSignOut, useUserSession } from '@/_entities/auth';
-import type { ApiError } from '@/_types';
 
 interface Props
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -32,6 +31,8 @@ export function SignOutButton({ className, ...props }: Props) {
   const signOut = useSignOut();
 
   const onClickSignOut = () => {
+    if (!userSession) return;
+
     signOut.mutate(
       {
         id: userSession.id,
@@ -42,7 +43,7 @@ export function SignOutButton({ className, ...props }: Props) {
 
           redirect('/auth/signin');
         },
-        onError(error: AxiosError<ApiError>) {
+        onError(error) {
           console.error(error);
         },
       }

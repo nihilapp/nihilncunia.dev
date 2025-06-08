@@ -21,8 +21,8 @@ enum PostStatus {
   ARCHIVED
 }
 
-// 관리자 정보
-model Admin {
+// 사용자 정보
+model User {
   id           String    @id @default(uuid())
   email        String    @unique
   name         String
@@ -31,24 +31,24 @@ model Admin {
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
-  admin_auth AdminAuth? // 1:1 관계
-  posts      Post[] // 1:N 관계 (작성한 포스트들)
+  user_auth UserAuth? // 1:1 관계
+  posts     Post[] // 1:N 관계 (작성한 포스트들)
 
-  @@map("admins")
+  @@map("users")
 }
 
-// 관리자 인증 정보
-model AdminAuth {
+// 사용자 인증 정보
+model UserAuth {
   id              String   @id @default(uuid())
-  admin_id        String   @unique // Admin 모델과의 관계를 위한 외래 키
+  user_id         String   @unique // User 모델과의 관계를 위한 외래 키
   hashed_password String
   refresh_token   String?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
-  admin Admin @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@map("admin_auths")
+  @@map("user_auths")
 }
 
 // 카테고리
@@ -98,10 +98,10 @@ model Post {
   updated_at      DateTime   @updatedAt
 
   // 관계
-  admin_id    String
+  user_id     String
   category_id String
 
-  admin    Admin    @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
 
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블

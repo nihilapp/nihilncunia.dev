@@ -1,8 +1,7 @@
 import React from 'react';
-import { setMeta } from '@/_libs';
-import { SignInForm } from '@/(auth)/_components';
 
-interface Props {}
+import { SignInForm } from '@/(auth)/_components';
+import { setMeta } from '@/_libs';
 
 export const metadata = setMeta({
   title: `로그인`,

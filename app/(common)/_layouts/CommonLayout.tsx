@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { CommonHeader } from '@/(common)/_layouts/CommonHeader';
-import { CommonNav } from '@/(common)/_layouts/CommonNav';
+
 import { CommonContent } from '@/(common)/_layouts/CommonContent';
 import { CommonFooter } from '@/(common)/_layouts/CommonFooter';
+import { CommonHeader } from '@/(common)/_layouts/CommonHeader';
+import { CommonNav } from '@/(common)/_layouts/CommonNav';
 
 interface Props {
   children: React.ReactNode;

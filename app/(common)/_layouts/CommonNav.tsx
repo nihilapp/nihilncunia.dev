@@ -1,8 +1,9 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
+
 import { cn } from '@/_libs';
 
 interface Props
@@ -15,11 +16,11 @@ const cssVariants = cva(
   [
     ``,
   ],
-    {
-      variants: {},
-      defaultVariants: {},
-      compoundVariants: [],
-    }
+  {
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: [],
+  }
 );
 
 export function CommonNav({ className, ...props }: Props) {

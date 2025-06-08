@@ -1,25 +1,20 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 // 미들웨어가 실행될 경로를 정의합니다.
-// API 라우트, Next.js 내부 경로, 정적 파일, 로그인 페이지, 인덱스 페이지 등은 제외합니다.
+// 블로그이므로 관리자 페이지(admin/)에만 인증이 필요합니다.
 export const config = {
   matcher: [
     /*
-     * 아래 패턴들과 일치하는 경로를 제외한 모든 요청 경로에서 미들웨어를 실행합니다:
-     * - api (API 라우트)
-     * - _next/static (정적 파일)
-     * - _next/image (이미지 최적화 파일)
-     * - favicon.ico (파비콘 파일)
-     * - auth/signin (로그인 페이지)
-     * - / (인덱스 페이지)
+     * admin/ 경로에서만 미들웨어를 실행합니다.
+     * 일반 블로그 포스트, 홈페이지, 카테고리 등은 누구나 접근 가능해야 합니다.
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|auth/signin|$).*)',
+    '/admin/:path*',
   ],
 };
 
 export async function middleware(request: NextRequest) {
-  console.log('--- 미들웨어 시작 ---');
-  console.log('요청 경로:', request.nextUrl.pathname);
+  console.log('--- 관리자 인증 미들웨어 시작 ---');
+  console.log('관리자 페이지 요청 경로:', request.nextUrl.pathname);
 
   // 1. 쿠키에서 리프레시 토큰 가져오기
   const refreshToken = request.cookies.get('refreshToken')?.value;
@@ -27,9 +22,9 @@ export async function middleware(request: NextRequest) {
 
   // 2. 리프레시 토큰이 없으면 로그인 페이지로 리다이렉트
   if (!refreshToken) {
-    console.log('리프레시 토큰 없음, 로그인 페이지로 리다이렉트합니다...');
+    console.log('관리자 인증 토큰 없음, 로그인 페이지로 리다이렉트합니다...');
     const signInUrl = new URL('/auth/signin', request.url);
-    // 현재 경로를 쿼리 파라미터로 추가하여 로그인 후 리다이렉트할 수 있도록 함 (선택 사항)
+    // 관리자 페이지 경로를 쿼리 파라미터로 추가하여 로그인 후 리다이렉트할 수 있도록 함
     signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
   }
@@ -56,7 +51,7 @@ export async function middleware(request: NextRequest) {
     // 4. API 응답 처리
     if (response.ok) {
       // 4.1. 갱신 성공: 다음 요청으로 진행하되, API가 설정한 쿠키를 포함
-      console.log('토큰 갱신 성공, 요청 계속 진행...');
+      console.log('관리자 토큰 갱신 성공, 관리자 페이지 접근 허용...');
       const nextResponse = NextResponse.next(); // 다음 미들웨어/페이지로 진행
 
       // refresh API 응답의 Set-Cookie 헤더를 가져와서 nextResponse에 설정
@@ -77,13 +72,13 @@ export async function middleware(request: NextRequest) {
       return nextResponse;
     } else {
       // 4.2. 갱신 실패 (예: 리프레시 토큰 만료 또는 무효): 로그인 페이지로 리다이렉트
-      console.log('토큰 갱신 실패, 로그인 페이지로 리다이렉트합니다...');
+      console.log('관리자 토큰 갱신 실패, 로그인 페이지로 리다이렉트합니다...');
       const signInUrl = new URL('/auth/signin', request.url);
       signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
 
       // 실패 시 기존 쿠키 삭제 응답 생성
       const redirectResponse = NextResponse.redirect(signInUrl);
-      console.log('유효하지 않을 수 있는 쿠키를 삭제합니다.');
+      console.log('유효하지 않은 관리자 인증 쿠키를 삭제합니다.');
       redirectResponse.cookies.delete('refreshToken');
       redirectResponse.cookies.delete('accessToken'); // accessToken 쿠키도 함께 삭제
 
@@ -99,12 +94,12 @@ export async function middleware(request: NextRequest) {
     }
   } catch (error) {
     // 5. fetch 중 네트워크 오류 등 발생 시 처리
-    console.error('토큰 갱신 API 호출 중 오류 발생:', error);
+    console.error('관리자 토큰 갱신 API 호출 중 오류 발생:', error);
     // 오류 발생 시 안전하게 로그인 페이지로 보내거나 오류 페이지 표시
     const signInUrl = new URL('/auth/signin', request.url);
-    signInUrl.searchParams.set('error', 'middleware_fetch_error');
+    signInUrl.searchParams.set('error', 'admin_auth_error');
     return NextResponse.redirect(signInUrl);
   } finally {
-    console.log('--- 미들웨어 종료 ---');
+    console.log('--- 관리자 인증 미들웨어 종료 ---');
   }
 }
