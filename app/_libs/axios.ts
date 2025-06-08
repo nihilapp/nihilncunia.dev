@@ -3,8 +3,10 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig
 } from 'axios';
-import { type ApiResponse, type UserSession } from '@/_types';
+
 import { siteConfig } from '../_config';
+
+import { type ApiResponse, type UserSession } from '@/_types';
 
 // Zustand 상태 타입 예시 (실제 타입으로 교체 필요)
 interface AuthState {

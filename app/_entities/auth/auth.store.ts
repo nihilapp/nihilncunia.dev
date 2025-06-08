@@ -1,6 +1,7 @@
 import { create, StateCreator } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+
 import type { UserSession } from '@/_types';
 
 interface AuthActions {
@@ -18,24 +19,20 @@ const createAuthSlice: StateCreator<
 > = (set) => ({
   userSession: null,
   actions: {
-    setUserSession: (userSession: UserSession | null) => set(
-      (state) => {
-        state.userSession = userSession;
-      }
-    ),
+    setUserSession: (userSession: UserSession | null) => set((state) => {
+      state.userSession = userSession;
+    }),
   },
 });
 
-const useAuthStore = create<AuthState>()(
-  persist(
-    immer(createAuthSlice),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ userSession: state.userSession, }),
-    }
-  )
-);
+const useAuthStore = create<AuthState>()(persist(
+  immer(createAuthSlice),
+  {
+    name: 'auth-storage',
+    storage: createJSONStorage(() => localStorage),
+    partialize: (state) => ({ userSession: state.userSession, }),
+  }
+));
 
 export const useUserSession = () => useAuthStore((state) => state.userSession);
 

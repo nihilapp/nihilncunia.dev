@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { CommonLayout } from './_layouts/CommonLayout';
 
 interface Props {

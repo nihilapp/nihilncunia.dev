@@ -21,9 +21,7 @@ const createUserAuthSlice: StateCreator<
   },
 });
 
-export const useUserAuthStore = create<UserAuthState>()(
-  immer(createUserAuthSlice)
-);
+export const useUserAuthStore = create<UserAuthState>()(immer(createUserAuthSlice));
 
 // 커스텀 훅 내보내기
 export const useUserAuthActions = () => useUserAuthStore((state) => state.actions);

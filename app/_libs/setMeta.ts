@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import { siteConfig } from '../_config';
 import { SiteMetadata } from '../_types';
 
