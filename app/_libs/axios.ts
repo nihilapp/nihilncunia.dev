@@ -36,11 +36,17 @@ export class Api {
     instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         try {
-          const storageKey = 'auth-storage'; // *** 실제 키로 변경 필수 ***
+          // SSR 환경에서는 localStorage가 없으므로 체크
+          if (typeof window === 'undefined') {
+            return config;
+          }
+
+          const storageKey = 'auth-storage';
           const persistedStateString = localStorage.getItem(storageKey);
 
           if (persistedStateString) {
             let persistedState: PersistedState | null = null;
+
             try {
               persistedState = JSON.parse(persistedStateString);
             } catch (parseError) {
@@ -48,15 +54,18 @@ export class Api {
               return config;
             }
 
-            const accessToken = persistedState?.state?.userSession?.access_token?.token;
+            // UserSession에는 토큰이 저장되지 않음
+            // 토큰은 HttpOnly 쿠키로 관리되므로
+            // Authorization 헤더를 별도로 설정할 필요 없음
+            const userSession = persistedState?.state?.userSession;
 
-            if (accessToken) {
-              config.headers.Authorization = `Bearer ${accessToken}`;
-            }
+            // 현재는 쿠키 기반 인증을 사용하므로
+            // 별도의 Authorization 헤더 설정 불필요
           }
         } catch (error) {
           console.error('토큰 검색/헤더 설정 중 오류 발생:', error);
         }
+
         return config;
       },
       (error) => {
