@@ -3,6 +3,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
 
+import { CommonMain, CommonSidebar } from '@/(common)/_layouts';
 import { cn } from '@/_libs';
 
 interface Props
@@ -31,8 +32,10 @@ export function CommonContent({ className, children, ...props }: Props) {
       )}
       {...props}
     >
-      <aside>aside</aside>
-      <main>{children}</main>
+      <CommonSidebar />
+      <CommonMain>
+        {children}
+      </CommonMain>
     </div>
   );
 }

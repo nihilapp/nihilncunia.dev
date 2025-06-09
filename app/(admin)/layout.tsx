@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AdminSidebar, AdminHeader } from '@/(admin)/_components';
+import { AdminSidebar, AdminHeader, AdminMain } from '@/(admin)/_layouts';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -17,11 +17,9 @@ export default function AdminLayout({ children, }: AdminLayoutProps) {
         <AdminSidebar />
 
         {/* Main Content */}
-        <main className='flex-1 p-6 ml-64 pt-20'>
-          <div className='max-w-full'>
-            {children}
-          </div>
-        </main>
+        <AdminMain>
+          {children}
+        </AdminMain>
       </div>
     </div>
   );
