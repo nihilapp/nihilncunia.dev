@@ -15,7 +15,7 @@ interface StatCardProps
 
 const StatCardVariants = cva(
   [
-    `bg-white rounded-lg shadow p-6`,
+    `bg-white/80 backdrop-blur-sm dark:bg-slate-800/80 rounded-xl shadow-lg hover:shadow-xl border border-gray-200/50 dark:border-slate-700/50 p-6 transition-all duration-300 hover:scale-105`,
   ],
   {
     variants: {},
@@ -42,13 +42,15 @@ export function StatCard({
     >
       <div className='flex items-center'>
         <div className='flex-shrink-0'>
-          <div className={`w-8 h-8 ${iconBgColor} rounded-lg flex items-center justify-center`}>
-            {icon}
+          <div className={`w-12 h-12 ${iconBgColor} rounded-xl flex items-center justify-center shadow-lg ring-4 ring-white/20 dark:ring-slate-800/20`}>
+            <div className='w-6 h-6 text-white'>
+              {icon}
+            </div>
           </div>
         </div>
         <div className='ml-4'>
-          <p className='text-sm font-medium text-gray-600'>{label}</p>
-          <p className='text-2xl font-bold text-gray-900'>
+          <p className='text-sm font-medium text-gray-600 dark:text-gray-400 mb-1'>{label}</p>
+          <p className='text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight'>
             {typeof value === 'number' ? value.toLocaleString() : value}
           </p>
         </div>

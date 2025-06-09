@@ -19,6 +19,9 @@ enum PostStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+  PENDING // 작성대기
+  WRITING // 작성중
+  COMPLETED // 작성완료
 }
 
 // 사용자 정보
@@ -61,9 +64,28 @@ model Category {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  posts Post[] // 1:N 관계
+  subcategories Subcategory[] // 1:N 관계
+  posts         Post[] // 1:N 관계
 
   @@map("categories")
+}
+
+// 서브카테고리
+model Subcategory {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // 관계
+  category_id String
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  posts       Post[] // 1:N 관계
+
+  @@unique([category_id, slug]) // 같은 카테고리 내에서 slug 유니크
+  @@map("subcategories")
 }
 
 // 해시태그
@@ -81,28 +103,26 @@ model Hashtag {
 
 // 블로그 포스트
 model Post {
-  id              String     @id @default(uuid())
-  title           String
-  slug            String     @unique
-  content         String // 마크다운 형태의 글 내용
-  excerpt         String? // 글 요약
-  featured_image  String? // 대표 이미지 URL
-  status          PostStatus @default(DRAFT)
-  published_at    DateTime?
-  views           Int        @default(0)
-  reading_time    Int? // 읽는 시간 (분)
-  seo_title       String? // SEO용 타이틀
-  seo_description String? // SEO용 설명
-  seo_keywords    String? // SEO용 키워드
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
+  id           String     @id @default(uuid())
+  title        String // 제목 (필수)
+  slug         String     @unique // URL용 slug (필수)
+  content      String     @db.Text // 마크다운 형태의 글 내용 (필수)
+  excerpt      String? // 글 요약 (선택)
+  status       PostStatus @default(DRAFT) // 현 상태 (작성대기, 작성중, 작성완료)
+  is_published Boolean    @default(false) // 공개여부 (true & false)
+  views        Int        @default(0) // 조회수
+  likes        Int        @default(0) // 좋아요 수
+  created_at   DateTime   @default(now()) // 작성일자
+  updated_at   DateTime   @updatedAt // 수정일자
 
   // 관계
-  user_id     String
-  category_id String
+  user_id        String
+  category_id    String
+  subcategory_id String? // 서브카테고리는 선택사항
 
-  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category    Category     @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  subcategory Subcategory? @relation(fields: [subcategory_id], references: [id], onDelete: SetNull)
 
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
 

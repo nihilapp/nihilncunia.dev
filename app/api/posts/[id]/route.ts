@@ -166,6 +166,22 @@ export async function PUT(request: NextRequest, { params, }: Params) {
       }
 
       slug = body.slug;
+    } else if (body.title !== existingPost.title && !body.slug) {
+      // 제목이 변경되었는데 슬러그가 제공되지 않았다면 자동 생성
+      const baseSlug = body.title
+        .toLowerCase()
+        .replace(/[^a-z0-9가-힣\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .trim();
+
+      slug = baseSlug;
+      let counter = 1;
+
+      while (await DB.posts().findUnique({ where: { slug, }, })) {
+        if (slug === existingPost.slug) break; // 기존 slug와 같다면 OK
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
     }
 
     // 포스트 업데이트
@@ -176,16 +192,10 @@ export async function PUT(request: NextRequest, { params, }: Params) {
         slug,
         content: body.content,
         excerpt: body.excerpt || body.content.substring(0, 200) + '...',
-        featured_image: body.featured_image,
         status: body.status || existingPost.status,
-        published_at: body.status === 'PUBLISHED' && existingPost.status !== 'PUBLISHED'
-          ? new Date()
-          : existingPost.published_at,
-        reading_time: Math.ceil(body.content.length / 1000),
-        seo_title: body.seo_title || body.title,
-        seo_description: body.seo_description || body.excerpt,
-        seo_keywords: body.seo_keywords,
+        is_published: body.is_published !== undefined ? body.is_published : existingPost.is_published,
         category_id: body.category_id,
+        subcategory_id: body.subcategory_id || null,
       },
       include: {
         user: {

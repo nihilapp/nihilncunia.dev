@@ -56,6 +56,13 @@ export async function GET(req: NextRequest) {
               color: true,
             },
           },
+          subcategory: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
           post_hashtags: {
             include: {
               hashtag: {
@@ -140,26 +147,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 슬러그 생성 (제목을 기반으로)
-    const slug = body.slug || body.title
+    // slug 생성
+    const baseSlug = body.title
       .toLowerCase()
       .replace(/[^a-z0-9가-힣\s-]/g, '')
       .replace(/\s+/g, '-')
       .trim();
 
-    // 슬러그 중복 체크
-    const existingPost = await DB.posts().findUnique({
-      where: { slug, },
-    });
+    let slug = baseSlug;
+    let counter = 1;
 
-    if (existingPost) {
-      return NextResponse.json(
-        {
-          message: '이미 존재하는 슬러그입니다.',
-          response: null,
-        },
-        { status: 400, }
-      );
+    // 중복된 slug가 있는지 확인하고 유니크한 slug 생성
+    while (await DB.posts().findUnique({ where: { slug, }, })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
     }
 
     // 포스트 생성
@@ -169,15 +170,11 @@ export async function POST(req: NextRequest) {
         slug,
         content: body.content,
         excerpt: body.excerpt || body.content.substring(0, 200) + '...',
-        featured_image: body.featured_image,
         status: body.status || 'DRAFT',
-        published_at: body.status === 'PUBLISHED' ? new Date() : null,
-        reading_time: Math.ceil(body.content.length / 1000), // 대략적인 읽기 시간 계산
-        seo_title: body.seo_title || body.title,
-        seo_description: body.seo_description || body.excerpt,
-        seo_keywords: body.seo_keywords,
+        is_published: body.is_published || false,
         user_id: tokenData.id,
         category_id: body.category_id,
+        subcategory_id: body.subcategory_id || null,
       },
       include: {
         user: {
@@ -193,6 +190,13 @@ export async function POST(req: NextRequest) {
             name: true,
             slug: true,
             color: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
           },
         },
       },

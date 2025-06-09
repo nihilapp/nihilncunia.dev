@@ -6,7 +6,7 @@ import { cn } from '@/_libs';
 
 const AdminMainVariants = cva(
   [
-    `flex-1 p-6 ml-64 pt-20`,
+    `flex-1 ml-64 pt-20 min-h-screen`,
   ],
   {
     variants: {},
@@ -34,7 +34,7 @@ export function AdminMain({
       )}
       {...props}
     >
-      <div className='max-w-full'>
+      <div className='max-w-7xl mx-auto'>
         {children}
       </div>
     </main>

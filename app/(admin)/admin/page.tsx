@@ -66,16 +66,18 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className='p-6'>
-      <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-2xl font-bold text-gray-900'>대시보드</h1>
-        <Button asChild>
+    <div className='p-8'>
+      <div className='flex justify-between items-center mb-8'>
+        <div>
+          <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2'>대시보드</h1>
+          <p className='text-gray-600 dark:text-gray-400'>블로그 관리 현황을 한눈에 확인하세요</p>
+        </div>
+        <Button asChild className='bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-6 py-3'>
           <Link
             href='/admin/posts/new'
           >
-            <span className='mr-2'>새 포스트 작성</span>
             <svg
-              className='w-5 h-5'
+              className='w-5 h-5 mr-2'
               fill='none'
               stroke='currentColor'
               viewBox='0 0 24 24'
@@ -87,30 +89,31 @@ export default function AdminPage() {
                 d='M12 4v16m8-8H4'
               />
             </svg>
+            <span>새 포스트 작성</span>
           </Link>
         </Button>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10'>
         <StatCard
           icon={<CheckIcon />}
           label='전체 포스트'
           value='12'
-          iconBgColor='bg-green-500'
+          iconBgColor='bg-gradient-to-br from-green-500 to-emerald-600'
         />
 
         <StatCard
           icon={<ClockIcon />}
           label='임시저장'
           value='3'
-          iconBgColor='bg-yellow-500'
+          iconBgColor='bg-gradient-to-br from-yellow-500 to-orange-500'
         />
 
         <StatCard
           icon={<EyeIcon />}
           label='총 조회수'
           value='1,234'
-          iconBgColor='bg-blue-500'
+          iconBgColor='bg-gradient-to-br from-blue-500 to-indigo-600'
         />
       </div>
 

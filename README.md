@@ -49,13 +49,17 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 블로그 포스트 CRUD API
 
-- [ ] 포스트 목록 조회 API (GET /api/posts)
-- [ ] 포스트 상세 조회 API (GET /api/posts/:id)
-- [ ] 포스트 작성 API (POST /api/posts)
-- [ ] 포스트 수정 API (PUT /api/posts/:id)
-- [ ] 포스트 삭제 API (DELETE /api/posts/:id)
-- [ ] 포스트 검색 API (GET /api/posts/search)
-- [ ] 카테고리별 포스트 필터링
+- [x] 포스트 목록 조회 API (GET /api/posts)
+- [x] 포스트 상세 조회 API (GET /api/posts/:id)
+- [x] 포스트 slug 조회 API (GET /api/posts/slug/:slug)
+- [x] 포스트 작성 API (POST /api/posts)
+- [x] 포스트 수정 API (PUT /api/posts/:id)
+- [x] 포스트 삭제 API (DELETE /api/posts/:id)
+- [x] 포스트 검색 API (GET /api/posts/search)
+- [x] 포스트 발행/취소 API (PATCH /api/posts/:id/publish)
+- [x] 포스트 조회수 증가 API (PATCH /api/posts/:id/views)
+- [x] 포스트 좋아요 증가 API (PATCH /api/posts/:id/likes)
+- [x] 카테고리별 포스트 필터링
 
 #### 카테고리 관리 시스템
 

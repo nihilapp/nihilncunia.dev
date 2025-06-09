@@ -24,8 +24,16 @@ export class PostsApi {
       params.append('search', filters.search);
     }
 
-    if (filters?.category) {
-      params.append('category', filters.category);
+    if (filters?.category_id) {
+      params.append('category', filters.category_id);
+    }
+
+    if (filters?.subcategory_id) {
+      params.append('subcategory', filters.subcategory_id);
+    }
+
+    if (filters?.is_published !== undefined) {
+      params.append('is_published', filters.is_published.toString());
     }
 
     return Api.getQuery<PostsResponse>(`/posts?${params.toString()}`);
@@ -84,5 +92,33 @@ export class PostsApi {
       `/posts/${id}/likes`,
       undefined
     );
+  }
+
+  // 포스트 검색
+  static async search(query: string, filters?: PostFilters & { page?: number; limit?: number }) {
+    const params = new URLSearchParams();
+    params.append('q', query);
+
+    if (filters?.page) {
+      params.append('page', filters.page.toString());
+    }
+
+    if (filters?.limit) {
+      params.append('limit', filters.limit.toString());
+    }
+
+    if (filters?.category_id) {
+      params.append('category', filters.category_id);
+    }
+
+    if (filters?.subcategory_id) {
+      params.append('subcategory', filters.subcategory_id);
+    }
+
+    if (filters?.status) {
+      params.append('status', filters.status);
+    }
+
+    return Api.getQuery<PostsResponse>(`/posts/search?${params.toString()}`);
   }
 }

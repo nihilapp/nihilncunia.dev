@@ -21,7 +21,7 @@ interface RecentPostsCardProps
 
 const cssVariants = cva(
   [
-    `bg-white rounded-lg shadow p-6`,
+    `bg-white/80 backdrop-blur-sm dark:bg-slate-800/80 rounded-xl shadow-lg border border-gray-200/50 dark:border-slate-700/50 p-8`,
   ],
   {
     variants: {},
@@ -32,7 +32,7 @@ const cssVariants = cva(
 
 const cardVariants = cva(
   [
-    `bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow`,
+    `bg-white/90 dark:bg-slate-800/90 rounded-xl shadow-md border border-gray-200/50 dark:border-slate-700/50 overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 group`,
   ],
   {
     variants: {},
@@ -47,13 +47,16 @@ export function RecentPostsCard({ className, posts, ...props }: RecentPostsCardP
       className={cssVariants({ className, })}
       {...props}
     >
-      <div className='flex justify-between items-center mb-6'>
-        <h2 className='text-lg font-semibold text-gray-900'>최근 포스트</h2>
+      <div className='flex justify-between items-center mb-8'>
+        <div>
+          <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1'>📝 최근 포스트</h2>
+          <p className='text-sm text-gray-600 dark:text-gray-400'>최근에 작성하거나 수정한 포스트들</p>
+        </div>
         <Link
           href='/admin/posts'
-          className='text-sm text-blue-600 hover:text-blue-800'
+          className='text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all duration-200'
         >
-          전체 보기
+          전체 보기 →
         </Link>
       </div>
 
@@ -64,29 +67,33 @@ export function RecentPostsCard({ className, posts, ...props }: RecentPostsCardP
             href={`/admin/posts/${post.id}`}
             className={cardVariants()}
           >
-            <div className='aspect-video bg-gray-100' />
-            <div className='p-4'>
-              <h3 className='font-medium text-gray-900 mb-2 line-clamp-2'>
+            <div className='aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-slate-700 dark:to-slate-600 relative overflow-hidden'>
+              <div className='absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300' />
+              <div className='absolute bottom-2 right-2'>
+                <span className='text-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-300'>📄</span>
+              </div>
+            </div>
+            <div className='p-5'>
+              <h3 className='font-semibold text-gray-900 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200'>
                 {post.title}
               </h3>
-              <div className='flex items-center gap-2 mb-2'>
+              <div className='flex items-center gap-2 mb-3'>
                 <span
-                  className={`px-2 py-1 text-xs font-medium rounded-full ${
+                  className={`px-3 py-1 text-xs font-medium rounded-full border ${
                     post.status === 'published'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800'
+                      : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800'
                   }`}
                 >
-                  {post.status === 'published' ? '발행됨' : '임시저장'}
+                  {post.status === 'published' ? '✅ 발행됨' : '⏳ 임시저장'}
                 </span>
-                <span className='text-xs text-gray-500'>
+              </div>
+              <div className='flex items-center justify-between text-xs text-gray-500 dark:text-gray-400'>
+                <span className='bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md font-medium'>
                   {post.category}
                   {post.subCategory && ` > ${post.subCategory}`}
                 </span>
-              </div>
-              <div className='text-xs text-gray-500 space-y-1'>
-                <p>작성일: {post.createdAt}</p>
-                <p>수정일: {post.updatedAt}</p>
+                <span>{post.updatedAt}</span>
               </div>
             </div>
           </Link>
