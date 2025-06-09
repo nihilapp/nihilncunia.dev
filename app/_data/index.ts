@@ -1,2 +1,2 @@
 export { userKeys, userAuthKeys } from './keys.data';
-export { adminMenuItems } from './admin-menu.data';
+export { menuItems } from './admin-menu.data';

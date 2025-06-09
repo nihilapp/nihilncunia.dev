@@ -47,6 +47,8 @@ export type {
   CategoryEx
 } from '@/_entities/categories';
 
+export { CategoriesApi } from '@/_entities/categories';
+
 // Hashtags 타입들 - entities에서 재export
 export type {
   CreateHashtag,

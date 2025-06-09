@@ -4,3 +4,6 @@ export type {
   UpdateHashtag,
   HashtagEx
 } from './hashtags.types';
+
+// API exports
+export { HashtagsApi } from './hashtags.api';

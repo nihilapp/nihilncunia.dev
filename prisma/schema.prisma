@@ -16,12 +16,11 @@ datasource db {
 }
 
 enum PostStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+  DRAFT // 임시저장/작성중
+  PUBLISHED // 공개/작성완료
+  ARCHIVED // 보관
   PENDING // 작성대기
-  WRITING // 작성중
-  COMPLETED // 작성완료
+  PROTECTED // 보호됨
 }
 
 // 사용자 정보

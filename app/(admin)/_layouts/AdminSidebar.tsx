@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { menuItems } from '@/_data/admin-menu.data';
+import { menuItems } from '@/_data';
 import { iconMap, type IconType } from '@/_data/icons.data';
 import { cn } from '@/_libs';
 
@@ -34,7 +34,7 @@ export function AdminSidebar() {
                 href={item.href}
                 className={cn(
                   'flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-800/50 rounded-lg transition-all duration-200 group',
-                  pathname === item.href && 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500'
+                  pathname === item.href && 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-300'
                 )}
               >
                 <div className={cn(

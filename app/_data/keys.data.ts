@@ -7,4 +7,5 @@ export const userKeys = {
 export const userAuthKeys = {
   list: [ 'user_auths', 'list', ],
   detailId: (id: string) => [ 'user_auths', 'detail', id, ],
+  adminProfile: () => [ 'admin', 'profile', ],
 };

@@ -4,11 +4,32 @@ import type { CreateHashtag } from '@/_entities/hashtags';
 import { DB } from '@/api/_libs';
 import { serverTools } from '@/api/_libs/tools';
 
-// GET /api/hashtags - 모든 해시태그 조회
-export async function GET() {
+// GET /api/hashtags - 모든 해시태그 조회 (검색 및 자동완성 지원)
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams, } = new URL(req.url);
+    const search = searchParams.get('search');
+    const limit = Number(searchParams.get('limit')) || 50;
+
+    let where: any = {};
+
+    // 검색어가 있으면 검색 조건 추가 (자동완성용)
+    if (search) {
+      where = {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      };
+    }
+
     const hashtags = await DB.hashtags().findMany({
-      orderBy: { created_at: 'desc', },
+      where,
+      take: limit,
+      orderBy: [
+        { post_hashtags: { _count: 'desc', }, }, // 포스트 수 많은 순
+        { created_at: 'desc', },
+      ],
       include: {
         post_hashtags: {
           select: {
@@ -26,7 +47,9 @@ export async function GET() {
     }));
 
     return NextResponse.json({
-      message: '해시태그 목록 조회 성공',
+      message: search
+        ? `'${search}' 검색 결과 ${hashtagsWithCount.length}개 해시태그를 찾았습니다.`
+        : '해시태그 목록 조회 성공',
       response: hashtagsWithCount,
     });
   } catch (error) {

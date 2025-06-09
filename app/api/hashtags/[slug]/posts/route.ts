@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { DB } from '@/api/_libs';
 
+interface Params {
+  params: Promise<{ slug: string }>;
+}
+
 // GET /api/hashtags/[slug]/posts - 특정 해시태그의 포스트 목록 조회
 export async function GET(
   req: NextRequest,
-  { params, }: { params: { slug: string } }
+  { params, }: Params
 ) {
   try {
-    const { slug, } = params;
+    const { slug, } = await params;
     const { searchParams, } = new URL(req.url);
 
     if (!slug) {

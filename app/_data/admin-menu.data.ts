@@ -28,6 +28,11 @@ export const menuItems: MenuItem[] = [
     icon: 'categories',
   },
   {
+    label: '해시태그 관리',
+    href: '/admin/hashtags',
+    icon: 'hashtags',
+  },
+  {
     label: '프로필',
     href: '/admin/profile',
     icon: 'profile',

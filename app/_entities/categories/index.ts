@@ -4,3 +4,6 @@ export type {
   UpdateCategory,
   CategoryEx
 } from './categories.types';
+
+// API exports
+export { CategoriesApi } from './categories.api';

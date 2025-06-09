@@ -63,24 +63,28 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 카테고리 관리 시스템
 
-- [ ] 카테고리 목록 조회 API (GET /api/categories)
-- [ ] 카테고리 생성 API (POST /api/categories)
-- [ ] 카테고리 수정 API (PUT /api/categories/:id)
-- [ ] 카테고리 삭제 API (DELETE /api/categories/:id)
-- [ ] 카테고리별 포스트 목록 API
+- [x] 카테고리 목록 조회 API (GET /api/categories)
+- [x] 카테고리 생성 API (POST /api/categories)
+- [x] 카테고리 수정 API (PUT /api/categories/:id)
+- [x] 카테고리 삭제 API (DELETE /api/categories/:id)
+- [x] 카테고리별 포스트 목록 API
 
 #### 해시태그 시스템
 
-- [ ] 해시태그 목록 조회 API (GET /api/hashtags)
-- [ ] 해시태그별 포스트 필터링
-- [ ] 해시태그 자동 완성 기능
-- [ ] 포스트-해시태그 연결 로직
+- [x] 해시태그 목록 조회 API (GET /api/hashtags)
+- [x] 해시태그 생성 API (POST /api/hashtags)
+- [x] 해시태그 수정 API (PUT /api/hashtags/:id)
+- [x] 해시태그 삭제 API (DELETE /api/hashtags/:id)
+- [x] 해시태그별 포스트 필터링
+- [x] 해시태그 자동 완성 기능
+- [x] 포스트-해시태그 연결 로직
 
 #### 관리자 프로필 관리
 
-- [ ] 관리자 정보 조회 API (GET /api/admin/profile)
-- [ ] 관리자 정보 수정 API (PUT /api/admin/profile)
-- [ ] 관리자 비밀번호 변경 API (PUT /api/admin/password)
+- [x] 관리자 정보 조회 API (GET /api/admin/profile)
+- [x] 관리자 정보 수정 API (PUT /api/admin/profile)
+- [x] 관리자 비밀번호 변경 API (PUT /api/admin/password)
+- [x] 관리자 프로필 관리 페이지 (/admin/profile)
 
 #### 마크다운 에디터 구현
 
@@ -96,7 +100,8 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 포스트 관리 페이지 (/admin/posts)
 - [ ] 새 포스트 작성 페이지 (/admin/posts/new)
 - [ ] 포스트 수정 페이지 (/admin/posts/[id]/edit)
-- [ ] 카테고리 관리 페이지 (/admin/categories)
+- [x] 카테고리 관리 페이지 (/admin/categories)
+- [x] 해시태그 관리 페이지 (/admin/hashtags)
 - [ ] 관리자 프로필 페이지 (/admin/profile)
 - [ ] 블로그 설정 페이지 (/admin/settings)
 
