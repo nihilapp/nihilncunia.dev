@@ -1,19 +1,19 @@
 import type {
-  Post,
   PostFormData,
   PostFilters,
   PostsResponse
 } from './posts.types';
 
 import { Api } from '@/_libs';
+import type { Post } from '@/_prisma/client';
 
 export class PostsApi {
   // 모든 포스트 조회
   static async getAll(filters?: PostFilters) {
     const params = new URLSearchParams();
 
-    if (filters?.published !== undefined) {
-      params.append('published', filters.published.toString());
+    if (filters?.status !== undefined) {
+      params.append('status', filters.status.toString());
     }
 
     if (filters?.user_id) {

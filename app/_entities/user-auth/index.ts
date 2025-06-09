@@ -5,4 +5,17 @@ export {
   useUserAuthActions
 } from './user-auth.store';
 
-export type { UserAuthType } from './user-auth.types';
+export type {
+  TokenInfo,
+  TokenData,
+  Tokens,
+  TokenMode,
+  SignInUser,
+  SignInResponse,
+  SignOutUser,
+  RefreshUserAccessToken,
+  RefreshApiResponse,
+  RefreshCheckResult,
+  UserSession,
+  AuthState
+} from './user-auth.types';

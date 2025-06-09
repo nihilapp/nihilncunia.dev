@@ -5,23 +5,51 @@ export type {
   SiteMetadata
 } from './common.types';
 
+// Users 타입들 - entities에서 재export
 export type {
   CreateUser,
   UpdateUser,
   UpdateUserPassword,
+  UpdateUserImage,
   DeleteUsers,
-  UpdateUserImage
-} from './users.types';
+  UserEx
+} from '@/_entities/users';
 
+// User Auth 타입들 - entities에서 재export
 export type {
   TokenData,
   TokenMode,
-  SignInUser,
-  SignOutUser,
   Tokens,
   TokenInfo,
-  RefreshUserAccessToken,
   RefreshCheckResult,
   RefreshApiResponse,
-  UserSession
-} from './user-auth.types';
+  UserSession,
+  SignInUser,
+  SignOutUser,
+  RefreshUserAccessToken,
+  SignInResponse,
+  AuthState
+} from '@/_entities/user-auth';
+
+// Posts 타입들 - entities에서 재export
+export type {
+  CreatePost,
+  UpdatePost,
+  PostFilters,
+  PostsResponse,
+  PostEx
+} from '@/_entities/posts';
+
+// Categories 타입들 - entities에서 재export
+export type {
+  CreateCategory,
+  UpdateCategory,
+  CategoryEx
+} from '@/_entities/categories';
+
+// Hashtags 타입들 - entities에서 재export
+export type {
+  CreateHashtag,
+  UpdateHashtag,
+  HashtagEx
+} from '@/_entities/hashtags';

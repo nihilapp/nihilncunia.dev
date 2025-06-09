@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { type SignInUser } from '@/_types';
+import { type SignInUser } from '@/_entities/user-auth';
 import { DB, serverTools } from '@/api/_libs';
 import {
   applySecurityMiddleware,

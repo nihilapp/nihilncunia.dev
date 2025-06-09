@@ -1,9 +1,10 @@
 // Types
 export type {
-  Post,
-  PostFormData,
+  CreatePost,
+  UpdatePost,
   PostFilters,
-  PostsResponse
+  PostsResponse,
+  PostEx
 } from './posts.types';
 
 // API
@@ -16,8 +17,8 @@ export { usePostsStore } from './posts.store';
 export { postsKeys } from './posts.keys';
 
 // Hooks
-export { useGetPosts } from './hooks/useGetPosts';
-export { useGetPostById } from './hooks/useGetPostById';
 export { useCreatePost } from './hooks/useCreatePost';
-export { useUpdatePost } from './hooks/useUpdatePost';
 export { useDeletePost } from './hooks/useDeletePost';
+export { useGetPostById } from './hooks/useGetPostById';
+export { useGetPosts } from './hooks/useGetPosts';
+export { useUpdatePost } from './hooks/useUpdatePost';
