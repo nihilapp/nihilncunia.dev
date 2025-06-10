@@ -4,19 +4,18 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { array, object, string } from 'yup';
 
 import { MarkdownEditor } from '@/(admin)/_components';
 import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
 import { useGetCategories } from '@/_entities/categories';
-import { useCreatePost, PostStatus } from '@/_entities/posts';
+import { useGetPostById, useUpdatePost, PostStatus } from '@/_entities/posts';
 import type { PostFormData } from '@/_entities/posts';
 import { useGetSubcategories } from '@/_entities/subcategories';
 import { cn } from '@/_libs';
 
-const NewPostVariants = cva(
+const EditPostVariants = cva(
   [
     'space-y-6',
   ],
@@ -27,68 +26,44 @@ const NewPostVariants = cva(
   }
 );
 
-interface NewPostProps
+interface EditPostProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof NewPostVariants> {}
-
-// Yup validation schema
-const validationSchema = object({
-  title: string()
-    .required('제목을 입력해주세요.')
-    .trim()
-    .min(1, '제목은 최소 1글자 이상이어야 합니다.')
-    .max(200, '제목은 200글자를 초과할 수 없습니다.'),
-  content: string()
-    .required('내용을 입력해주세요.')
-    .trim()
-    .min(1, '내용은 최소 1글자 이상이어야 합니다.'),
-  excerpt: string()
-    .trim()
-    .max(500, '요약은 500글자를 초과할 수 없습니다.')
-    .optional(),
-  category_id: string()
-    .required('카테고리를 선택해주세요.'),
-  subcategory_id: string()
-    .optional(),
-  hashtags: array()
-    .of(string())
-    .max(10, '해시태그는 최대 10개까지 추가할 수 있습니다.')
-    .optional(),
-});
-
-// Form 타입 정의
-interface PostFormInput {
-  title: string;
-  content: string;
-  excerpt?: string;
-  category_id: string;
-  subcategory_id?: string;
-  hashtags?: string[];
+    VariantProps<typeof EditPostVariants> {
+  params: Promise<{ id: string }>;
 }
 
-// 커스텀 validation 함수
-const validateFormData = async (data: PostFormInput) => {
-  try {
-    await validationSchema.validate(data, { abortEarly: false, });
-    return {};
-  } catch (error: any) {
-    const errors: Record<string, string> = {};
-    if (error.inner) {
-      error.inner.forEach((err: any) => {
-        if (err.path) {
-          errors[err.path] = err.message;
-        }
-      });
-    }
-    return errors;
+// 기본 validation 함수
+const validateForm = (data: PostFormData) => {
+  const errors: Record<string, string> = {};
+
+  if (!data.title || data.title.trim().length === 0) {
+    errors.title = '제목은 필수입니다';
   }
+
+  if (!data.content || data.content.trim().length === 0) {
+    errors.content = '내용은 필수입니다';
+  }
+
+  if (!data.category_id) {
+    errors.category_id = '카테고리는 필수입니다';
+  }
+
+  return errors;
 };
 
-export function NewPost({ className, ...props }: NewPostProps) {
+export function EditPost({ className, params, ...props }: EditPostProps) {
   const router = useRouter();
-
+  const [ postId, setPostId, ] = useState<string>('');
   const [ hashtagInput, setHashtagInput, ] = useState('');
-  const [ customErrors, setCustomErrors, ] = useState<Record<string, string>>({});
+
+  // params에서 id 추출
+  useEffect(() => {
+    const getPostId = async () => {
+      const { id, } = await params;
+      setPostId(id);
+    };
+    getPostId();
+  }, [ params, ]);
 
   // React Hook Form 설정
   const {
@@ -96,8 +71,9 @@ export function NewPost({ className, ...props }: NewPostProps) {
     handleSubmit,
     watch,
     setValue,
-    formState: { isSubmitting, },
-  } = useForm<PostFormInput>({
+    reset,
+    formState: { errors, isSubmitting, },
+  } = useForm<PostFormData>({
     defaultValues: {
       title: '',
       content: '',
@@ -105,25 +81,44 @@ export function NewPost({ className, ...props }: NewPostProps) {
       category_id: '',
       subcategory_id: '',
       hashtags: [],
+      status: PostStatus.DRAFT,
+      is_published: false,
     },
   });
 
   // API 호출
+  const { post, loading: postLoading, } = useGetPostById(postId);
   const { categories, loading: categoriesLoading, } = useGetCategories();
   const selectedCategoryId = watch('category_id');
   const { subcategories, loading: subcategoriesLoading, } = useGetSubcategories(selectedCategoryId);
 
   const currentHashtags = watch('hashtags') || [];
 
+  // 포스트 데이터 로드 시 폼에 설정
+  useEffect(() => {
+    if (post) {
+      reset({
+        title: post.title || '',
+        content: post.content || '',
+        excerpt: post.excerpt || '',
+        category_id: post.category_id || '',
+        subcategory_id: post.subcategory_id || '',
+        hashtags: post.post_hashtags?.map((ph: any) => ph.hashtag.name) || [],
+        status: post.status || PostStatus.DRAFT,
+        is_published: post.is_published || false,
+      });
+    }
+  }, [ post, reset, ]);
+
   // 카테고리 변경 시 서브카테고리 초기화
   useEffect(() => {
-    if (selectedCategoryId) {
+    if (selectedCategoryId && post && selectedCategoryId !== post.category_id) {
       setValue('subcategory_id', ''); // 카테고리 변경 시 서브카테고리 초기화
     }
-  }, [ selectedCategoryId, setValue, ]);
+  }, [ selectedCategoryId, setValue, post, ]);
 
-  // Create Post Hook
-  const createPostMutation = useCreatePost();
+  // Update Post Hook
+  const updatePostMutation = useUpdatePost();
 
   // 해시태그 관련 함수들
   const onKeyPressHashtagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -131,17 +126,8 @@ export function NewPost({ className, ...props }: NewPostProps) {
       e.preventDefault();
       const newHashtag = hashtagInput.trim();
 
-      // 해시태그 개수 제한 체크
-      if (currentHashtags.length >= 10) {
-        alert('해시태그는 최대 10개까지 추가할 수 있습니다.');
-        return;
-      }
-
-      // 중복 체크
       if (!currentHashtags.includes(newHashtag)) {
         setValue('hashtags', [ ...currentHashtags, newHashtag, ]);
-      } else {
-        alert('이미 추가된 해시태그입니다.');
       }
 
       setHashtagInput('');
@@ -153,29 +139,25 @@ export function NewPost({ className, ...props }: NewPostProps) {
     setValue('hashtags', updatedHashtags);
   };
 
-  // 폼 제출 함수들 - status를 여기서 결정
+  // 폼 제출 함수들
   const onClickSaveDraft = handleSubmit(async (data) => {
     try {
-      // 커스텀 validation 체크
-      const validationErrors = await validateFormData(data);
+      const formData = data as PostFormData;
+      const validationErrors = validateForm(formData);
+
       if (Object.keys(validationErrors).length > 0) {
-        setCustomErrors(validationErrors);
+        console.error('유효성 검사 실패:', validationErrors);
         return;
       }
-      setCustomErrors({});
 
-      const formData: PostFormData = {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt || '',
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || '',
-        hashtags: data.hashtags || [],
-        status: PostStatus.DRAFT,
-        is_published: false,
-      };
-
-      await createPostMutation.mutateAsync(formData);
+      await updatePostMutation.mutateAsync({
+        id: postId,
+        data: {
+          ...formData,
+          status: PostStatus.DRAFT,
+          is_published: false,
+        },
+      });
       alert('임시 저장되었습니다!');
     } catch (error) {
       console.error('임시 저장 실패:', error);
@@ -183,28 +165,46 @@ export function NewPost({ className, ...props }: NewPostProps) {
     }
   });
 
-  const onClickPublish = handleSubmit(async (data) => {
+  const onClickUpdate = handleSubmit(async (data) => {
     try {
-      // 커스텀 validation 체크
-      const validationErrors = await validateFormData(data);
+      const formData = data as PostFormData;
+      const validationErrors = validateForm(formData);
+
       if (Object.keys(validationErrors).length > 0) {
-        setCustomErrors(validationErrors);
+        console.error('유효성 검사 실패:', validationErrors);
         return;
       }
-      setCustomErrors({});
 
-      const formData: PostFormData = {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt || '',
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || '',
-        hashtags: data.hashtags || [],
-        status: PostStatus.PUBLISHED,
-        is_published: true,
-      };
+      await updatePostMutation.mutateAsync({
+        id: postId,
+        data: formData,
+      });
+      alert('포스트가 수정되었습니다!');
+      router.push('/admin/posts');
+    } catch (error) {
+      console.error('수정 실패:', error);
+      alert('수정에 실패했습니다.');
+    }
+  });
 
-      await createPostMutation.mutateAsync(formData);
+  const onClickPublish = handleSubmit(async (data) => {
+    try {
+      const formData = data as PostFormData;
+      const validationErrors = validateForm(formData);
+
+      if (Object.keys(validationErrors).length > 0) {
+        console.error('유효성 검사 실패:', validationErrors);
+        return;
+      }
+
+      await updatePostMutation.mutateAsync({
+        id: postId,
+        data: {
+          ...formData,
+          status: PostStatus.PUBLISHED,
+          is_published: true,
+        },
+      });
       alert('포스트가 발행되었습니다!');
       router.push('/admin/posts');
     } catch (error) {
@@ -213,30 +213,60 @@ export function NewPost({ className, ...props }: NewPostProps) {
     }
   });
 
+  // 로딩 상태
+  if (postLoading || !postId) {
+    return (
+      <div className={cn(EditPostVariants({}), className)} {...props}>
+        <div className='flex items-center justify-center h-64'>
+          <div className='text-lg text-gray-600'>포스트를 불러오는 중...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // 포스트가 없는 경우
+  if (!post) {
+    return (
+      <div className={cn(EditPostVariants({}), className)} {...props}>
+        <div className='flex items-center justify-center h-64'>
+          <div className='text-lg text-red-600'>포스트를 찾을 수 없습니다.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
-        NewPostVariants({}),
+        EditPostVariants({}),
         className
       )}
       {...props}
     >
       {/* Page Header */}
       <div className='flex items-center justify-between'>
-        <h1 className='text-2xl font-bold text-gray-900'>새 포스트 작성</h1>
+        <h1 className='text-2xl font-bold text-gray-900'>포스트 수정</h1>
 
         <div className='flex space-x-3'>
           <Button
             variant='outline'
             onClick={onClickSaveDraft}
-            disabled={isSubmitting || createPostMutation.isPending}
+            disabled={isSubmitting || updatePostMutation.isPending}
           >
             임시 저장
           </Button>
 
           <Button
+            variant='outline'
+            onClick={onClickUpdate}
+            disabled={isSubmitting || updatePostMutation.isPending}
+          >
+            수정하기
+          </Button>
+
+          <Button
             onClick={onClickPublish}
-            disabled={isSubmitting || createPostMutation.isPending}
+            disabled={isSubmitting || updatePostMutation.isPending}
           >
             발행하기
           </Button>
@@ -256,8 +286,8 @@ export function NewPost({ className, ...props }: NewPostProps) {
             placeholder='포스트 제목을 입력하세요'
             className='text-lg'
           />
-          {customErrors.title && (
-            <p className='mt-1 text-sm text-red-600'>{customErrors.title}</p>
+          {errors.title && (
+            <p className='mt-1 text-sm text-red-600'>{errors.title.message}</p>
           )}
         </div>
 
@@ -274,8 +304,8 @@ export function NewPost({ className, ...props }: NewPostProps) {
               rows={4}
               className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none'
             />
-            {customErrors.excerpt && (
-              <p className='mt-1 text-sm text-red-600'>{customErrors.excerpt}</p>
+            {errors.excerpt && (
+              <p className='mt-1 text-sm text-red-600'>{errors.excerpt.message}</p>
             )}
           </div>
 
@@ -284,7 +314,10 @@ export function NewPost({ className, ...props }: NewPostProps) {
             <label className='block text-sm font-medium text-gray-700 mb-2'>
               카테고리 *
             </label>
-            <Select onValueChange={(value) => setValue('category_id', value)}>
+            <Select
+              value={watch('category_id')}
+              onValueChange={(value) => setValue('category_id', value)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder='카테고리를 선택하세요' />
               </SelectTrigger>
@@ -296,8 +329,8 @@ export function NewPost({ className, ...props }: NewPostProps) {
                 ))}
               </SelectContent>
             </Select>
-            {customErrors.category_id && (
-              <p className='mt-1 text-sm text-red-600'>{customErrors.category_id}</p>
+            {errors.category_id && (
+              <p className='mt-1 text-sm text-red-600'>{errors.category_id.message}</p>
             )}
           </div>
 
@@ -307,6 +340,7 @@ export function NewPost({ className, ...props }: NewPostProps) {
               서브카테고리
             </label>
             <Select
+              value={watch('subcategory_id')}
               onValueChange={(value) => setValue('subcategory_id', value)}
               disabled={!selectedCategoryId || subcategories.length === 0}
             >
@@ -321,15 +355,15 @@ export function NewPost({ className, ...props }: NewPostProps) {
                 ))}
               </SelectContent>
             </Select>
-            {customErrors.subcategory_id && (
-              <p className='mt-1 text-sm text-red-600'>{customErrors.subcategory_id}</p>
+            {errors.subcategory_id && (
+              <p className='mt-1 text-sm text-red-600'>{errors.subcategory_id.message}</p>
             )}
           </div>
 
           {/* Hashtags */}
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-2'>
-              해시태그 ({currentHashtags.length}/10)
+              해시태그
             </label>
             <Input
               type='text'
@@ -337,11 +371,7 @@ export function NewPost({ className, ...props }: NewPostProps) {
               onChange={(e) => setHashtagInput(e.target.value)}
               onKeyPress={onKeyPressHashtagInput}
               placeholder='해시태그를 입력하고 Enter를 누르세요'
-              disabled={currentHashtags.length >= 10}
             />
-            {customErrors.hashtags && (
-              <p className='mt-1 text-sm text-red-600'>{customErrors.hashtags}</p>
-            )}
 
             {/* Hashtag List */}
             {currentHashtags.length > 0 && (
@@ -370,7 +400,8 @@ export function NewPost({ className, ...props }: NewPostProps) {
         <div className='p-4 bg-gray-50 rounded-lg'>
           <h3 className='text-sm font-medium text-gray-700 mb-2'>포스트 상태</h3>
           <p className='text-sm text-gray-600'>
-            임시 저장: 작성 중인 포스트를 저장합니다 (DRAFT 상태). | 발행하기: 포스트를 즉시 공개합니다 (PUBLISHED 상태).
+            현재 상태: <span className='font-medium'>{post.status}</span> |
+            발행 여부: <span className='font-medium'>{post.is_published ? '발행됨' : '미발행'}</span>
           </p>
         </div>
 
@@ -386,8 +417,8 @@ export function NewPost({ className, ...props }: NewPostProps) {
               className='min-h-[600px]'
             />
           </div>
-          {customErrors.content && (
-            <p className='mt-1 text-sm text-red-600'>{customErrors.content}</p>
+          {errors.content && (
+            <p className='mt-1 text-sm text-red-600'>{errors.content.message}</p>
           )}
         </div>
       </div>

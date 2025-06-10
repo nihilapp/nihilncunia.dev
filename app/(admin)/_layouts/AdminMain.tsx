@@ -34,7 +34,7 @@ export function AdminMain({
       )}
       {...props}
     >
-      <div className='max-w-7xl mx-auto'>
+      <div className='max-w-7xl mx-auto py-5'>
         {children}
       </div>
     </main>

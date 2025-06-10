@@ -2,7 +2,7 @@ import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 import { PostsApi } from '../posts.api';
 import { postsKeys } from '../posts.keys';
-import type { PostFilters } from '../posts.types';
+import type { PostFilters, PostsResponse } from '../posts.types';
 
 import { useDone, useLoading } from '@/_entities/common';
 
@@ -26,7 +26,7 @@ export const useGetPosts = (
   const done = useDone(loading, isSuccess);
 
   return {
-    posts,
+    posts: posts as unknown as PostsResponse[] || [],
     loading,
     done,
     ...other,

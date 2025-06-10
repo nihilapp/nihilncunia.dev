@@ -7,3 +7,9 @@ export type {
 
 // API exports
 export { SubcategoriesApi } from './subcategories.api';
+
+// Keys exports
+export { subcategoriesKeys } from './subcategories.keys';
+
+// Hooks exports
+export { useGetSubcategories } from './hooks';

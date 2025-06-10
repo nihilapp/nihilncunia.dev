@@ -1,4 +1,5 @@
-import { AdminPosts } from '@/(admin)/admin/posts/_components/AdminPosts';
+import { AdminPosts } from './_components';
+
 import { setMeta } from '@/_libs';
 
 export const metadata = setMeta({
@@ -11,7 +12,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export function AdminPostsPage({ children, }: Props) {
+export default function AdminPostsPage({ children, }: Props) {
   return (
     <AdminPosts />
   );

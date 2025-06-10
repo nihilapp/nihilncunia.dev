@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import type { CreatePost } from '@/_entities/posts';
+import type { ApiResponse } from '@/_entities/common';
+import type { CreatePost, PostsResponse } from '@/_entities/posts';
 import { DB } from '@/api/_libs';
 import { serverTools } from '@/api/_libs/tools';
 
@@ -86,10 +87,11 @@ export async function GET(req: NextRequest) {
         total,
         page,
         limit,
-      },
+      } satisfies PostsResponse,
     });
   } catch (error) {
     console.error('포스트 목록 조회 에러:', error);
+
     return NextResponse.json(
       {
         message: '포스트 목록 조회 실패',
