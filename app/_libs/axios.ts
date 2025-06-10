@@ -6,7 +6,8 @@ import axios, {
 
 import { siteConfig } from '../_config';
 
-import { type ApiResponse, type UserSession } from '@/_types';
+import { type ApiResponse } from '@/_entities/common';
+import { type UserSession } from '@/_entities/user-auth';
 
 // Zustand 상태 타입 예시 (실제 타입으로 교체 필요)
 interface AuthState {

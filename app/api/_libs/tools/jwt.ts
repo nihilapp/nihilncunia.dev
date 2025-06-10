@@ -1,11 +1,11 @@
 import { jwtVerify, SignJWT } from 'jose';
 
-import { User } from '@/_prisma/client';
 import {
   type TokenMode,
   type TokenData,
   type Tokens
-} from '@/_types';
+} from '@/_entities/user-auth';
+import { User } from '@/_prisma/client';
 
 export class Jwt {
   // 비밀 키 설정

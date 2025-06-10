@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import type { UpdateUserPassword } from '@/_types';
+import type { UpdateUserPassword } from '@/_entities/users';
 import { DB, serverTools } from '@/api/_libs';
 
 interface Params {
@@ -12,7 +12,7 @@ export async function PUT(request: Request, { params, }: Params) {
   try {
     const { id, } = await params;
     const body: UpdateUserPassword = await request.json();
-    const { oldPassword, newPassword, } = body;
+    const { currentPassword, newPassword, } = body;
 
     // 현재 사용자 조회
     const user = await DB.user().findUnique({
@@ -40,7 +40,7 @@ export async function PUT(request: Request, { params, }: Params) {
     // 현재 비밀번호 확인
     const isCurrentPasswordValid = await serverTools.bcrypt!.dataCompare(
       userAuth!.hashed_password,
-      oldPassword
+      currentPassword
     );
 
     if (!isCurrentPasswordValid) {

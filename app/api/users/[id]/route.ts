@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import type { UpdateUser } from '@/_types';
+import type { UpdateUser } from '@/_entities/users';
 import { DB, serverTools } from '@/api/_libs';
 
 interface Params {

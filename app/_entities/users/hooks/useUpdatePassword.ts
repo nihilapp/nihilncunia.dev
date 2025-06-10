@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import type { UpdateUserPassword } from '../users.types';
+
 import { userKeys } from '@/_data';
 import { UsersApi } from '@/_entities/users/users.api';
-import type { UpdateUserPassword } from '@/_types';
 
 interface UseUpdatePasswordParams {
   id: string;

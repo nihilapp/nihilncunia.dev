@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import type { UpdateUserImage } from '@/_types';
+import type { UpdateUserImage } from '@/_entities/users';
 import { DB } from '@/api/_libs';
 
 interface Params {
@@ -18,7 +18,7 @@ export async function PUT(request: Request, { params, }: Params) {
         id,
       },
       data: {
-        image_url: body.image,
+        image_url: body.image_url,
       },
     });
 

@@ -15,7 +15,8 @@ import { Button } from '@/(common)/_components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/(common)/_components/ui/card';
 import { Form, FormField } from '@/(common)/_components/ui/form';
 import { useAuthActions, useSignIn } from '@/_entities/auth';
-import type { UserSession, ApiResponse } from '@/_types';
+import type { ApiResponse } from '@/_entities/common';
+import type { UserSession } from '@/_entities/user-auth';
 
 interface FormValues {
   email: string;

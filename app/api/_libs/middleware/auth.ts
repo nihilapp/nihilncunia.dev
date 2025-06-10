@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { type UserSession } from '@/_types';
+import { type UserSession } from '@/_entities/user-auth';
 import { DB, serverTools } from '@/api/_libs';
 
 export interface AuthenticatedRequest extends NextRequest {

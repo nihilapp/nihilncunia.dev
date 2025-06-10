@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-import type { UserSession } from '@/_types';
+import type { UserSession } from '@/_entities/user-auth';
 
 interface AuthActions {
   setUserSession: (userSession: UserSession | null) => void;

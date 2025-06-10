@@ -8,8 +8,8 @@ import { CategoryList, CategoryForm, CategoryStatistics } from './_components';
 
 import { Button } from '@/(common)/_components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/(common)/_components/ui/card';
+import { CategoriesApi } from '@/_entities/categories';
 import type { Category } from '@/_prisma/client';
-import { CategoriesApi } from '@/_types';
 
 interface CategoryWithCount extends Category {
   post_count: number;

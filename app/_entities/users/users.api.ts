@@ -1,12 +1,12 @@
 import type {
   AdminProfileResponse, AdminProfileUpdateRequest, AdminPasswordChangeRequest
 } from './users.types';
+import type {
+  CreateUser, UpdateUser, UpdateUserImage, UpdateUserPassword
+} from './users.types';
 
 import { Api } from '@/_libs';
 import type { User } from '@/_prisma/client';
-import type {
-  CreateUser, UpdateUser, UpdateUserImage, UpdateUserPassword
-} from '@/_types';
 
 export class UsersApi {
   static async getAll() {

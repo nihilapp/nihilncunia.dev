@@ -15,9 +15,9 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/(common)/_components/ui/dialog';
+import { CategoriesApi } from '@/_entities/categories';
+import type { CreateCategory, UpdateCategory } from '@/_entities/categories';
 import type { Category } from '@/_prisma/client';
-import { CategoriesApi } from '@/_types';
-import type { CreateCategory, UpdateCategory } from '@/_types';
 
 interface CategoryFormProps {
   category?: Category | null;

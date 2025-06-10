@@ -1,4 +1,4 @@
-import type { RefreshCheckResult, TokenData, TokenInfo } from '@/_types';
+import type { RefreshCheckResult, TokenData, TokenInfo } from '@/_entities/user-auth';
 import { DB } from '@/api/_libs/prisma';
 import { serverTools } from '@/api/_libs/tools';
 

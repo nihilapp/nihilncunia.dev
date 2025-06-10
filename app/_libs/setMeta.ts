@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 
 import { siteConfig } from '../_config';
-import { SiteMetadata } from '../_types';
+
+import { SiteMetadata } from '@/_entities/common';
 
 export const setMeta = (meta: SiteMetadata): Metadata => {
   const siteDescription = meta.description || siteConfig.description;

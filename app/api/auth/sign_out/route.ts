@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import type { ApiResponse, ApiError, SignOutUser } from '@/_types';
+import type { ApiResponse, ApiError } from '@/_entities/common';
+import type { SignOutUser } from '@/_entities/user-auth';
 import {
   DB, getHeaderToken, serverTools, refreshCheck
 } from '@/api/_libs';

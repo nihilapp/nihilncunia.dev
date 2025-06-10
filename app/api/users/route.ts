@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import type { CreateUser } from '@/_types';
+import type { CreateUser } from '@/_entities/users';
 import { DB, serverTools } from '@/api/_libs';
 
 // GET /api/users - 모든 사용자 조회

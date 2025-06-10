@@ -1,4 +1,4 @@
-import type { RefreshCheckResult } from '@/_types';
+import type { RefreshCheckResult } from '@/_entities/user-auth';
 import { performTokenRefresh } from '@/api/_libs/performRefresh';
 import { serverTools } from '@/api/_libs/tools';
 
@@ -33,7 +33,7 @@ export async function refreshCheck(
     }
 
     // 3. 액세스 토큰 검증
-    const accessTokenData = await serverTools.jwt.tokenInfo(
+    const accessTokenData = await serverTools.jwt!.tokenInfo(
       'accessToken',
       accessToken
     );
@@ -50,7 +50,7 @@ export async function refreshCheck(
     }
 
     // 5. 액세스 토큰 만료 시간 확인
-    const accessTokenExpCheck = serverTools.jwt.expCheck(accessTokenData.exp);
+    const accessTokenExpCheck = serverTools.jwt!.expCheck(accessTokenData.exp);
 
     if (accessTokenExpCheck > 0) {
       // 액세스 토큰이 유효한 경우
@@ -81,8 +81,8 @@ export async function refreshCheck(
       status = 401;
 
       // 인증 실패 시 쿠키 삭제
-      await serverTools.cookie.remove('refreshToken');
-      await serverTools.cookie.remove('accessToken');
+      await serverTools.cookie!.remove('refreshToken');
+      await serverTools.cookie!.remove('accessToken');
     }
 
     return {

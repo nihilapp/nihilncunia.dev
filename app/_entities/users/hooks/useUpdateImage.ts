@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import type { UpdateUserImage } from '../users.types';
+
 import { userKeys } from '@/_data';
 import { UsersApi } from '@/_entities/users/users.api';
-import type { UpdateUserImage } from '@/_types';
 
 interface UseUpdateImageParams {
   id: string;
