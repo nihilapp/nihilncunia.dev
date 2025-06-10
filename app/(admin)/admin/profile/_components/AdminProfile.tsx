@@ -3,15 +3,32 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiUser, FiLock, FiSave, FiEdit } from 'react-icons/fi';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { Button } from '@/(common)/_components/ui/button';
 import { Card } from '@/(common)/_components/ui/card';
 import { Input } from '@/(common)/_components/ui/input';
 import { Label } from '@/(common)/_components/ui/label';
+import { cn } from '@/_libs';
 import { useGetAdminProfile, useUpdateAdminProfile, useChangeAdminPassword } from '@/_entities/users';
 import type { AdminProfileUpdateRequest, AdminPasswordChangeRequest } from '@/_entities/users';
 
-export function AdminProfile() {
+const AdminProfileVariants = cva(
+  [
+    'space-y-6',
+  ],
+  {
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: [],
+  }
+);
+
+interface AdminProfileProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof AdminProfileVariants> {}
+
+export function AdminProfile({ className, ...props }: AdminProfileProps) {
   const [ isEditingProfile, setIsEditingProfile, ] = useState(false);
   const [ isChangingPassword, setIsChangingPassword, ] = useState(false);
 
@@ -45,7 +62,7 @@ export function AdminProfile() {
     }
   }, [ profile, profileForm, ]);
 
-  const handleUpdateProfile = (data: AdminProfileUpdateRequest) => {
+  const onSubmitUpdateProfile = (data: AdminProfileUpdateRequest) => {
     updateProfileMutation.mutate(data, {
       onSuccess: () => {
         setIsEditingProfile(false);
@@ -57,7 +74,7 @@ export function AdminProfile() {
     });
   };
 
-  const handleChangePassword = (data: AdminPasswordChangeRequest) => {
+  const onSubmitChangePassword = (data: AdminPasswordChangeRequest) => {
     changePasswordMutation.mutate(data, {
       onSuccess: () => {
         setIsChangingPassword(false);
@@ -95,7 +112,10 @@ export function AdminProfile() {
   }
 
   return (
-    <div className='space-y-6'>
+    <div
+      className={cn(AdminProfileVariants({}), className)}
+      {...props}
+    >
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-2xl font-bold text-gray-900 dark:text-gray-100'>관리자 프로필</h1>
@@ -110,7 +130,7 @@ export function AdminProfile() {
           <h2 className='text-lg font-semibold text-gray-900 dark:text-gray-100'>프로필 정보</h2>
         </div>
 
-        <form onSubmit={profileForm.handleSubmit(handleUpdateProfile)} className='space-y-4'>
+        <form onSubmit={profileForm.handleSubmit(onSubmitUpdateProfile)} className='space-y-4'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
               <Label htmlFor='name'>이름</Label>
@@ -212,7 +232,7 @@ export function AdminProfile() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} className='space-y-4'>
+          <form onSubmit={passwordForm.handleSubmit(onSubmitChangePassword)} className='space-y-4'>
             <div>
               <Label htmlFor='currentPassword'>현재 비밀번호</Label>
               <Input

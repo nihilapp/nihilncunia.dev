@@ -10,7 +10,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export default function NewPostPage({ children, }: Props) {
+export function NewPostPage({ children, }: Props) {
   return (
     <NewPost />
   );

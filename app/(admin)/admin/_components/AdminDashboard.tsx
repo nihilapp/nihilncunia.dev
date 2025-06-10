@@ -2,11 +2,28 @@
 
 import Link from 'next/link';
 
+import { cva, type VariantProps } from 'class-variance-authority';
 import { StatCard, RecentPostsCard } from '@/(admin)/_components';
 import { Button } from '@/(common)/_components/ui/button';
 import { EyeIcon, CheckIcon, ClockIcon } from '@/_icons';
+import { cn } from '@/_libs';
 
-export function AdminDashboard() {
+const AdminDashboardVariants = cva(
+  [
+    'p-8',
+  ],
+  {
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: [],
+  }
+);
+
+interface AdminDashboardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof AdminDashboardVariants> {}
+
+export function AdminDashboard({ className, ...props }: AdminDashboardProps) {
   // TODO: 실제 데이터로 교체
   const recentPosts = [
     {
@@ -66,7 +83,13 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className='p-8'>
+    <div
+      className={cn(
+        AdminDashboardVariants({}),
+        className,
+      )}
+      {...props}
+    >
       <div className='flex justify-between items-center mb-8'>
         <div>
           <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2'>대시보드</h1>
