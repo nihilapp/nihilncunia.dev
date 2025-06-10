@@ -14,6 +14,24 @@ export class Jwt {
       .encode(secret);
   }
 
+  // 토큰 만료 시간 형식 검증 및 변환
+  private validateExpireTime(expireTime: string | undefined, defaultValue: string): string {
+    if (!expireTime) {
+      return defaultValue;
+    }
+
+    // JWT에서 허용하는 형식인지 확인 (예: 1h, 30m, 7d, 또는 숫자)
+    const validTimePattern = /^(\d+)([smhd]?)$|^(\d+)$/;
+
+    if (validTimePattern.test(expireTime)) {
+      return expireTime;
+    }
+
+    // 잘못된 형식이면 기본값 사용
+    console.warn(`잘못된 토큰 만료 시간 형식: ${expireTime}, 기본값 사용: ${defaultValue}`);
+    return defaultValue;
+  }
+
   // 토큰 생성
   public async genTokens(user: User): Promise<Tokens> {
     const {
@@ -27,16 +45,36 @@ export class Jwt {
     const accessTokenSecret = await this.setSecret(process.env.NEXT_PUBLIC_ACCESS_TOKEN_SECRET);
     const refreshTokenSecret = await this.setSecret(process.env.NEXT_PUBLIC_REFRESH_TOKEN_SECRET);
 
+    // 환경 변수에서 만료 시간을 가져오고 올바른 형식으로 변환
+    console.log('DEBUG - 환경 변수 값:', {
+      access: process.env.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRE_TIME,
+      refresh: process.env.NEXT_PUBLIC_REFRESH_TOKEN_EXPIRE_TIME,
+    });
+
+    const accessTokenExpire = this.validateExpireTime(
+      process.env.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRE_TIME,
+      '1h'
+    );
+    const refreshTokenExpire = this.validateExpireTime(
+      process.env.NEXT_PUBLIC_REFRESH_TOKEN_EXPIRE_TIME,
+      '30d'
+    );
+
+    console.log('DEBUG - 변환된 값:', {
+      access: accessTokenExpire,
+      refresh: refreshTokenExpire,
+    });
+
     const accessToken = await new SignJWT(tokenPayload)
       .setProtectedHeader({ alg: 'HS256', })
       .setIssuedAt()
-      .setExpirationTime(process.env.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRE_TIME)
+      .setExpirationTime(accessTokenExpire)
       .sign(accessTokenSecret);
 
     const refreshToken = await new SignJWT(tokenPayload)
       .setProtectedHeader({ alg: 'HS256', })
       .setIssuedAt()
-      .setExpirationTime(process.env.NEXT_PUBLIC_REFRESH_TOKEN_EXPIRE_TIME)
+      .setExpirationTime(refreshTokenExpire)
       .sign(refreshTokenSecret);
 
     // 생성된 토큰의 실제 만료 시간(exp) 확인

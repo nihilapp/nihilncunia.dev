@@ -36,6 +36,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
+    "highlight.js": "^11.11.1",
     "jose": "^6.0.11",
     "lucide-react": "^0.513.0",
     "next": "^15.3.3",

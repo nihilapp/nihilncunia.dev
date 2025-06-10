@@ -1,14 +1,34 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 import { PostsApi } from '../posts.api';
 import { postsKeys } from '../posts.keys';
 
-export const useGetPostById = (id: string) => {
-  return useQuery({
+import { useDone, useLoading } from '@/_entities/common';
+
+export const useGetPostById = (
+  id: string,
+  options?: UseQueryOptions
+) => {
+  const {
+    data: post,
+    isLoading,
+    isFetching,
+    isSuccess,
+    ...other
+  } = useQuery({
     queryKey: postsKeys.detail(id),
     queryFn: () => PostsApi.getById(id),
     enabled: !!id,
-    staleTime: 1000 * 60 * 5, // 5분
-    gcTime: 1000 * 60 * 10, // 10분
+    ...options,
   });
+
+  const loading = useLoading(isLoading, isFetching);
+  const done = useDone(loading, isSuccess);
+
+  return {
+    post,
+    loading,
+    done,
+    ...other,
+  };
 };

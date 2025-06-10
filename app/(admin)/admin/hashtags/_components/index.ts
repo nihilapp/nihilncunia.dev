@@ -1,3 +1,4 @@
+export { AdminHashtags } from './AdminHashtags';
 export { HashtagStatistics } from './HashtagStatistics';
 export { HashtagCard } from './HashtagCard';
 export { HashtagList } from './HashtagList';

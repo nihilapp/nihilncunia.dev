@@ -1,4 +1,5 @@
 // Category management components exports
+export { AdminCategories } from './AdminCategories';
 export { CategoryList } from './CategoryList';
 export { CategoryForm } from './CategoryForm';
 export { CategoryCard } from './CategoryCard';
