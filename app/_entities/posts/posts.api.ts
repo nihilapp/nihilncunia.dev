@@ -1,7 +1,8 @@
 import type {
   PostFormData,
   PostFilters,
-  PostsResponse
+  PostsResponse,
+  PostEx
 } from './posts.types';
 
 import { Api } from '@/_libs';
@@ -41,12 +42,12 @@ export class PostsApi {
 
   // 개별 포스트 조회 (ID)
   static async getById(id: string) {
-    return Api.getQuery<Post>(`/posts/${id}`);
+    return Api.getQuery<PostEx>(`/posts/${id}`);
   }
 
   // 개별 포스트 조회 (slug)
   static async getBySlug(slug: string) {
-    return Api.getQuery<Post>(`/posts/slug/${slug}`);
+    return Api.getQuery<PostEx>(`/posts/slug/${slug}`);
   }
 
   // 포스트 생성
