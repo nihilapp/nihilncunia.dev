@@ -154,7 +154,7 @@ export async function POST(_request: NextRequest) {
       );
     }
 
-    // 새로운 액세스 토큰 생성
+    // 새로운 액세스 토큰과 리프레시 토큰 생성
     const newTokens = await serverTools.jwt!.genTokens(findUser);
 
     // 새로운 액세스 토큰 쿠키 설정
@@ -163,6 +163,19 @@ export async function POST(_request: NextRequest) {
       newTokens.accessToken.token,
       60 * 60 // 1시간
     );
+
+    // 새로운 리프레시 토큰 쿠키 설정 (보안 강화)
+    await serverTools.cookie!.set(
+      'refreshToken',
+      newTokens.refreshToken.token,
+      7 * 24 * 60 * 60 // 7일
+    );
+
+    // 데이터베이스에 새 리프레시 토큰 저장
+    await DB.userAuth().update({
+      where: { user_id: findUser.id, },
+      data: { refresh_token: newTokens.refreshToken.token, },
+    });
 
     return NextResponse.json(
       {

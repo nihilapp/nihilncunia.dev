@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 // POST /api/subcategories - 새 서브카테고리 생성 (Admin)
 export async function POST(req: NextRequest) {
   try {
-    const cookie = req.cookies.get('access_token');
+    const cookie = req.cookies.get('accessToken');
     if (!cookie) {
       return NextResponse.json(
         {
@@ -135,7 +135,6 @@ export async function POST(req: NextRequest) {
         name: body.name,
         slug,
         description: body.description,
-        color: body.color,
         category_id: body.category_id,
       },
       include: {

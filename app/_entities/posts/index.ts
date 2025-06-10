@@ -4,8 +4,18 @@ export type {
   UpdatePost,
   PostFilters,
   PostsResponse,
-  PostEx
+  PostEx,
+  PostFormData,
+  DraftPost,
+  DuplicatePost,
+  BatchOperation,
+  PostStats,
+  PostSortOption,
+  PostFiltersEx
 } from './posts.types';
+
+// Re-export PostStatus from Prisma client
+export { PostStatus } from '@/_prisma/client';
 
 // API
 export { PostsApi } from './posts.api';

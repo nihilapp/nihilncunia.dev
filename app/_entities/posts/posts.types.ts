@@ -83,3 +83,51 @@ export interface PostFormData {
   status: PostStatus;
   is_published: boolean;
 }
+
+// 임시 저장 데이터
+export interface DraftPost {
+  title?: string;
+  content?: string;
+  excerpt?: string;
+  category_id?: string;
+  subcategory_id?: string;
+  hashtags?: string[];
+  auto_saved_at?: Date;
+}
+
+// 포스트 복제 데이터
+export interface DuplicatePost {
+  title: string;
+  copy_content?: boolean;
+  copy_category?: boolean;
+  copy_hashtags?: boolean;
+}
+
+// 일괄 작업 데이터
+export interface BatchOperation {
+  post_ids: string[];
+  action: 'delete' | 'archive' | 'publish' | 'draft';
+}
+
+// 포스트 통계
+export interface PostStats {
+  total_posts: number;
+  published_posts: number;
+  draft_posts: number;
+  archived_posts: number;
+  total_views: number;
+  total_likes: number;
+  most_viewed_posts: PostEx[];
+  most_liked_posts: PostEx[];
+  recent_posts: PostEx[];
+}
+
+// 정렬 옵션
+export type PostSortOption = 'newest' | 'oldest' | 'popular' | 'most_viewed' | 'most_liked' | 'title';
+
+// 포스트 필터 확장
+export interface PostFiltersEx extends PostFilters {
+  sort?: PostSortOption;
+  date_from?: string;
+  date_to?: string;
+}

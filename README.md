@@ -60,6 +60,16 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [x] 포스트 조회수 증가 API (PATCH /api/posts/:id/views)
 - [x] 포스트 좋아요 증가 API (PATCH /api/posts/:id/likes)
 - [x] 카테고리별 포스트 필터링
+- [ ] 포스트 임시 저장 API (POST /api/posts/draft)
+- [ ] 임시 저장 포스트 조회 API (GET /api/posts/drafts)
+- [ ] 임시 저장 포스트 복구 API (GET /api/posts/drafts/:id/restore)
+- [ ] 포스트 자동 저장 API (PATCH /api/posts/:id/autosave)
+- [ ] 포스트 복제 API (POST /api/posts/:id/duplicate)
+- [ ] 포스트 상태 일괄 변경 API (PATCH /api/posts/batch-status)
+- [ ] 포스트 일괄 삭제 API (DELETE /api/posts/batch)
+- [ ] 관련 포스트 추천 API (GET /api/posts/:id/related)
+- [ ] 포스트 프리뷰 API (GET /api/posts/:id/preview)
+- [ ] 포스트 목록 정렬 옵션 확장 (최신순, 인기순, 조회순)
 
 #### 카테고리 관리 시스템
 
@@ -68,6 +78,15 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [x] 카테고리 수정 API (PUT /api/categories/:id)
 - [x] 카테고리 삭제 API (DELETE /api/categories/:id)
 - [x] 카테고리별 포스트 목록 API
+
+#### 서브카테고리 관리 시스템
+
+- [x] 서브카테고리 목록 조회 API (GET /api/subcategories)
+- [x] 서브카테고리 생성 API (POST /api/subcategories)
+- [x] 서브카테고리 수정 API (PUT /api/subcategories/:id)
+- [x] 서브카테고리 삭제 API (DELETE /api/subcategories/:id)
+- [x] 카테고리별 서브카테고리 필터링
+- [x] 서브카테고리별 포스트 필터링
 
 #### 해시태그 시스템
 
@@ -101,9 +120,12 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 새 포스트 작성 페이지 (/admin/posts/new)
 - [ ] 포스트 수정 페이지 (/admin/posts/[id]/edit)
 - [x] 카테고리 관리 페이지 (/admin/categories)
+- [x] 서브카테고리 관리 페이지 (/admin/subcategories)
 - [x] 해시태그 관리 페이지 (/admin/hashtags)
 - [ ] 관리자 프로필 페이지 (/admin/profile)
 - [ ] 블로그 설정 페이지 (/admin/settings)
+- [ ] 포스트 통계 페이지 (/admin/analytics)
+- [ ] 백업 및 복원 페이지 (/admin/backup)
 
 #### 상태 관리 및 API 통신
 

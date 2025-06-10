@@ -56,17 +56,33 @@
 ### 블로그 포스트 관련
 - 모든 포스트 조회: GET /api/posts
 - 포스트 상세 조회: GET /api/posts/:id
+- 포스트 slug 조회: GET /api/posts/slug/:slug
 - 포스트 작성: POST /api/posts (Admin)
 - 포스트 수정: PUT /api/posts/:id (Admin)
 - 포스트 삭제: DELETE /api/posts/:id (Admin)
 - 포스트 검색: GET /api/posts/search?q=검색어
+- 포스트 발행/취소: PATCH /api/posts/:id/publish (Admin)
+- 포스트 조회수 증가: PATCH /api/posts/:id/views
+- 포스트 좋아요 증가: PATCH /api/posts/:id/likes
 - 카테고리별 포스트: GET /api/posts?category=카테고리
+- 서브카테고리별 포스트: GET /api/posts?subcategory=서브카테고리
+- 포스트 임시 저장: POST /api/posts/draft (Admin)
+- 임시 저장 포스트 목록: GET /api/posts/drafts (Admin)
+- 임시 저장 포스트 복구: GET /api/posts/drafts/:id/restore (Admin)
+- 포스트 자동 저장: PATCH /api/posts/:id/autosave (Admin)
 
 ### 카테고리 관련
 - 모든 카테고리 조회: GET /api/categories
 - 카테고리 생성: POST /api/categories (Admin)
 - 카테고리 수정: PUT /api/categories/:id (Admin)
 - 카테고리 삭제: DELETE /api/categories/:id (Admin)
+
+### 서브카테고리 관련
+- 모든 서브카테고리 조회: GET /api/subcategories
+- 카테고리별 서브카테고리 조회: GET /api/subcategories?category_id=카테고리ID
+- 서브카테고리 생성: POST /api/subcategories (Admin)
+- 서브카테고리 수정: PUT /api/subcategories/:id (Admin)
+- 서브카테고리 삭제: DELETE /api/subcategories/:id (Admin)
 
 ### 해시태그 관련
 - 모든 해시태그 조회: GET /api/hashtags
@@ -93,6 +109,7 @@
 - `/admin/posts/new`: 새 포스트 작성 페이지
 - `/admin/posts/[id]/edit`: 포스트 수정 페이지
 - `/admin/categories`: 카테고리 관리 페이지
+- `/admin/subcategories`: 서브카테고리 관리 페이지
 - `/admin/profile`: 관리자 프로필 관리 페이지
 - `/admin/settings`: 블로그 설정 페이지
 
@@ -105,6 +122,7 @@
 - **마크다운 에디터**: 실시간 프리뷰 지원
 - **이미지 업로드**: 드래그 앤 드롭 이미지 업로드
 - **카테고리 관리**: 웹 인터페이스를 통한 카테고리 CRUD
+- **서브카테고리 관리**: 카테고리 하위의 서브카테고리 시스템
 - **해시태그 시스템**: 글당 최대 10개의 해시태그
 
 ### 2. SEO 최적화
@@ -210,8 +228,9 @@
 
 2. **카테고리 및 해시태그 시스템**
    - 카테고리 관리 인터페이스
+   - 서브카테고리 관리 인터페이스
    - 해시태그 자동 완성 기능
-   - 카테고리별/태그별 필터링
+   - 카테고리별/서브카테고리별/태그별 필터링
 
 ### 3단계: 공개 블로그 페이지 (2주)
 1. **프론트엔드 블로그 페이지**
@@ -241,8 +260,9 @@
 2. **AdminAuth**: 관리자 인증 정보 (해시된 비밀번호, 리프레시 토큰)
 3. **Post**: 블로그 포스트
 4. **Category**: 카테고리
-5. **Hashtag**: 해시태그
-6. **PostHashtag**: 포스트-해시태그 연결 테이블
+5. **Subcategory**: 서브카테고리
+6. **Hashtag**: 해시태그
+7. **PostHashtag**: 포스트-해시태그 연결 테이블
 
 ### 제거된 테이블
 - **User**: 일반 사용자 정보 (관리자 전용 시스템으로 불필요)
@@ -250,6 +270,8 @@
 
 ### 관계 설정
 - Post ↔ Category: Many-to-One
+- Post ↔ Subcategory: Many-to-One (선택적)
+- Subcategory ↔ Category: Many-to-One
 - Post ↔ Hashtag: Many-to-Many (PostHashtag 중간 테이블)
 - Admin ↔ AdminAuth: One-to-One
 - Post ↔ Admin: Many-to-One (작성자 관계)

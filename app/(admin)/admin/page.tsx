@@ -12,7 +12,7 @@ export default function AdminPage() {
     {
       id: '1',
       title: 'Next.js 13의 새로운 기능들',
-      status: 'published' as const,
+      status: 'PUBLISHED' as const,
       createdAt: '2024-03-15',
       updatedAt: '2024-03-15',
       category: '개발',
@@ -21,7 +21,7 @@ export default function AdminPage() {
     {
       id: '2',
       title: 'TypeScript로 더 안전한 코드 작성하기',
-      status: 'draft' as const,
+      status: 'DRAFT' as const,
       createdAt: '2024-03-14',
       updatedAt: '2024-03-15',
       category: '개발',
@@ -30,7 +30,7 @@ export default function AdminPage() {
     {
       id: '3',
       title: 'React Query로 서버 상태 관리하기',
-      status: 'published' as const,
+      status: 'PUBLISHED' as const,
       createdAt: '2024-03-13',
       updatedAt: '2024-03-13',
       category: '개발',
@@ -39,7 +39,7 @@ export default function AdminPage() {
     {
       id: '4',
       title: 'Tailwind CSS로 빠르게 스타일링하기',
-      status: 'published' as const,
+      status: 'PUBLISHED' as const,
       createdAt: '2024-03-12',
       updatedAt: '2024-03-12',
       category: '개발',
@@ -48,7 +48,7 @@ export default function AdminPage() {
     {
       id: '5',
       title: 'Prisma로 데이터베이스 관리하기',
-      status: 'published' as const,
+      status: 'PUBLISHED' as const,
       createdAt: '2024-03-11',
       updatedAt: '2024-03-11',
       category: '개발',
@@ -57,7 +57,7 @@ export default function AdminPage() {
     {
       id: '6',
       title: 'Docker로 개발 환경 구성하기',
-      status: 'draft' as const,
+      status: 'DRAFT' as const,
       createdAt: '2024-03-10',
       updatedAt: '2024-03-10',
       category: '개발',
