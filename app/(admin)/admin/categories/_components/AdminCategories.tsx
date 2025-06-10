@@ -4,11 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { FiPlus, FiTag } from 'react-icons/fi';
 
+import { cva, type VariantProps } from 'class-variance-authority';
 import { CategoryList, CategoryForm, CategoryStatistics } from '.';
 
 import { Button } from '@/(common)/_components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/(common)/_components/ui/card';
 import { CategoriesApi } from '@/_entities/categories';
+import { cn } from '@/_libs';
 import type { Category } from '@/_prisma/client';
 
 interface CategoryWithCount extends Category {
@@ -16,7 +18,22 @@ interface CategoryWithCount extends Category {
   published_post_count: number;
 }
 
-export function AdminCategories() {
+const AdminCategoriesVariants = cva(
+  [
+    'min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900 p-6',
+  ],
+  {
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: [],
+  }
+);
+
+interface AdminCategoriesProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof AdminCategoriesVariants> {}
+
+export function AdminCategories({ className, ...props }: AdminCategoriesProps) {
   const [ showForm, setShowForm, ] = useState(false);
   const [ editingCategory, setEditingCategory, ] = useState<CategoryWithCount | null>(null);
 
@@ -31,24 +48,24 @@ export function AdminCategories() {
 
   const categories = (categoriesResponse?.response || []) as CategoryWithCount[];
 
-  const handleNewCategory = () => {
+  const onClickNewCategory = () => {
     setEditingCategory(null);
     setShowForm(true);
   };
 
-  const handleEditCategory = (category: CategoryWithCount) => {
+  const onClickEditCategory = (category: CategoryWithCount) => {
     setEditingCategory(category);
     setShowForm(true);
   };
 
-  const handleCloseForm = () => {
+  const onCloseCategoryForm = () => {
     setShowForm(false);
     setEditingCategory(null);
   };
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900 p-6'>
+      <div className={cn(AdminCategoriesVariants({}), className)} {...props}>
         <div className='max-w-7xl mx-auto'>
           <div className='flex items-center justify-center h-64'>
             <div className='text-center'>
@@ -63,7 +80,7 @@ export function AdminCategories() {
 
   if (error) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900 p-6'>
+      <div className={cn(AdminCategoriesVariants({}), className)} {...props}>
         <div className='max-w-7xl mx-auto'>
           <div className='flex items-center justify-center h-64'>
             <div className='text-center'>
@@ -82,7 +99,10 @@ export function AdminCategories() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900 p-6'>
+    <div
+      className={cn(AdminCategoriesVariants({}), className)}
+      {...props}
+    >
       <div className='max-w-7xl mx-auto space-y-8'>
         {/* 헤더 */}
         <Card>
@@ -98,7 +118,7 @@ export function AdminCategories() {
                 </CardDescription>
               </div>
               <Button
-                onClick={handleNewCategory}
+                onClick={onClickNewCategory}
                 className='flex items-center gap-2'
               >
                 <FiPlus className='w-5 h-5' />
@@ -115,14 +135,14 @@ export function AdminCategories() {
         {/* 카테고리 목록 */}
         <CategoryList
           categories={categories}
-          onEditCategory={handleEditCategory}
+          onEditCategory={onClickEditCategory}
         />
 
         {/* 카테고리 폼 모달 */}
         <CategoryForm
           category={editingCategory}
           open={showForm}
-          onClose={handleCloseForm}
+          onClose={onCloseCategoryForm}
         />
       </div>
     </div>

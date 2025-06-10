@@ -11,7 +11,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export default function AdminHashtagsPage({ children, }: Props) {
+export function AdminHashtagsPage({ children, }: Props) {
   return (
     <AdminHashtags />
   );

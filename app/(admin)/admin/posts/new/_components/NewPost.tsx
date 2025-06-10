@@ -4,12 +4,29 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { cva, type VariantProps } from 'class-variance-authority';
 import { MarkdownEditor } from '@/(admin)/_components';
 import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
 import { useCreatePost, PostStatus } from '@/_entities/posts';
+import { cn } from '@/_libs';
 import type { PostFormData } from '@/_entities/posts';
+
+const NewPostVariants = cva(
+  [
+    'space-y-6',
+  ],
+  {
+    variants: {},
+    defaultVariants: {},
+    compoundVariants: [],
+  }
+);
+
+interface NewPostProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof NewPostVariants> {}
 
 // 기본 validation 함수
 const validateForm = (data: PostFormData) => {
@@ -44,7 +61,7 @@ const subcategories = [
   { id: '3', name: 'React', slug: 'react', category_id: '1', },
 ];
 
-export function NewPost() {
+export function NewPost({ className, ...props }: NewPostProps) {
   const router = useRouter();
 
   const [ hashtagInput, setHashtagInput, ] = useState('');
@@ -88,7 +105,7 @@ export function NewPost() {
   const createPostMutation = useCreatePost();
 
   // 해시태그 관련 함수들
-  const handleHashtagKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPressHashtagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && hashtagInput.trim()) {
       e.preventDefault();
       const newHashtag = hashtagInput.trim();
@@ -101,13 +118,13 @@ export function NewPost() {
     }
   };
 
-  const removeHashtag = (indexToRemove: number) => {
+  const onClickRemoveHashtag = (indexToRemove: number) => {
     const updatedHashtags = currentHashtags.filter((_, index) => index !== indexToRemove);
     setValue('hashtags', updatedHashtags);
   };
 
   // 폼 제출 함수들
-  const handleSaveDraft = handleSubmit(async (data) => {
+  const onClickSaveDraft = handleSubmit(async (data) => {
     try {
       const formData = data as PostFormData;
       const validationErrors = validateForm(formData);
@@ -129,7 +146,7 @@ export function NewPost() {
     }
   });
 
-  const handlePublish = handleSubmit(async (data) => {
+  const onClickPublish = handleSubmit(async (data) => {
     try {
       const formData = data as PostFormData;
       const validationErrors = validateForm(formData);
@@ -153,7 +170,13 @@ export function NewPost() {
   });
 
   return (
-    <div className='space-y-6'>
+    <div
+      className={cn(
+        NewPostVariants({}),
+        className,
+      )}
+      {...props}
+    >
       {/* Page Header */}
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold text-gray-900'>새 포스트 작성</h1>
@@ -161,14 +184,14 @@ export function NewPost() {
         <div className='flex space-x-3'>
           <Button
             variant='outline'
-            onClick={handleSaveDraft}
+            onClick={onClickSaveDraft}
             disabled={isSubmitting || createPostMutation.isPending}
           >
             임시 저장
           </Button>
 
           <Button
-            onClick={handlePublish}
+            onClick={onClickPublish}
             disabled={isSubmitting || createPostMutation.isPending}
           >
             발행하기
@@ -268,7 +291,7 @@ export function NewPost() {
               type='text'
               value={hashtagInput}
               onChange={(e) => setHashtagInput(e.target.value)}
-              onKeyPress={handleHashtagKeyPress}
+              onKeyPress={onKeyPressHashtagInput}
               placeholder='해시태그를 입력하고 Enter를 누르세요'
             />
 
@@ -283,7 +306,7 @@ export function NewPost() {
                     #{tag}
                     <button
                       type='button'
-                      onClick={() => removeHashtag(index)}
+                      onClick={() => onClickRemoveHashtag(index)}
                       className='ml-1 text-blue-600 hover:text-blue-800 focus:outline-none'
                     >
                       ×
