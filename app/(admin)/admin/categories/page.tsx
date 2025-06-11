@@ -11,7 +11,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export function AdminCategoriesPage({ children, }: Props) {
+export default function AdminCategoriesPage({ children, }: Props) {
   return (
     <AdminCategories />
   );
