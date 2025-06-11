@@ -1,11 +1,15 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import React from 'react';
+import React, { useState } from 'react';
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { FiPlus } from 'react-icons/fi';
 
 import { HashtagInput } from './HashtagInput';
 
+import { CategoryCreateModal, SubcategoryCreateModal } from './';
+
+import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
 import { cn } from '@/_libs';
@@ -56,6 +60,20 @@ export function PostFormFields({
   ...props
 }: PostFormFieldsProps) {
   const selectedCategoryId = watch('category_id');
+
+  // 모달 상태 관리
+  const [ showCategoryModal, setShowCategoryModal, ] = useState(false);
+  const [ showSubcategoryModal, setShowSubcategoryModal, ] = useState(false);
+
+  // 카테고리 생성 성공 시 자동 선택
+  const handleCategoryCreateSuccess = (categoryId: string) => {
+    setValue('category_id', categoryId);
+  };
+
+  // 서브카테고리 생성 성공 시 자동 선택
+  const handleSubcategoryCreateSuccess = (subcategoryId: string) => {
+    setValue('subcategory_id', subcategoryId);
+  };
 
   return (
     <div
@@ -109,10 +127,22 @@ export function PostFormFields({
 
           {/* Category */}
           <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              카테고리 <span className='text-red-500'>*</span>
-            </label>
-            <Select onValueChange={(value) => setValue('category_id', value)}>
+            <div className='flex items-center justify-between'>
+              <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+                카테고리 <span className='text-red-500'>*</span>
+              </label>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                onClick={() => setShowCategoryModal(true)}
+                className='flex items-center gap-1 text-xs h-8 px-3 border-blue-200 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+              >
+                <FiPlus className='w-3 h-3' />
+                새 카테고리
+              </Button>
+            </div>
+            <Select onValueChange={(value) => setValue('category_id', value)} value={selectedCategoryId}>
               <SelectTrigger className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200'>
                 <SelectValue placeholder='카테고리를 선택하세요' />
               </SelectTrigger>
@@ -145,12 +175,26 @@ export function PostFormFields({
         <div className='space-y-6'>
           {/* Subcategory */}
           <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              서브카테고리
-            </label>
+            <div className='flex items-center justify-between'>
+              <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+                서브카테고리
+              </label>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                onClick={() => setShowSubcategoryModal(true)}
+                disabled={!selectedCategoryId}
+                className='flex items-center gap-1 text-xs h-8 px-3 border-purple-200 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-50'
+              >
+                <FiPlus className='w-3 h-3' />
+                새 서브카테고리
+              </Button>
+            </div>
             <Select
               onValueChange={(value) => setValue('subcategory_id', value)}
               disabled={!selectedCategoryId || subcategories.length === 0}
+              value={watch('subcategory_id')}
             >
               <SelectTrigger className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 disabled:opacity-50'>
                 <SelectValue placeholder='서브카테고리를 선택하세요' />
@@ -187,6 +231,22 @@ export function PostFormFields({
           />
         </div>
       </div>
+
+      {/* 카테고리 생성 모달 */}
+      <CategoryCreateModal
+        open={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        onSuccess={handleCategoryCreateSuccess}
+      />
+
+      {/* 서브카테고리 생성 모달 */}
+      <SubcategoryCreateModal
+        open={showSubcategoryModal}
+        onClose={() => setShowSubcategoryModal(false)}
+        onSuccess={handleSubcategoryCreateSuccess}
+        categories={categories}
+        selectedCategoryId={selectedCategoryId}
+      />
     </div>
   );
 }
