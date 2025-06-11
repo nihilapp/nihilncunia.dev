@@ -11,7 +11,7 @@ export const useGetPostById = (
   options?: UseQueryOptions
 ) => {
   const {
-    data: post,
+    data: postResponse,
     isLoading,
     isFetching,
     isSuccess,
@@ -27,7 +27,7 @@ export const useGetPostById = (
   const done = useDone(loading, isSuccess);
 
   return {
-    post: post as PostEx | undefined,
+    post: postResponse?.response as PostEx | undefined,
     loading,
     done,
     ...other,

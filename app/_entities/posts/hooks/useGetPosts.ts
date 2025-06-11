@@ -11,7 +11,7 @@ export const useGetPosts = (
   options?: UseQueryOptions
 ) => {
   const {
-    data: posts,
+    data: postsResponse,
     isLoading,
     isFetching,
     isSuccess,
@@ -26,7 +26,10 @@ export const useGetPosts = (
   const done = useDone(loading, isSuccess);
 
   return {
-    posts: posts as unknown as PostsResponse[] || [],
+    posts: postsResponse?.response.posts || [],
+    total: postsResponse?.response.total ?? 0,
+    page: postsResponse?.response.page ?? 1,
+    limit: postsResponse?.response.limit ?? 0,
     loading,
     done,
     ...other,
