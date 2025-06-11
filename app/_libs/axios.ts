@@ -7,18 +7,6 @@ import axios, {
 import { siteConfig } from '../_config';
 
 import { type ApiResponse } from '@/_entities/common';
-import { type UserSession } from '@/_entities/user-auth';
-
-// Zustand 상태 타입 예시 (실제 타입으로 교체 필요)
-interface AuthState {
-  userSession: UserSession;
-}
-
-// Zustand persist가 저장하는 전체 객체 구조 예시
-interface PersistedState {
-  state: AuthState;
-  version: number;
-}
 
 export class Api {
   private static baseURL = siteConfig.apiRoute;
@@ -36,37 +24,7 @@ export class Api {
 
     instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        try {
-          // SSR 환경에서는 localStorage가 없으므로 체크
-          if (typeof window === 'undefined') {
-            return config;
-          }
-
-          const storageKey = 'auth-storage';
-          const persistedStateString = localStorage.getItem(storageKey);
-
-          if (persistedStateString) {
-            let persistedState: PersistedState | null = null;
-
-            try {
-              persistedState = JSON.parse(persistedStateString);
-            } catch (parseError) {
-              console.error('로컬스토리지 JSON 파싱 오류:', parseError);
-              return config;
-            }
-
-            // UserSession에는 토큰이 저장되지 않음
-            // 토큰은 HttpOnly 쿠키로 관리되므로
-            // Authorization 헤더를 별도로 설정할 필요 없음
-            const userSession = persistedState?.state?.userSession;
-
-            // 현재는 쿠키 기반 인증을 사용하므로
-            // 별도의 Authorization 헤더 설정 불필요
-          }
-        } catch (error) {
-          console.error('토큰 검색/헤더 설정 중 오류 발생:', error);
-        }
-
+        // 별도의 토큰 헤더 설정 없이 쿠키 기반 인증만 사용
         return config;
       },
       (error) => {
@@ -152,7 +110,6 @@ export class Api {
 
   static async getQuery<D>(url: string) {
     const { data, } = await this.get<D>(url);
-
     return data;
   }
 
@@ -175,7 +132,6 @@ export class Api {
       url,
       patchData
     );
-
     return data;
   }
 
@@ -187,13 +143,11 @@ export class Api {
       url,
       putData
     );
-
     return data;
   }
 
   static async deleteQuery<D>(url: string) {
     const { data, } = await this.delete<D>(url);
-
     return data;
   }
 
@@ -207,7 +161,6 @@ export class Api {
         data: postData,
       }
     );
-
     return data;
   }
 
@@ -218,7 +171,6 @@ export class Api {
         data: deleteData,
       }
     );
-
     return data;
   }
 }
