@@ -1,4 +1,5 @@
 import type { Post, PostStatus } from '@/_prisma/client';
+import type { ApiResponse } from '../common';
 
 // 포스트 생성
 export interface CreatePost {
@@ -131,3 +132,40 @@ export interface PostFiltersEx extends PostFilters {
   date_from?: string;
   date_to?: string;
 }
+
+export interface BatchDeleteResponseData {
+  deleted_count: number;
+  deleted_posts: { id: string; title: string }[];
+  not_found_ids: string[];
+}
+
+export type BatchDeleteResponse = ApiResponse<BatchDeleteResponseData>;
+
+export interface UpdatedPostInfo {
+  id: string;
+  title: string;
+  status: string;
+  is_published: boolean;
+  updated_at: string;
+}
+
+export interface BatchUpdateChanges {
+  status?: string;
+  is_published?: boolean;
+}
+
+export interface BatchUpdateResponseData {
+  updated_count: number;
+  updated_posts: UpdatedPostInfo[];
+  not_found_ids: string[];
+  changes: BatchUpdateChanges;
+}
+
+export interface BatchUpdateRequest {
+  post_ids: string[];
+  status?: string;
+  is_published?: boolean;
+}
+
+export type BatchUpdateStatusResponse = ApiResponse<BatchUpdateResponseData>;
+

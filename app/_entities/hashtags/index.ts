@@ -2,7 +2,13 @@
 export type {
   CreateHashtag,
   UpdateHashtag,
-  HashtagEx
+  HashtagEx,
+  HashtagsResponse,
+  HashtagResponse,
+  CreateHashtagResponse,
+  UpdateHashtagResponse,
+  DeleteHashtagResponse,
+  HashtagPostsResponse
 } from './hashtags.types';
 
 // API exports

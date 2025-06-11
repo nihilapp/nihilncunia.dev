@@ -2,7 +2,10 @@
 export type {
   CreateSubcategory,
   UpdateSubcategory,
-  SubcategoryEx
+  SubcategoryEx,
+  SubcategoriesResponse,
+  SubcategoryResponse,
+  DeleteSubcategoryResponse
 } from './subcategories.types';
 
 // API exports

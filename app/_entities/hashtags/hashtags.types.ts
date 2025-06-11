@@ -1,4 +1,5 @@
 import type { Hashtag } from '@/_prisma/client';
+import type { ApiResponse } from '../common';
 
 // 해시태그 생성
 export interface CreateHashtag {
@@ -18,3 +19,28 @@ export interface HashtagEx extends Hashtag {
     post_id: string;
   }[];
 }
+
+export interface HashtagWithCount extends Hashtag {
+  post_count: number;
+}
+
+export type HashtagsResponse = ApiResponse<HashtagWithCount[]>;
+export type HashtagResponse = ApiResponse<HashtagWithCount>;
+export type CreateHashtagResponse = ApiResponse<Hashtag>;
+export type UpdateHashtagResponse = ApiResponse<Hashtag>;
+export type DeleteHashtagResponse = ApiResponse<null>;
+
+export interface HashtagPostsData {
+  hashtag: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  posts: any[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export type HashtagPostsResponse = ApiResponse<HashtagPostsData>;
+
