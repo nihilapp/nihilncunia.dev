@@ -1,5 +1,4 @@
 import { AdminPosts } from './_components';
-
 import { setMeta } from '@/_libs';
 
 export const metadata = setMeta({
@@ -7,6 +6,7 @@ export const metadata = setMeta({
   url: '/admin/posts',
   description: '블로그 포스트를 관리할 수 있습니다.',
 });
+
 
 interface Props {
   children?: React.ReactNode;

@@ -1,5 +1,4 @@
 import { EditPost } from './_components';
-
 import { setMeta } from '@/_libs';
 
 interface Props {
@@ -15,7 +14,6 @@ export async function generateMetadata({ params, }: Props) {
     description: '블로그 포스트를 수정합니다.',
   });
 }
-
 interface PageProps {
   params: Promise<{ id: string }>;
   children?: React.ReactNode;
