@@ -1,4 +1,5 @@
 import type { Subcategory } from '@/_prisma/client';
+import type { ApiResponse } from '../common';
 
 // 서브카테고리 생성
 export interface CreateSubcategory {
@@ -27,3 +28,7 @@ export interface SubcategoryEx extends Subcategory {
     posts: number;
   };
 }
+
+export type SubcategoriesResponse = ApiResponse<SubcategoryEx[]>;
+export type SubcategoryResponse = ApiResponse<SubcategoryEx>;
+export type DeleteSubcategoryResponse = ApiResponse<null>;

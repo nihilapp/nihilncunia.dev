@@ -2,7 +2,11 @@
 export type {
   CreateCategory,
   UpdateCategory,
-  CategoryEx
+  CategoryEx,
+  CategoriesResponse,
+  CategoryResponse,
+  DeleteCategoryResponse,
+  CategoryPostsResponse
 } from './categories.types';
 
 // API exports

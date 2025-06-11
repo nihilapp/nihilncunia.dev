@@ -3,7 +3,11 @@ import type {
   PostFilters,
   PostsResponse,
   PostEx,
-  PostStats
+  PostStats,
+  BatchDeleteResponse,
+  BatchUpdateStatusResponse,
+  BatchUpdateRequest,
+  BatchUpdateChanges
 } from './posts.types';
 
 import { Api } from '@/_libs';
@@ -150,44 +154,25 @@ export class PostsApi {
 
   // 일괄 삭제
   static async batchDelete(postIds: string[]) {
-    return Api.deleteWithDataQuery<{
-      deleted_count: number;
-      deleted_posts: { id: string; title: string }[];
-      not_found_ids: string[];
-    }, { post_ids: string[] }>('/posts/batch', {
-      post_ids: postIds,
-    });
+    return Api.deleteWithDataQuery<BatchDeleteResponse, BatchUpdateRequest>(
+      '/posts/batch',
+      {
+        post_ids: postIds,
+      }
+    );
   }
 
   // 일괄 상태 변경
   static async batchUpdateStatus(
     postIds: string[],
-    updates: {
-      status?: string;
-      is_published?: boolean;
-    }
+    updates: BatchUpdateChanges
   ) {
-    return Api.patchQuery<{
-      updated_count: number;
-      updated_posts: {
-        id: string;
-        title: string;
-        status: string;
-        is_published: boolean;
-        updated_at: string;
-      }[];
-      not_found_ids: string[];
-      changes: {
-        status?: string;
-        is_published?: boolean;
-      };
-    }, {
-      post_ids: string[];
-      status?: string;
-      is_published?: boolean;
-    }>('/posts/batch-status', {
-      post_ids: postIds,
-      ...updates,
-    });
+    return Api.patchQuery<BatchUpdateStatusResponse, BatchUpdateRequest>(
+      '/posts/batch-status',
+      {
+        post_ids: postIds,
+        ...updates,
+      }
+    );
   }
 }

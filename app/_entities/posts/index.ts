@@ -11,7 +11,11 @@ export type {
   BatchOperation,
   PostStats,
   PostSortOption,
-  PostFiltersEx
+  PostFiltersEx,
+  BatchDeleteResponse,
+  BatchUpdateStatusResponse,
+  BatchUpdateRequest,
+  BatchUpdateChanges
 } from './posts.types';
 
 // Re-export PostStatus from Prisma client
