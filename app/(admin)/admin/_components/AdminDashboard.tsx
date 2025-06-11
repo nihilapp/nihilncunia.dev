@@ -1,11 +1,11 @@
 'use client';
 
+import { cva, type VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 
-import { cva, type VariantProps } from 'class-variance-authority';
 import { StatCard, RecentPostsCard } from '@/(admin)/_components';
 import { Button } from '@/(common)/_components/ui/button';
-import { EyeIcon, CheckIcon, ClockIcon } from '@/_icons';
+import { EyeIcon, CheckIcon, ClockIcon, PlusIcon } from '@/_icons';
 import { cn } from '@/_libs';
 
 const AdminDashboardVariants = cva(
@@ -86,7 +86,7 @@ export function AdminDashboard({ className, ...props }: AdminDashboardProps) {
     <div
       className={cn(
         AdminDashboardVariants({}),
-        className,
+        className
       )}
       {...props}
     >
@@ -99,19 +99,7 @@ export function AdminDashboard({ className, ...props }: AdminDashboardProps) {
           <Link
             href='/admin/posts/new'
           >
-            <svg
-              className='w-5 h-5 mr-2'
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M12 4v16m8-8H4'
-              />
-            </svg>
+            <PlusIcon className='w-5 h-5 mr-2' />
             <span>새 포스트 작성</span>
           </Link>
         </Button>

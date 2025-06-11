@@ -15,3 +15,15 @@ export { CheckIcon } from './CheckIcon';
 export { ClockIcon } from './ClockIcon';
 
 export { EyeIcon } from './EyeIcon';
+
+export { EyeOffIcon } from './EyeOffIcon';
+
+export { EditIcon } from './EditIcon';
+
+export { PlusIcon } from './PlusIcon';
+
+export { PreviewIcon } from './PreviewIcon';
+
+export { PreviewEmptyIcon } from './PreviewEmptyIcon';
+
+export { UserIcon } from './UserIcon';

@@ -74,7 +74,7 @@ export function EditPostFormFields({
           type='text'
           {...register('title')}
           placeholder='포스트 제목을 입력하세요'
-          className='text-xl p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200'
+          className='w-full text-xl p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200'
         />
         {customErrors.title && (
           <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
@@ -84,112 +84,108 @@ export function EditPostFormFields({
         )}
       </div>
 
-      {/* Meta Information Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-        {/* Left Column */}
-        <div className='space-y-6'>
-          {/* Excerpt */}
-          <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              요약
-            </label>
-            <textarea
-              {...register('excerpt')}
-              placeholder='포스트 요약을 입력하세요 (선택사항)'
-              rows={4}
-              className='w-full p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none transition-all duration-200 bg-white dark:bg-slate-700'
-            />
-            {customErrors.excerpt && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.excerpt}
-              </p>
-            )}
-          </div>
+      {/* Excerpt */}
+      <div className='space-y-3'>
+        <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+          요약
+        </label>
+        <textarea
+          {...register('excerpt')}
+          placeholder='포스트 요약을 입력하세요 (선택사항)'
+          rows={5}
+          className='w-full p-6 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none transition-all duration-200 bg-white dark:bg-slate-700 text-base'
+        />
+        {customErrors.excerpt && (
+          <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
+            <span className='w-1 h-1 bg-red-500 rounded-full'></span>
+            {customErrors.excerpt}
+          </p>
+        )}
+      </div>
 
-          {/* Category */}
-          <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              카테고리 <span className='text-red-500'>*</span>
-            </label>
-            <Select
-              value={watch('category_id')}
-              onValueChange={(value) => setValue('category_id', value)}
-            >
-              <SelectTrigger className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200'>
-                <SelectValue placeholder='카테고리를 선택하세요' />
-              </SelectTrigger>
-              <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
-                {categoriesLoading ? (
-                  <div className='p-3 text-gray-500'>로딩 중...</div>
-                ) : (
-                  categories.map((category: any) => (
-                    <SelectItem
-                      key={category.id}
-                      value={category.id}
-                      className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'
-                    >
-                      {category.name}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-            {customErrors.category_id && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.category_id}
-              </p>
-            )}
-          </div>
+      {/* Category and Subcategory Row */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        {/* Category */}
+        <div className='space-y-3'>
+          <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+            카테고리 <span className='text-red-500'>*</span>
+          </label>
+          <Select
+            value={watch('category_id')}
+            onValueChange={(value) => setValue('category_id', value)}
+          >
+            <SelectTrigger className='w-full p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 text-base'>
+              <SelectValue placeholder='카테고리를 선택하세요' />
+            </SelectTrigger>
+            <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
+              {categoriesLoading ? (
+                <div className='p-4 text-gray-500'>로딩 중...</div>
+              ) : (
+                categories.map((category: any) => (
+                  <SelectItem
+                    key={category.id}
+                    value={category.id}
+                    className='p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-base'
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
+          {customErrors.category_id && (
+            <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
+              <span className='w-1 h-1 bg-red-500 rounded-full'></span>
+              {customErrors.category_id}
+            </p>
+          )}
         </div>
 
-        {/* Right Column */}
-        <div className='space-y-6'>
-          {/* Subcategory */}
-          <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              서브카테고리
-            </label>
-            <Select
-              value={watch('subcategory_id')}
-              onValueChange={(value) => setValue('subcategory_id', value)}
-              disabled={!selectedCategoryId || subcategories.length === 0}
-            >
-              <SelectTrigger className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 disabled:opacity-50'>
-                <SelectValue placeholder='서브카테고리를 선택하세요' />
-              </SelectTrigger>
-              <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
-                {subcategoriesLoading ? (
-                  <div className='p-3 text-gray-500'>로딩 중...</div>
-                ) : (
-                  subcategories.map((subcategory: any) => (
-                    <SelectItem
-                      key={subcategory.id}
-                      value={subcategory.id}
-                      className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'
-                    >
-                      {subcategory.name}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-            {customErrors.subcategory_id && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.subcategory_id}
-              </p>
-            )}
-          </div>
-
-          {/* Hashtags */}
-          <EditHashtagInput
-            setValue={setValue}
-            watch={watch}
-            customErrors={customErrors}
-          />
+        {/* Subcategory */}
+        <div className='space-y-3'>
+          <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+            서브카테고리
+          </label>
+          <Select
+            value={watch('subcategory_id')}
+            onValueChange={(value) => setValue('subcategory_id', value)}
+            disabled={!selectedCategoryId || subcategories.length === 0}
+          >
+            <SelectTrigger className='w-full p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 disabled:opacity-50 text-base'>
+              <SelectValue placeholder='서브카테고리를 선택하세요' />
+            </SelectTrigger>
+            <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
+              {subcategoriesLoading ? (
+                <div className='p-4 text-gray-500'>로딩 중...</div>
+              ) : (
+                subcategories.map((subcategory: any) => (
+                  <SelectItem
+                    key={subcategory.id}
+                    value={subcategory.id}
+                    className='p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-base'
+                  >
+                    {subcategory.name}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
+          {customErrors.subcategory_id && (
+            <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
+              <span className='w-1 h-1 bg-red-500 rounded-full'></span>
+              {customErrors.subcategory_id}
+            </p>
+          )}
         </div>
+      </div>
+
+      {/* Hashtags */}
+      <div className='space-y-3'>
+        <EditHashtagInput
+          setValue={setValue}
+          watch={watch}
+          customErrors={customErrors}
+        />
       </div>
     </div>
   );

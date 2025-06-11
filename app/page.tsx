@@ -35,6 +35,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <LinkButton href='/admin'>링크버튼</LinkButton>
     </main>
   );
 }

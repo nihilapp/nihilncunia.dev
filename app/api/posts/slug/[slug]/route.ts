@@ -65,7 +65,7 @@ export async function GET(request: NextRequest, { params, }: Params) {
 
     // 포스트 접근 권한 확인
     let isAdmin = false;
-    const cookie = request.cookies?.get('access_token');
+    const cookie = request.cookies?.get('accessToken');
 
     if (cookie && serverTools.jwt) {
       try {

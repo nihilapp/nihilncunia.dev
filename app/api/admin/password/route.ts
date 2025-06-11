@@ -8,7 +8,7 @@ import { serverTools } from '@/api/_libs/tools';
 export async function PUT(req: NextRequest) {
   try {
     // JWT 인증
-    const cookie = req.cookies.get('access_token');
+    const cookie = req.cookies.get('accessToken');
     if (!cookie) {
       return NextResponse.json(
         {

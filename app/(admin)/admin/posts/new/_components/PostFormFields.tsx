@@ -92,7 +92,7 @@ export function PostFormFields({
           type='text'
           {...register('title')}
           placeholder='포스트 제목을 입력하세요'
-          className='text-xl p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200'
+          className='w-full text-xl p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200'
         />
         {customErrors.title && (
           <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
@@ -102,59 +102,46 @@ export function PostFormFields({
         )}
       </div>
 
-      {/* Meta Information Grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-        {/* Left Column */}
-        <div className='space-y-6'>
-          {/* Excerpt */}
-          <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              요약
-            </label>
-            <textarea
-              {...register('excerpt')}
-              placeholder='포스트 요약을 입력하세요 (선택사항)'
-              rows={4}
-              className='w-full p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none transition-all duration-200 bg-white dark:bg-slate-700'
-            />
-            {customErrors.excerpt && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.excerpt}
-              </p>
-            )}
-          </div>
+      {/* Excerpt */}
+      <div className='space-y-3'>
+        <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+          요약
+        </label>
+        <textarea
+          {...register('excerpt')}
+          placeholder='포스트 요약을 입력하세요 (선택사항)'
+          rows={5}
+          className='w-full p-6 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none transition-all duration-200 bg-white dark:bg-slate-700 text-base'
+        />
+        {customErrors.excerpt && (
+          <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
+            <span className='w-1 h-1 bg-red-500 rounded-full'></span>
+            {customErrors.excerpt}
+          </p>
+        )}
+      </div>
 
-          {/* Category */}
-          <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
-              <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-                카테고리 <span className='text-red-500'>*</span>
-              </label>
-              <Button
-                type='button'
-                variant='outline'
-                size='sm'
-                onClick={() => setShowCategoryModal(true)}
-                className='flex items-center gap-1 text-xs h-8 px-3 border-blue-200 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-              >
-                <FiPlus className='w-3 h-3' />
-                새 카테고리
-              </Button>
-            </div>
+      {/* Category and Subcategory Row */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        {/* Category */}
+        <div className='space-y-3'>
+          <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+            카테고리 <span className='text-red-500'>*</span>
+          </label>
+          <div className='relative'>
             <Select onValueChange={(value) => setValue('category_id', value)} value={selectedCategoryId}>
-              <SelectTrigger className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200'>
+              <SelectTrigger className='w-full p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 text-base'>
                 <SelectValue placeholder='카테고리를 선택하세요' />
               </SelectTrigger>
               <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
                 {categoriesLoading ? (
-                  <div className='p-3 text-gray-500'>로딩 중...</div>
+                  <div className='p-4 text-gray-500'>로딩 중...</div>
                 ) : (
                   categories.map((category: any) => (
                     <SelectItem
                       key={category.id}
                       value={category.id}
-                      className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'
+                      className='p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-base'
                     >
                       {category.name}
                     </SelectItem>
@@ -162,52 +149,48 @@ export function PostFormFields({
                 )}
               </SelectContent>
             </Select>
-            {customErrors.category_id && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.category_id}
-              </p>
-            )}
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={() => setShowCategoryModal(true)}
+              className='absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1 text-xs h-10 px-3 border-blue-200 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 z-10'
+            >
+              <FiPlus className='w-3 h-3' />
+              새 카테고리
+            </Button>
           </div>
+          {customErrors.category_id && (
+            <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
+              <span className='w-1 h-1 bg-red-500 rounded-full'></span>
+              {customErrors.category_id}
+            </p>
+          )}
         </div>
 
-        {/* Right Column */}
-        <div className='space-y-6'>
-          {/* Subcategory */}
-          <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
-              <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-                서브카테고리
-              </label>
-              <Button
-                type='button'
-                variant='outline'
-                size='sm'
-                onClick={() => setShowSubcategoryModal(true)}
-                disabled={!selectedCategoryId}
-                className='flex items-center gap-1 text-xs h-8 px-3 border-purple-200 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-50'
-              >
-                <FiPlus className='w-3 h-3' />
-                새 서브카테고리
-              </Button>
-            </div>
+        {/* Subcategory */}
+        <div className='space-y-3'>
+          <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
+            서브카테고리
+          </label>
+          <div className='relative'>
             <Select
               onValueChange={(value) => setValue('subcategory_id', value)}
               disabled={!selectedCategoryId || subcategories.length === 0}
               value={watch('subcategory_id')}
             >
-              <SelectTrigger className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 disabled:opacity-50'>
+              <SelectTrigger className='w-full p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200 disabled:opacity-50 text-base'>
                 <SelectValue placeholder='서브카테고리를 선택하세요' />
               </SelectTrigger>
               <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
                 {subcategoriesLoading ? (
-                  <div className='p-3 text-gray-500'>로딩 중...</div>
+                  <div className='p-4 text-gray-500'>로딩 중...</div>
                 ) : (
                   subcategories.map((subcategory: any) => (
                     <SelectItem
                       key={subcategory.id}
                       value={subcategory.id}
-                      className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'
+                      className='p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-base'
                     >
                       {subcategory.name}
                     </SelectItem>
@@ -215,21 +198,34 @@ export function PostFormFields({
                 )}
               </SelectContent>
             </Select>
-            {customErrors.subcategory_id && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.subcategory_id}
-              </p>
-            )}
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={() => setShowSubcategoryModal(true)}
+              disabled={!selectedCategoryId}
+              className='absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1 text-xs h-10 px-3 border-purple-200 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-50 z-10'
+            >
+              <FiPlus className='w-3 h-3' />
+              새 서브카테고리
+            </Button>
           </div>
-
-          {/* Hashtags */}
-          <HashtagInput
-            setValue={setValue}
-            watch={watch}
-            customErrors={customErrors}
-          />
+          {customErrors.subcategory_id && (
+            <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
+              <span className='w-1 h-1 bg-red-500 rounded-full'></span>
+              {customErrors.subcategory_id}
+            </p>
+          )}
         </div>
+      </div>
+
+      {/* Hashtags */}
+      <div className='space-y-3'>
+        <HashtagInput
+          setValue={setValue}
+          watch={watch}
+          customErrors={customErrors}
+        />
       </div>
 
       {/* 카테고리 생성 모달 */}

@@ -46,7 +46,7 @@ export function HashtagInput({
   const [ hashtagInput, setHashtagInput, ] = useState('');
   const currentHashtags = watch('hashtags') || [];
 
-  const onKeyPressHashtagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDownHashtagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && hashtagInput.trim()) {
       e.preventDefault();
       const newHashtag = hashtagInput.trim();
@@ -92,10 +92,10 @@ export function HashtagInput({
         type='text'
         value={hashtagInput}
         onChange={(e) => setHashtagInput(e.target.value)}
-        onKeyPress={onKeyPressHashtagInput}
+        onKeyDown={onKeyDownHashtagInput}
         placeholder='해시태그를 입력하고 Enter를 누르세요'
         disabled={currentHashtags.length >= 10}
-        className='p-4 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200 disabled:opacity-50'
+        className='w-full p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200 disabled:opacity-50 text-base'
       />
 
       {customErrors.hashtags && (

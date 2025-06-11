@@ -6,6 +6,8 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
+import { EditIcon, PreviewIcon, PreviewEmptyIcon } from '@/_icons';
+
 import 'highlight.js/styles/github.css';
 
 interface MarkdownEditorProps {
@@ -65,6 +67,33 @@ export default function MarkdownEditor({
     [ onChange, ]
   );
 
+  // 탭 키 들여쓰기 핸들러
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+
+        const textarea = e.currentTarget;
+        const { selectionStart, selectionEnd, } = textarea;
+        const currentValue = textarea.value;
+
+        // 스페이스 2칸으로 들여쓰기
+        const newValue =
+          currentValue.substring(0, selectionStart) +
+          '  ' + // 스페이스 2칸
+          currentValue.substring(selectionEnd);
+
+        onChange(newValue);
+
+        // 커서 위치 조정 (다음 렌더 사이클에서)
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = selectionStart + 2;
+        }, 0);
+      }
+    },
+    [ onChange, ]
+  );
+
   // 글자수 계산 (메모이제이션으로 성능 최적화)
   const characterCounts = useMemo(() => {
     const rawLength = value.length;
@@ -79,9 +108,7 @@ export default function MarkdownEditor({
         <div className='flex items-center space-x-2'>
           {/* 마크다운 탭 (항상 활성) */}
           <div className='px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md flex items-center gap-2'>
-            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
-            </svg>
+            <EditIcon className='w-4 h-4' />
             마크다운
           </div>
 
@@ -95,14 +122,15 @@ export default function MarkdownEditor({
                 : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-slate-600 hover:text-gray-900 dark:hover:text-gray-200 border border-gray-300 dark:border-slate-500'
             }`}
           >
-            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' />
-            </svg>
+            <PreviewIcon className='w-4 h-4' />
             미리보기
-            {showPreview && (
-              <span className='text-xs bg-white/20 px-1.5 py-0.5 rounded'>ON</span>
-            )}
+            <span className={`text-xs px-1.5 py-0.5 rounded ${
+              showPreview
+                ? 'bg-white/20 text-white'
+                : 'bg-gray-300 dark:bg-slate-500 text-gray-600 dark:text-gray-400'
+            }`}>
+              {showPreview ? 'ON' : 'OFF'}
+            </span>
           </button>
         </div>
 
@@ -128,6 +156,7 @@ export default function MarkdownEditor({
             <textarea
               value={value}
               onChange={handleTextareaChange}
+              onKeyDown={handleKeyDown}
               placeholder={placeholder}
               className='w-full h-full p-4 border-0 resize-none focus:outline-none font-mono text-sm leading-relaxed bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400'
               style={{ minHeight: '500px', }}
@@ -219,10 +248,7 @@ export default function MarkdownEditor({
                   </ReactMarkdown>
                 ) : (
                   <div className='text-gray-400 dark:text-gray-500 italic text-center py-12'>
-                    <svg className='w-12 h-12 mx-auto mb-4 opacity-50' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1} d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' />
-                    </svg>
+                    <PreviewEmptyIcon className='w-12 h-12 mx-auto mb-4 opacity-50' />
                     미리보기가 여기에 표시됩니다...
                   </div>
                 )}
@@ -237,6 +263,7 @@ export default function MarkdownEditor({
             <textarea
               value={value}
               onChange={handleTextareaChange}
+              onKeyDown={handleKeyDown}
               placeholder={placeholder}
               className='w-full h-full p-4 border-0 resize-none focus:outline-none font-mono text-sm leading-relaxed bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400'
               style={{ minHeight: '500px', }}

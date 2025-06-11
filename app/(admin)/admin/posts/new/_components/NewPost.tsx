@@ -98,6 +98,7 @@ export function NewPost({ className, ...props }: NewPostProps) {
     setValue,
     formState: { isSubmitting, },
   } = useForm<PostFormInput>({
+    mode: 'all',
     defaultValues: {
       title: '',
       content: '',

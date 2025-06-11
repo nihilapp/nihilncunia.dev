@@ -74,6 +74,7 @@ export default function AdminPage({ children }: Props) {
 }
 ```
 - 폼 관련 기능 함수명은 'onClick', 'onChange' 등등의 수식어를 붙여야한다.
+- 'react-icons' 가 아닌 직접 작성해서 사용하는 아이콘들은 '/app/_icons' 에 있으며, 'react-icons'가 아닌 새로운 아이콘의 경우 여기에 넣어야만 한다.
 
 [React Query 훅 작성 규칙 - GET]
 - 모든 GET 요청 훅은 통일된 구조를 따라야 한다.

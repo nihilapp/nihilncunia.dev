@@ -14,7 +14,7 @@ export async function PUT(request: NextRequest, { params, }: Params) {
     const { id, } = await params;
 
     // JWT 인증
-    const cookie = request.cookies.get('access_token');
+    const cookie = request.cookies.get('accessToken');
     if (!cookie) {
       return NextResponse.json(
         {
@@ -141,7 +141,7 @@ export async function DELETE(request: NextRequest, { params, }: Params) {
     const { id, } = await params;
 
     // JWT 인증
-    const cookie = request.cookies.get('access_token');
+    const cookie = request.cookies.get('accessToken');
     if (!cookie) {
       return NextResponse.json(
         {
