@@ -23,12 +23,12 @@ export class HashtagsApi {
     const queryString = params.toString();
     const url = queryString ? `/hashtags?${queryString}` : '/hashtags';
 
-    return Api.getQuery<HashtagsResponse>(url);
+    return Api.getQuery<Hashtag[]>('/hashtags');
   }
 
   // 개별 해시태그 조회 (ID) - slug API 사용
   static async getById(id: string) {
-    return Api.getQuery<HashtagResponse>(`/hashtags/${id}`);
+    return Api.getQuery<Hashtag>('/hashtags/' + id);
   }
 
   // 개별 해시태그 조회 (Slug)
@@ -37,27 +37,18 @@ export class HashtagsApi {
   }
 
   // 해시태그 생성
-  static async create(data: CreateHashtag) {
-    return Api.postQuery<CreateHashtagResponse, CreateHashtag>(
-      '/hashtags',
-      data
-    );
+  static async create(data: any) {
+    return Api.postQuery<Hashtag, any>('/hashtags', data);
   }
 
   // 해시태그 수정 - slug API 사용 (id도 처리 가능)
-  static async update(
-    id: string,
-    data: UpdateHashtag
-  ) {
-    return Api.putQuery<UpdateHashtagResponse, UpdateHashtag>(
-      `/hashtags/${id}`,
-      data
-    );
+  static async update(id: string, data: any) {
+    return Api.putQuery<Hashtag, any>('/hashtags/' + id, data);
   }
 
   // 해시태그 삭제 - slug API 사용 (id도 처리 가능)
   static async delete(id: string) {
-    return Api.deleteQuery<DeleteHashtagResponse>(`/hashtags/${id}`);
+    return Api.deleteQuery<null>('/hashtags/' + id);
   }
 
   // 해시태그별 포스트 목록 조회

@@ -8,6 +8,7 @@ import type { PostFormInput } from '@/(admin)/admin/posts/_data/post-validation.
 import { Button } from '@/(common)/_components/ui/button';
 import { useCreatePost, useSaveDraft, PostStatus, useUpdatePost } from '@/_entities/posts';
 import type { PostFormData } from '@/_entities/posts';
+import { useGetAdminProfile } from '@/_entities/users';
 import { toast } from '@/_libs';
 
 interface PostActionsProps {
@@ -27,25 +28,41 @@ export function PostActions({
   const createPostMutation = useCreatePost();
   const saveDraftMutation = useSaveDraft();
   const updatePostMutation = useUpdatePost();
+  const { adminProfile, } = useGetAdminProfile();
 
   // 폼 제출 로직 함수들
   const saveDraft: SubmitHandler<PostFormInput> = async (data) => {
     try {
+      const userId = (adminProfile as any)?.response?.id;
+
+      if (!userId) {
+        toast.error('사용자 정보를 불러올 수 없습니다.');
+        return;
+      }
+
       const formData = {
-        post_id: currentPostId, // 포스트 ID 전달
+        userId, // 사용자 ID 추가
+        postId: currentPostId, // 포스트 ID 전달 (API 스키마에 맞게 수정)
         title: data.title,
         content: data.content,
         excerpt: data.excerpt || '',
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || '',
+        categoryId: data.category_id, // API 스키마에 맞게 수정
+        subcategoryId: data.subcategory_id || '', // API 스키마에 맞게 수정
         hashtags: data.hashtags || [],
       };
 
       const response = await saveDraftMutation.mutateAsync(formData);
       const postData = (response as any)?.response;
 
-      // 새로 생성된 포스트라면 ID를 상위 컴포넌트에 전달
+      console.log('임시저장 응답:', response);
+      console.log('postData:', postData);
+      console.log('현재 currentPostId:', currentPostId);
+
+      // 새로 생성된 포스트라면 ID를 URL에 추가
       if (!currentPostId && postData?.id) {
+        console.log('새 포스트 ID를 URL에 추가:', postData.id);
+        const newUrl = `/admin/posts/new?currentPostId=${postData.id}`;
+        router.replace(newUrl);
         onPostCreated?.(postData.id);
       }
 
@@ -58,6 +75,8 @@ export function PostActions({
 
   const publishPost: SubmitHandler<PostFormInput> = async (data) => {
     try {
+      console.log('발행 시작 - currentPostId:', currentPostId);
+
       const formData: PostFormData = {
         title: data.title,
         content: data.content,
@@ -71,12 +90,14 @@ export function PostActions({
 
       if (currentPostId) {
         // 기존 포스트를 발행으로 업데이트
+        console.log('기존 포스트 업데이트 중...', currentPostId);
         await updatePostMutation.mutateAsync({
           id: currentPostId,
           data: formData,
         });
       } else {
         // 새 포스트 생성 및 발행
+        console.log('새 포스트 생성 중...');
         await createPostMutation.mutateAsync(formData);
       }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import type { ApiResponse } from '@/_entities/common';
 import { DB } from '@/api/_libs';
 import { getHeaderToken, refreshCheck, createSecurityErrorResponse } from '@/api/_libs';
 
@@ -8,6 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     // JWT 인증
     const accessToken = getHeaderToken(request);
+    console.log('accessToken', accessToken);
 
     if (!accessToken) {
       return createSecurityErrorResponse('액세스 토큰이 필요합니다.', 401);
@@ -70,19 +72,23 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({
-      success: true,
-      message: '임시저장이 완료되었습니다.',
-      data: {
+    const successResponse: ApiResponse<typeof draft> = {
+      response: {
         id: draft.id,
         title: draft.title,
         content: draft.content,
         slug: draft.slug,
         excerpt: draft.excerpt,
-        createdAt: draft.created_at,
-        updatedAt: draft.updated_at,
+        created_at: draft.created_at,
+        updated_at: draft.updated_at,
       },
-    });
+      message: '임시저장이 완료되었습니다.',
+    };
+
+    return NextResponse.json(
+      successResponse,
+      { status: 200, }
+    );
   } catch (error) {
     console.error('Draft save error:', error);
     return createSecurityErrorResponse('임시저장 중 오류가 발생했습니다.', 500);

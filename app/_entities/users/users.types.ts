@@ -1,28 +1,4 @@
-import type { User } from '@/_prisma/client';
-
-// 관리자 프로필 조회 응답
-export interface AdminProfileResponse {
-  id: string;
-  email: string;
-  name: string;
-  image_url: string | null;
-  last_sign_in: Date | null;
-  created_at: Date;
-  updated_at: Date;
-}
-
-// 관리자 프로필 수정 요청
-export interface AdminProfileUpdateRequest {
-  name: string;
-  email: string;
-  image_url?: string;
-}
-
-// 관리자 비밀번호 변경 요청
-export interface AdminPasswordChangeRequest {
-  currentPassword: string;
-  newPassword: string;
-}
+import type { Prisma } from '@/_prisma/client';
 
 // 사용자 생성
 export interface CreateUser {
@@ -55,12 +31,15 @@ export interface DeleteUsers {
 }
 
 // Include 관계가 있는 사용자 (Ex 접미사)
-export interface UserEx extends User {
-  user_auth?: {
-    id: string;
-    hashed_password: string;
-    refresh_token: string | null;
-    created_at: Date;
-    updated_at: Date;
+export type UserEx = Prisma.UserGetPayload<{
+  include: {
+    user_auth: {
+      select: {
+        id: true,
+        refresh_token: true,
+        created_at: true,
+        updated_at: true,
+      },
+    },
   };
-}
+}>;

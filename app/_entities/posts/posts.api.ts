@@ -42,12 +42,12 @@ export class PostsApi {
       params.append('is_published', filters.is_published.toString());
     }
 
-    return Api.getQuery<PostsResponse>(`/posts?${params.toString()}`);
+    return Api.getQuery<Post[]>('/posts');
   }
 
   // 개별 포스트 조회 (ID)
   static async getById(id: string) {
-    return Api.getQuery<PostEx>(`/posts/${id}`);
+    return Api.getQuery<Post>('/posts/' + id);
   }
 
   // 개별 포스트 조회 (slug)
@@ -56,24 +56,18 @@ export class PostsApi {
   }
 
   // 포스트 생성
-  static async create(data: PostFormData) {
-    return Api.postQuery<Post, PostFormData>(
-      '/posts',
-      data
-    );
+  static async create(data: any) {
+    return Api.postQuery<Post, any>('/posts', data);
   }
 
   // 포스트 수정
-  static async update(id: string, data: Partial<PostFormData>) {
-    return Api.putQuery<Post, Partial<PostFormData>>(
-      `/posts/${id}`,
-      data
-    );
+  static async update(id: string, data: any) {
+    return Api.putQuery<Post, any>('/posts/' + id, data);
   }
 
   // 포스트 삭제
   static async delete(id: string) {
-    return Api.deleteQuery<Post>(`/posts/${id}`);
+    return Api.deleteQuery<null>('/posts/' + id);
   }
 
   // 포스트 발행/취소

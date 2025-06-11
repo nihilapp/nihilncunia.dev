@@ -1,40 +1,26 @@
-import type {
-  CreateSubcategory,
-  UpdateSubcategory,
-  SubcategoryEx,
-  SubcategoriesResponse,
-  SubcategoryResponse,
-  DeleteSubcategoryResponse
-} from './subcategories.types';
+import type { SubcategoryEx } from './subcategories.types';
 
 import { Api } from '@/_libs';
+import type { Subcategory } from '@/_prisma/client';
 
 export class SubcategoriesApi {
-
-  static async getSubcategories(categoryId?: string) {
-    const params = categoryId ? `?category_id=${categoryId}` : '';
-    return Api.getQuery<SubcategoriesResponse>(`/subcategories${params}`);
+  static async getAll() {
+    return Api.getQuery<Subcategory[]>('/subcategories');
   }
 
-  static async createSubcategory(data: CreateSubcategory) {
-    return Api.postQuery<SubcategoryResponse, CreateSubcategory>(
-      '/subcategories',
-      data
-    );
+  static async getById(id: string) {
+    return Api.getQuery<Subcategory>('/subcategories/' + id);
   }
 
-  static async updateSubcategory(
-    id: string,
-    data: UpdateSubcategory
-  ) {
-    return Api.putQuery<SubcategoryResponse, UpdateSubcategory>(
-      `/subcategories/${id}`,
-      data
-    );
+  static async create(data: any) {
+    return Api.postQuery<Subcategory, any>('/subcategories', data);
   }
 
-  static async deleteSubcategory(id: string) {
-    return Api.deleteQuery<DeleteSubcategoryResponse>(`/subcategories/${id}`);
+  static async update(id: string, data: any) {
+    return Api.putQuery<Subcategory, any>('/subcategories/' + id, data);
   }
 
+  static async delete(id: string) {
+    return Api.deleteQuery<null>('/subcategories/' + id);
+  }
 }

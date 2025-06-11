@@ -1,17 +1,17 @@
 'use client';
 
+import { cva, type VariantProps } from 'class-variance-authority';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiUser, FiLock, FiSave, FiEdit } from 'react-icons/fi';
-import { cva, type VariantProps } from 'class-variance-authority';
 
 import { Button } from '@/(common)/_components/ui/button';
 import { Card } from '@/(common)/_components/ui/card';
 import { Input } from '@/(common)/_components/ui/input';
 import { Label } from '@/(common)/_components/ui/label';
-import { cn } from '@/_libs';
 import { useGetAdminProfile, useUpdateAdminProfile, useChangeAdminPassword } from '@/_entities/users';
 import type { AdminProfileUpdateRequest, AdminPasswordChangeRequest } from '@/_entities/users';
+import { cn } from '@/_libs';
 
 const AdminProfileVariants = cva(
   [
@@ -32,15 +32,15 @@ export function AdminProfile({ className, ...props }: AdminProfileProps) {
   const [ isEditingProfile, setIsEditingProfile, ] = useState(false);
   const [ isChangingPassword, setIsChangingPassword, ] = useState(false);
 
-  const { data: profile, isLoading, error, } = useGetAdminProfile();
+  const { adminProfile: profile, loading: isLoading, error, } = useGetAdminProfile();
   const updateProfileMutation = useUpdateAdminProfile();
   const changePasswordMutation = useChangeAdminPassword();
 
   const profileForm = useForm<AdminProfileUpdateRequest>({
     defaultValues: {
-      name: profile?.response?.name || '',
-      email: profile?.response?.email || '',
-      image_url: profile?.response?.image_url || '',
+      name: (profile as any)?.response?.name || '',
+      email: (profile as any)?.response?.email || '',
+      image_url: (profile as any)?.response?.image_url || '',
     },
   });
 

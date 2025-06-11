@@ -1,7 +1,6 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -11,7 +10,6 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { PostCard } from './PostCard';
 
 import { Button } from '@/(common)/_components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/(common)/_components/ui/card';
 import { Checkbox } from '@/(common)/_components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
 import {
@@ -115,6 +113,10 @@ export function PostList({ className, ...props }: PostListProps) {
 
   const onClickNewPost = () => {
     router.push('/admin/posts/new');
+  };
+
+  const onClickViewPost = (postId: string) => {
+    router.push(`/admin/posts/${postId}`);
   };
 
   const onClickEditPost = (postId: string) => {
@@ -248,6 +250,7 @@ export function PostList({ className, ...props }: PostListProps) {
               post={post}
               checked={selectedIds.includes(post.id)}
               onSelect={handleSelect}
+              onView={onClickViewPost}
               onEdit={onClickEditPost}
               onDelete={onClickDeletePost}
             />

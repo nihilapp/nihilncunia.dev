@@ -9,6 +9,7 @@ interface PostCardProps {
   onSelect: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string, title: string) => void;
+  onView?: (id: string) => void;
 }
 
 function getStatusBadge(status: PostStatus, isPublished: boolean) {
@@ -52,7 +53,7 @@ function getStatusBadge(status: PostStatus, isPublished: boolean) {
   }
 }
 
-export function PostCard({ post, checked, onSelect, onEdit, onDelete, }: PostCardProps) {
+export function PostCard({ post, checked, onSelect, onEdit, onDelete, onView, }: PostCardProps) {
   return (
     <Card
       className='bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-600'
@@ -94,12 +95,22 @@ export function PostCard({ post, checked, onSelect, onEdit, onDelete, }: PostCar
               </div>
             </div>
           </div>
-          <div className='flex space-x-3 ml-4'>
+          <div className='flex space-x-2 ml-4'>
+            {onView && (
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={() => onView(post.id)}
+                className='px-3 py-2 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/20 text-gray-600 dark:text-gray-400 transition-all duration-200'
+              >
+                보기
+              </Button>
+            )}
             <Button
               variant='outline'
               size='sm'
               onClick={() => onEdit(post.id)}
-              className='px-4 py-2 border-2 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all duration-200'
+              className='px-3 py-2 border-2 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all duration-200'
             >
               수정
             </Button>
@@ -107,7 +118,7 @@ export function PostCard({ post, checked, onSelect, onEdit, onDelete, }: PostCar
               variant='outline'
               size='sm'
               onClick={() => onDelete(post.id, post.title)}
-              className='px-4 py-2 border-2 border-red-300 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-all duration-200 disabled:opacity-50'
+              className='px-3 py-2 border-2 border-red-300 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-all duration-200 disabled:opacity-50'
             >
               삭제
             </Button>

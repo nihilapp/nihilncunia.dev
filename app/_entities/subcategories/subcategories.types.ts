@@ -1,5 +1,6 @@
-import type { Subcategory } from '@/_prisma/client';
 import type { ApiResponse } from '../common';
+
+import type { Subcategory, Prisma } from '@/_prisma/client';
 
 // 서브카테고리 생성
 export interface CreateSubcategory {
@@ -17,17 +18,11 @@ export interface UpdateSubcategory {
 }
 
 // Include 관계가 있는 서브카테고리
-export interface SubcategoryEx extends Subcategory {
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-    color: string | null;
+export type SubcategoryEx = Prisma.SubcategoryGetPayload<{
+  include: {
+    // 필요한 관계가 있다면 여기에 추가
   };
-  _count?: {
-    posts: number;
-  };
-}
+}>;
 
 export type SubcategoriesResponse = ApiResponse<SubcategoryEx[]>;
 export type SubcategoryResponse = ApiResponse<SubcategoryEx>;

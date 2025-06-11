@@ -1,5 +1,6 @@
-import type { Post, PostStatus } from '@/_prisma/client';
 import type { ApiResponse } from '../common';
+
+import type { Post, PostStatus, Prisma } from '@/_prisma/client';
 
 // 포스트 생성
 export interface CreatePost {
@@ -46,55 +47,13 @@ export interface PostsResponse {
 }
 
 // Include 관계가 있는 포스트 (Ex 접미사)
-export interface PostEx extends Post {
-  user: {
-    id: string;
-    name: string;
-    email: string;
+export type PostEx = Prisma.PostGetPayload<{
+  include: {
+    user: true;
+    category: true;
+    // 필요한 관계가 있다면 여기에 추가
   };
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-    color: string | null;
-  };
-  subcategory?: {
-    id: string;
-    name: string;
-    slug: string;
-  } | null;
-  post_hashtags: {
-    hashtag: {
-      id: string;
-      name: string;
-      slug: string;
-    };
-  }[];
-}
-
-// 포스트 작성 폼 데이터 (클라이언트용)
-export interface PostFormData {
-  title: string;
-  slug?: string;
-  content: string;
-  excerpt: string;
-  category_id: string;
-  subcategory_id: string;
-  hashtags: string[];
-  status: PostStatus;
-  is_published: boolean;
-}
-
-// 임시 저장 데이터
-export interface DraftPost {
-  title?: string;
-  content?: string;
-  excerpt?: string;
-  category_id?: string;
-  subcategory_id?: string;
-  hashtags?: string[];
-  auto_saved_at?: Date;
-}
+}>;
 
 // 포스트 복제 데이터
 export interface DuplicatePost {
@@ -168,4 +127,3 @@ export interface BatchUpdateRequest {
 }
 
 export type BatchUpdateStatusResponse = ApiResponse<BatchUpdateResponseData>;
-

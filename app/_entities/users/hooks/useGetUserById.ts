@@ -3,6 +3,7 @@ import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { userKeys } from '@/_data';
 import { useDone, useLoading } from '@/_entities/common';
 import { UsersApi } from '@/_entities/users/users.api';
+import type { UserEx } from '@/_entities/users/users.types';
 
 export function useGetUserById(id: string, options?: UseQueryOptions) {
   const {
@@ -22,7 +23,7 @@ export function useGetUserById(id: string, options?: UseQueryOptions) {
   const done = useDone(loading, isSuccess);
 
   return {
-    user,
+    user: user as unknown as UserEx,
     loading,
     done,
     ...other,

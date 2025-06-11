@@ -4,6 +4,7 @@ import { UsersApi } from '../users.api';
 
 import { userKeys } from '@/_data';
 import { useDone, useLoading } from '@/_entities/common';
+import type { UserEx } from '@/_entities/users/users.types';
 
 export function useGetUsers(options?: UseQueryOptions) {
   const {
@@ -22,7 +23,7 @@ export function useGetUsers(options?: UseQueryOptions) {
   const done = useDone(loading, isSuccess);
 
   return {
-    users,
+    users: users as unknown as UserEx[],
     loading,
     done,
     ...other,

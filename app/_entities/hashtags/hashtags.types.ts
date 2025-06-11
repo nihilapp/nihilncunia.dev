@@ -1,5 +1,6 @@
-import type { Hashtag } from '@/_prisma/client';
 import type { ApiResponse } from '../common';
+
+import type { Hashtag, Prisma } from '@/_prisma/client';
 
 // 해시태그 생성
 export interface CreateHashtag {
@@ -14,11 +15,11 @@ export interface UpdateHashtag {
 }
 
 // Include 관계가 있는 해시태그 (Ex 접미사)
-export interface HashtagEx extends Hashtag {
-  post_hashtags: {
-    post_id: string;
-  }[];
-}
+export type HashtagEx = Prisma.HashtagGetPayload<{
+  include: {
+    // 필요한 관계가 있다면 여기에 추가
+  };
+}>;
 
 export interface HashtagWithCount extends Hashtag {
   post_count: number;
@@ -43,4 +44,3 @@ export interface HashtagPostsData {
 }
 
 export type HashtagPostsResponse = ApiResponse<HashtagPostsData>;
-

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -27,10 +28,13 @@ const NewPostVariants = cva(
 
 interface NewPostProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof NewPostVariants> {}
+  VariantProps<typeof NewPostVariants> {
+  className?: string;
+    }
 
 export function NewPost({ className, ...props }: NewPostProps) {
-  const [ currentPostId, setCurrentPostId, ] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const [ currentPostId, setCurrentPostId, ] = useState<string | null>(searchParams.get('currentPostId') || null);
 
   // React Hook Form 설정
   const {
@@ -80,7 +84,9 @@ export function NewPost({ className, ...props }: NewPostProps) {
 
   // 포스트 생성 후 콜백
   const handlePostCreated = (postId: string) => {
+    console.log('handlePostCreated 호출됨 - postId:', postId);
     setCurrentPostId(postId);
+    console.log('currentPostId 설정 완료');
   };
 
   // 폼 데이터 변경 감지 (페이지 이탈 경고용)

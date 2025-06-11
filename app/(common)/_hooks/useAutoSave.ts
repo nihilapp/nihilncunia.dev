@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAutoSave as useAutoSaveMutation } from '@/_entities/posts';
+import { useGetAdminProfile } from '@/_entities/users';
 import { toast } from '@/_libs';
 
 interface UseAutoSaveOptions {
@@ -29,12 +30,16 @@ export const useAutoSave = (
   const [ status, setStatus, ] = useState<SaveStatus>('idle');
   const [ lastSaved, setLastSaved, ] = useState<Date | null>(null);
   const lastDataRef = useRef<string>('');
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const autoSaveMutation = useAutoSaveMutation();
+  const { adminProfile, } = useGetAdminProfile();
 
   // 자동 저장 함수
   const performAutoSave = useCallback(async () => {
     if (!postId || !enabled) return;
+
+    const userId = (adminProfile as any)?.response?.id;
+    if (!userId) return;
 
     const currentData = JSON.stringify(formData);
 
@@ -50,11 +55,12 @@ export const useAutoSave = (
       await autoSaveMutation.mutateAsync({
         id: postId,
         data: {
+          userId, // 사용자 ID 추가
           title: formData.title,
           content: formData.content,
           excerpt: formData.excerpt,
-          category_id: formData.category_id,
-          subcategory_id: formData.subcategory_id,
+          categoryId: formData.category_id,
+          subcategoryId: formData.subcategory_id,
           hashtags: formData.hashtags,
         },
       });
@@ -81,6 +87,7 @@ export const useAutoSave = (
     autoSaveMutation,
     onSave,
     onError,
+    adminProfile,
   ]);
 
   // 수동 저장 함수

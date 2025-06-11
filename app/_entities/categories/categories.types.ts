@@ -1,5 +1,4 @@
-import type { Category } from '@/_prisma/client';
-import type { ApiResponse } from '../common';
+import type { Category, Prisma } from '@/_prisma/client';
 
 // 카테고리 생성
 export interface CreateCategory {
@@ -18,20 +17,13 @@ export interface UpdateCategory {
 }
 
 // Include 관계가 있는 카테고리 (Ex 접미사)
-export interface CategoryEx extends Category {
-  posts: {
-    id: string;
-    title: string;
-    status: string;
-  }[];
-}
+export type CategoryEx = Prisma.CategoryGetPayload<{
+  include: {
+    // 필요한 관계가 있다면 여기에 추가
+  };
+}>;
 
 export interface CategoryWithCounts extends Category {
   post_count: number;
   published_post_count: number;
 }
-
-export type CategoriesResponse = ApiResponse<CategoryWithCounts[]>;
-export type CategoryResponse = ApiResponse<Category>;
-export type DeleteCategoryResponse = ApiResponse<null>;
-export type CategoryPostsResponse = ApiResponse<any[]>;
