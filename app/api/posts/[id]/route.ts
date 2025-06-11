@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import type { ApiResponse, ApiError } from '@/_entities/common';
 import type { UpdatePost } from '@/_entities/posts';
 import { DB } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { getHeaderToken, refreshCheck, serverTools } from '@/api/_libs';
 
 interface Params {
   params: Promise<{ id: string }>;
 }
 
-// GET /api/posts/[id] - 포스트 상세 조회
-export async function GET(request: Request, { params, }: Params) {
+// GET /api/posts/[id] - 포스트 상세 조회 (인증 불필요)
+export async function GET(request: NextRequest, { params, }: Params) {
   try {
     const { id, } = await params;
 
-    const post = await DB.posts().findUnique({
+    const findPost = await DB.posts().findUnique({
       where: { id, },
       include: {
         user: {
@@ -45,12 +46,14 @@ export async function GET(request: Request, { params, }: Params) {
       },
     });
 
-    if (!post) {
+    if (!findPost) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '포스트를 찾을 수 없습니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '포스트를 찾을 수 없습니다.',
-          response: null,
-        },
+        errorResponse,
         { status: 404, }
       );
     }
@@ -65,110 +68,179 @@ export async function GET(request: Request, { params, }: Params) {
       },
     });
 
-    return NextResponse.json({
-      message: '포스트 조회 성공',
-      response: {
-        ...post,
-        views: post.views + 1, // 업데이트된 조회수 반영
-      },
-    });
-  } catch (error) {
-    console.error('포스트 조회 에러:', error);
+    const postWithUpdatedViews = {
+      ...findPost,
+      views: findPost.views + 1,
+    };
+
+    const successResponse: ApiResponse<typeof postWithUpdatedViews> = {
+      response: postWithUpdatedViews,
+      message: '포스트를 성공적으로 조회했습니다.',
+    };
+
     return NextResponse.json(
-      {
-        message: '포스트 조회 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('포스트 조회 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '포스트 조회 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }
 }
 
-// PUT /api/posts/[id] - 포스트 수정 (Admin)
+// PUT /api/posts/[id] - 포스트 수정 (인증 필요)
 export async function PUT(request: NextRequest, { params, }: Params) {
+  let updateData: UpdatePost;
+
   try {
-    const { id, } = await params;
+    updateData = await request.json();
+  } catch (error) {
+    console.error('포스트 수정 중 요청 파싱 오류:', error);
 
-    // JWT 인증
-    const cookie = request.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
-    }
+    const errorResponse: ApiError = {
+      response: null,
+      message: '잘못된 요청 형식입니다.',
+    };
 
-    if (!serverTools.jwt) {
-      return NextResponse.json(
-        {
-          message: '인증 시스템 오류가 발생했습니다.',
-          response: null,
-        },
-        { status: 500, }
-      );
-    }
+    return NextResponse.json(
+      errorResponse,
+      { status: 400, }
+    );
+  }
 
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
-    }
+  // JWT 인증
+  const accessToken = getHeaderToken(request);
 
+  if (!accessToken) {
+    const errorResponse: ApiError = {
+      response: null,
+      message: '액세스 토큰이 필요합니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 401, }
+    );
+  }
+
+  // JWT 토큰에서 사용자 ID 추출
+  let userId: string;
+
+  try {
+    const tokenData = await serverTools.jwt!.tokenInfo('accessToken', accessToken);
+    userId = tokenData.id;
+  } catch (error) {
+    console.error('포스트 수정 중 토큰 디코딩 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '유효하지 않은 토큰입니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 401, }
+    );
+  }
+
+  const { id, } = await params;
+
+  // 토큰 검증 및 갱신
+  const checkResult = await refreshCheck(
+    userId,
+    accessToken
+  );
+
+  if (checkResult.error) {
+    console.error('포스트 수정 중 토큰 검증 오류:', checkResult.error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: checkResult.message,
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: checkResult.status, }
+    );
+  }
+
+  try {
     // 기존 포스트 확인
-    const existingPost = await DB.posts().findUnique({
+    const findExistingPost = await DB.posts().findUnique({
       where: { id, },
     });
 
-    if (!existingPost) {
+    if (!findExistingPost) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '수정할 포스트를 찾을 수 없습니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '수정할 포스트를 찾을 수 없습니다.',
-          response: null,
-        },
+        errorResponse,
         { status: 404, }
       );
     }
 
-    const body: UpdatePost = await request.json();
-    if (!body.title || !body.content || !body.category_id) {
+    // 작성자 권한 확인
+    if (findExistingPost.user_id !== userId) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '본인의 포스트만 수정할 수 있습니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '제목, 내용, 카테고리는 필수입니다.',
-          response: null,
-        },
+        errorResponse,
+        { status: 403, }
+      );
+    }
+
+    // 필수 필드 검증
+    if (!updateData.title || !updateData.content || !updateData.category_id) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '제목, 내용, 카테고리는 필수입니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
         { status: 400, }
       );
     }
 
     // 슬러그가 변경되었다면 중복 체크
-    let slug = existingPost.slug;
-    if (body.slug && body.slug !== existingPost.slug) {
-      const duplicatePost = await DB.posts().findUnique({
-        where: { slug: body.slug, },
+    let slug = findExistingPost.slug;
+    if (updateData.slug && updateData.slug !== findExistingPost.slug) {
+      const findDuplicatePost = await DB.posts().findUnique({
+        where: { slug: updateData.slug, },
       });
 
-      if (duplicatePost && duplicatePost.id !== id) {
+      if (findDuplicatePost && findDuplicatePost.id !== id) {
+        const errorResponse: ApiError = {
+          response: null,
+          message: '이미 존재하는 슬러그입니다.',
+        };
+
         return NextResponse.json(
-          {
-            message: '이미 존재하는 슬러그입니다.',
-            response: null,
-          },
+          errorResponse,
           { status: 400, }
         );
       }
 
-      slug = body.slug;
-    } else if (body.title !== existingPost.title && !body.slug) {
+      slug = updateData.slug;
+    } else if (updateData.title !== findExistingPost.title && !updateData.slug) {
       // 제목이 변경되었는데 슬러그가 제공되지 않았다면 자동 생성
-      const baseSlug = body.title
+      const baseSlug = updateData.title
         .toLowerCase()
         .replace(/[^a-z0-9가-힣\s-]/g, '')
         .replace(/\s+/g, '-')
@@ -178,7 +250,7 @@ export async function PUT(request: NextRequest, { params, }: Params) {
       let counter = 1;
 
       while (await DB.posts().findUnique({ where: { slug, }, })) {
-        if (slug === existingPost.slug) break; // 기존 slug와 같다면 OK
+        if (slug === findExistingPost.slug) break; // 기존 slug와 같다면 OK
         slug = `${baseSlug}-${counter}`;
         counter++;
       }
@@ -188,14 +260,14 @@ export async function PUT(request: NextRequest, { params, }: Params) {
     const updatedPost = await DB.posts().update({
       where: { id, },
       data: {
-        title: body.title,
+        title: updateData.title,
         slug,
-        content: body.content,
-        excerpt: body.excerpt || body.content.substring(0, 200) + '...',
-        status: body.status || existingPost.status,
-        is_published: body.is_published !== undefined ? body.is_published : existingPost.is_published,
-        category_id: body.category_id,
-        subcategory_id: body.subcategory_id || null,
+        content: updateData.content,
+        excerpt: updateData.excerpt || updateData.content.substring(0, 200) + '...',
+        status: updateData.status || findExistingPost.status,
+        is_published: updateData.is_published !== undefined ? updateData.is_published : findExistingPost.is_published,
+        category_id: updateData.category_id,
+        subcategory_id: updateData.subcategory_id || null,
       },
       include: {
         user: {
@@ -222,22 +294,22 @@ export async function PUT(request: NextRequest, { params, }: Params) {
     });
 
     // 새로운 해시태그 연결
-    if (body.hashtags && body.hashtags.length > 0) {
+    if (updateData.hashtags && updateData.hashtags.length > 0) {
       const hashtagConnections = [];
 
-      for (const hashtagName of body.hashtags) {
-        let hashtag = await DB.hashtags().findUnique({
+      for (const hashtagName of updateData.hashtags) {
+        let findHashtag = await DB.hashtags().findUnique({
           where: { name: hashtagName, },
         });
 
-        if (!hashtag) {
+        if (!findHashtag) {
           const hashtagSlug = hashtagName
             .toLowerCase()
             .replace(/[^a-z0-9가-힣\s-]/g, '')
             .replace(/\s+/g, '-')
             .trim();
 
-          hashtag = await DB.hashtags().create({
+          findHashtag = await DB.hashtags().create({
             data: {
               name: hashtagName,
               slug: hashtagSlug,
@@ -247,7 +319,7 @@ export async function PUT(request: NextRequest, { params, }: Params) {
 
         hashtagConnections.push({
           post_id: id,
-          hashtag_id: hashtag.id,
+          hashtag_id: findHashtag.id,
         });
       }
 
@@ -256,72 +328,117 @@ export async function PUT(request: NextRequest, { params, }: Params) {
       });
     }
 
-    return NextResponse.json({
-      message: '포스트 수정 성공',
+    const successResponse: ApiResponse<typeof updatedPost> = {
       response: updatedPost,
-    });
-  } catch (error) {
-    console.error('포스트 수정 에러:', error);
+      message: '포스트가 성공적으로 수정되었습니다.',
+    };
+
     return NextResponse.json(
-      {
-        message: '포스트 수정 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('포스트 수정 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '포스트 수정 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }
 }
 
-// DELETE /api/posts/[id] - 포스트 삭제 (Admin)
+// DELETE /api/posts/[id] - 포스트 삭제 (인증 필요)
 export async function DELETE(request: NextRequest, { params, }: Params) {
+  // JWT 인증
+  const accessToken = getHeaderToken(request);
+
+  if (!accessToken) {
+    const errorResponse: ApiError = {
+      response: null,
+      message: '액세스 토큰이 필요합니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 401, }
+    );
+  }
+
+  // JWT 토큰에서 사용자 ID 추출
+  let userId: string;
+
   try {
-    const { id, } = await params;
+    const tokenData = await serverTools.jwt!.tokenInfo('accessToken', accessToken);
+    userId = tokenData.id;
+  } catch (error) {
+    console.error('포스트 삭제 중 토큰 디코딩 오류:', error);
 
-    // JWT 인증
-    const cookie = request.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
-    }
+    const errorResponse: ApiError = {
+      response: null,
+      message: '유효하지 않은 토큰입니다.',
+    };
 
-    if (!serverTools.jwt) {
-      return NextResponse.json(
-        {
-          message: '인증 시스템 오류가 발생했습니다.',
-          response: null,
-        },
-        { status: 500, }
-      );
-    }
+    return NextResponse.json(
+      errorResponse,
+      { status: 401, }
+    );
+  }
 
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
-    }
+  const { id, } = await params;
 
+  // 토큰 검증 및 갱신
+  const checkResult = await refreshCheck(
+    userId,
+    accessToken
+  );
+
+  if (checkResult.error) {
+    console.error('포스트 삭제 중 토큰 검증 오류:', checkResult.error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: checkResult.message,
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: checkResult.status, }
+    );
+  }
+
+  try {
     // 포스트 존재 확인
-    const existingPost = await DB.posts().findUnique({
+    const findExistingPost = await DB.posts().findUnique({
       where: { id, },
     });
 
-    if (!existingPost) {
+    if (!findExistingPost) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '삭제할 포스트를 찾을 수 없습니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '삭제할 포스트를 찾을 수 없습니다.',
-          response: null,
-        },
+        errorResponse,
         { status: 404, }
+      );
+    }
+
+    // 작성자 권한 확인
+    if (findExistingPost.user_id !== userId) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '본인의 포스트만 삭제할 수 있습니다.',
+      };
+
+      return NextResponse.json(
+        errorResponse,
+        { status: 403, }
       );
     }
 
@@ -330,17 +447,25 @@ export async function DELETE(request: NextRequest, { params, }: Params) {
       where: { id, },
     });
 
-    return NextResponse.json({
-      message: '포스트 삭제 성공',
+    const successResponse: ApiResponse<null> = {
       response: null,
-    });
-  } catch (error) {
-    console.error('포스트 삭제 에러:', error);
+      message: '포스트가 성공적으로 삭제되었습니다.',
+    };
+
     return NextResponse.json(
-      {
-        message: '포스트 삭제 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('포스트 삭제 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '포스트 삭제 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }

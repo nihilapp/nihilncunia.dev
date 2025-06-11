@@ -1,85 +1,210 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
+import type { ApiResponse, ApiError } from '@/_entities/common';
 import type { CreateUser } from '@/_entities/users';
-import { DB, serverTools } from '@/api/_libs';
+import { DB } from '@/api/_libs';
+import { getHeaderToken, refreshCheck, serverTools } from '@/api/_libs';
 
-// GET /api/users - 모든 사용자 조회
-export async function GET() {
+// GET /api/users - 사용자 목록 조회 (인증 불필요)
+export async function GET(request: NextRequest) {
   try {
-    const users = await DB.user().findMany({
-      orderBy: {
-        created_at: 'desc',
-      },
-    });
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
 
-    return NextResponse.json({
-      message: '사용자 목록 조회 성공',
-      response: users,
-    });
-  } catch (error) {
-    console.error('사용자 목록 조회 에러:', error);
-    return NextResponse.json(
-      {
-        message: '사용자 목록 조회 실패',
-        response: null,
+    const [ users, total, ] = await Promise.all([
+      DB.user().findMany({
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          created_at: true,
+          updated_at: true,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      }),
+      DB.user().count(),
+    ]);
+
+    const successResponse: ApiResponse<{
+      users: typeof users;
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+      };
+    }> = {
+      response: {
+        users,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
       },
+      message: '사용자 목록을 성공적으로 조회했습니다.',
+    };
+
+    return NextResponse.json(
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('사용자 목록 조회 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '사용자 목록 조회 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }
 }
 
-// POST /api/users - 새 사용자 생성
-export async function POST(request: Request) {
-  try {
-    const body: CreateUser = await request.json();
-    const { email, password, name, } = body;
+// POST /api/users - 사용자 생성 (인증 필요)
+export async function POST(request: NextRequest) {
+  let userData: CreateUser;
 
-    // 이메일 중복 확인
-    const findExistingUser = await DB.user().findFirst({
-      where: {
-        email,
-      },
+  try {
+    userData = await request.json();
+  } catch (error) {
+    console.error('사용자 생성 중 오류:', error);
+    const errorResponse: ApiError = {
+      response: null,
+      message: '잘못된 요청 형식입니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 400, }
+    );
+  }
+
+  // JWT 인증
+  const accessToken = getHeaderToken(request);
+
+  if (!accessToken) {
+    const errorResponse: ApiError = {
+      response: null,
+      message: '액세스 토큰이 필요합니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 401, }
+    );
+  }
+
+  // JWT 토큰에서 사용자 ID 추출
+  let userId: string;
+
+  try {
+    const tokenData = await serverTools.jwt!.tokenInfo('accessToken', accessToken);
+    userId = tokenData.id;
+  } catch (error) {
+    console.error('사용자 생성 중 오류:', error);
+    const errorResponse: ApiError = {
+      response: null,
+      message: '유효하지 않은 토큰입니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: 401, }
+    );
+  }
+
+  // 토큰 검증 및 갱신
+  const checkResult = await refreshCheck(
+    userId,
+    accessToken
+  );
+
+  if (checkResult.error) {
+    console.error('사용자 생성 중 오류:', checkResult.error);
+    const errorResponse: ApiError = {
+      response: null,
+      message: checkResult.message,
+    };
+
+    return NextResponse.json(
+      errorResponse,
+      { status: checkResult.status, }
+    );
+  }
+
+  try {
+    // 이메일 중복 체크
+    const findExistingUser = await DB.user().findUnique({
+      where: { email: userData.email, },
     });
 
     if (findExistingUser) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '이미 존재하는 이메일입니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '이미 존재하는 이메일입니다.',
-          response: null,
-        },
+        errorResponse,
         { status: 409, }
       );
     }
 
     // 비밀번호 해싱
-    const hashedPassword: string = await serverTools.bcrypt!.dataToHash(password);
+    const hashedPassword = await serverTools.bcrypt!.dataToHash(userData.password);
 
     // 사용자 생성
-    const user = await DB.user().create({
+    const newUser = await DB.user().create({
       data: {
-        email,
-        name,
+        name: userData.name,
+        email: userData.email,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        created_at: true,
       },
     });
 
+    // 사용자 인증 정보 생성
     await DB.userAuth().create({
       data: {
-        user_id: user.id,
+        user_id: newUser.id,
         hashed_password: hashedPassword,
       },
     });
 
-    return NextResponse.json({
-      message: '사용자 생성 성공',
-      response: user,
-    });
-  } catch (error) {
-    console.error('사용자 생성 에러:', error);
+    const successResponse: ApiResponse<typeof newUser> = {
+      response: newUser,
+      message: '사용자가 성공적으로 생성되었습니다.',
+    };
+
     return NextResponse.json(
-      {
-        message: '사용자 생성 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 201, }
+    );
+  } catch (error: any) {
+    console.error('사용자 생성 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '사용자 생성 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }

@@ -2,15 +2,18 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 import React, { useState } from 'react';
-import { UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { UseFormSetValue, UseFormWatch, FieldErrors } from 'react-hook-form';
+import { FiX, FiPlus } from 'react-icons/fi';
 import { toast } from 'sonner';
 
+import { type PostFormInput } from '@/(admin)/admin/posts/_data/post-validation.schema';
+import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { cn } from '@/_libs';
 
 const EditHashtagInputVariants = cva(
   [
-    'space-y-3',
+    'space-y-4',
   ],
   {
     variants: {},
@@ -19,28 +22,19 @@ const EditHashtagInputVariants = cva(
   }
 );
 
-interface PostFormInput {
-  title: string;
-  content: string;
-  excerpt?: string;
-  category_id: string;
-  subcategory_id?: string;
-  hashtags?: string[];
-}
-
 interface EditHashtagInputProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof EditHashtagInputVariants> {
   setValue: UseFormSetValue<PostFormInput>;
   watch: UseFormWatch<PostFormInput>;
-  customErrors: Record<string, string>;
+  errors: FieldErrors<PostFormInput>;
 }
 
 export function EditHashtagInput({
   className,
   setValue,
   watch,
-  customErrors,
+  errors,
   ...props
 }: EditHashtagInputProps) {
   const [ hashtagInput, setHashtagInput, ] = useState('');
@@ -98,10 +92,10 @@ export function EditHashtagInput({
         className='w-full p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200 disabled:opacity-50 text-base'
       />
 
-      {customErrors.hashtags && (
+      {errors.hashtags && (
         <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
           <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-          {customErrors.hashtags}
+          {errors.hashtags.message}
         </p>
       )}
 

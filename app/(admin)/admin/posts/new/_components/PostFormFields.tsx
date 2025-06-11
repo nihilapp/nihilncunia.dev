@@ -2,13 +2,14 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 import React, { useState } from 'react';
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { UseFormRegister, UseFormSetValue, UseFormWatch, FieldErrors } from 'react-hook-form';
 import { FiPlus } from 'react-icons/fi';
 
 import { HashtagInput } from './HashtagInput';
 
 import { CategoryCreateModal, SubcategoryCreateModal } from './';
 
+import { type PostFormInput } from '@/(admin)/admin/posts/_data/post-validation.schema';
 import { Button } from '@/(common)/_components/ui/button';
 import { Input } from '@/(common)/_components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
@@ -25,15 +26,6 @@ const PostFormFieldsVariants = cva(
   }
 );
 
-interface PostFormInput {
-  title: string;
-  content: string;
-  excerpt?: string;
-  category_id: string;
-  subcategory_id?: string;
-  hashtags?: string[];
-}
-
 interface PostFormFieldsProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof PostFormFieldsVariants> {
@@ -42,7 +34,7 @@ interface PostFormFieldsProps
   watch: UseFormWatch<PostFormInput>;
   categories: any[];
   subcategories: any[];
-  customErrors: Record<string, string>;
+  errors: FieldErrors<PostFormInput>;
   categoriesLoading?: boolean;
   subcategoriesLoading?: boolean;
 }
@@ -54,7 +46,7 @@ export function PostFormFields({
   watch,
   categories,
   subcategories,
-  customErrors,
+  errors,
   categoriesLoading = false,
   subcategoriesLoading = false,
   ...props
@@ -94,10 +86,10 @@ export function PostFormFields({
           placeholder='포스트 제목을 입력하세요'
           className='w-full text-xl p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200'
         />
-        {customErrors.title && (
+        {errors.title && (
           <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
             <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-            {customErrors.title}
+            {errors.title.message}
           </p>
         )}
       </div>
@@ -113,10 +105,10 @@ export function PostFormFields({
           rows={5}
           className='w-full p-6 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none transition-all duration-200 bg-white dark:bg-slate-700 text-base'
         />
-        {customErrors.excerpt && (
+        {errors.excerpt && (
           <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
             <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-            {customErrors.excerpt}
+            {errors.excerpt.message}
           </p>
         )}
       </div>
@@ -160,10 +152,10 @@ export function PostFormFields({
               새 카테고리
             </Button>
           </div>
-          {customErrors.category_id && (
+          {errors.category_id && (
             <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
               <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-              {customErrors.category_id}
+              {errors.category_id.message}
             </p>
           )}
         </div>
@@ -204,16 +196,16 @@ export function PostFormFields({
               size='sm'
               onClick={() => setShowSubcategoryModal(true)}
               disabled={!selectedCategoryId}
-              className='absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1 text-xs h-10 px-3 border-purple-200 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-50 z-10'
+              className='absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1 text-xs h-10 px-3 border-green-200 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-50 z-10'
             >
               <FiPlus className='w-3 h-3' />
               새 서브카테고리
             </Button>
           </div>
-          {customErrors.subcategory_id && (
+          {errors.subcategory_id && (
             <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
               <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-              {customErrors.subcategory_id}
+              {errors.subcategory_id.message}
             </p>
           )}
         </div>
@@ -224,24 +216,24 @@ export function PostFormFields({
         <HashtagInput
           setValue={setValue}
           watch={watch}
-          customErrors={customErrors}
+          errors={errors}
         />
       </div>
 
-      {/* 카테고리 생성 모달 */}
+      {/* Category Create Modal */}
       <CategoryCreateModal
         open={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         onSuccess={handleCategoryCreateSuccess}
       />
 
-      {/* 서브카테고리 생성 모달 */}
+      {/* Subcategory Create Modal */}
       <SubcategoryCreateModal
         open={showSubcategoryModal}
         onClose={() => setShowSubcategoryModal(false)}
         onSuccess={handleSubcategoryCreateSuccess}
-        categories={categories}
         selectedCategoryId={selectedCategoryId}
+        categories={categories}
       />
     </div>
   );

@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import type { ApiResponse, ApiError } from '@/_entities/common';
 import { DB } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { serverTools } from '@/api/_libs';
 
 interface Params {
 	params: Promise<{ slug: string }>;
 }
 
-// GET /api/posts/slug/[slug] - slug로 포스트 조회
+// GET /api/posts/slug/[slug] - slug로 포스트 조회 (인증 선택적)
 export async function GET(request: NextRequest, { params, }: Params) {
   try {
     const { slug, } = await params;
 
-    const post = await DB.posts().findUnique({
-      where: {
-        slug,
-      },
+    const findPost = await DB.posts().findUnique({
+      where: { slug, },
       include: {
         user: {
           select: {
@@ -53,12 +52,14 @@ export async function GET(request: NextRequest, { params, }: Params) {
       },
     });
 
-    if (!post) {
+    if (!findPost) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '포스트를 찾을 수 없습니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '포스트를 찾을 수 없습니다.',
-          response: null,
-        },
+        errorResponse,
         { status: 404, }
       );
     }
@@ -79,55 +80,16 @@ export async function GET(request: NextRequest, { params, }: Params) {
     }
 
     // 포스트 상태별 접근 제어
-    if (post.status === 'DRAFT' || post.status === 'PENDING') {
-      if (!isAdmin) {
+    if (!isAdmin) {
+      // 일반 사용자는 PUBLISHED 상태이면서 is_published가 true인 포스트만 접근 가능
+      if (findPost.status !== 'PUBLISHED' || !findPost.is_published) {
+        const errorResponse: ApiError = {
+          response: null,
+          message: '접근할 수 없는 포스트입니다.',
+        };
+
         return NextResponse.json(
-          {
-            message: '작성 중인 포스트입니다.',
-            response: null,
-          },
-          { status: 403, }
-        );
-      }
-    } else if (post.status === 'ARCHIVED') {
-      if (!isAdmin) {
-        return NextResponse.json(
-          {
-            message: '보관된 포스트입니다.',
-            response: null,
-          },
-          { status: 403, }
-        );
-      }
-    } else if (post.status === 'PROTECTED') {
-      if (!isAdmin) {
-        return NextResponse.json(
-          {
-            message: '보호된 포스트입니다. 접근 권한이 필요합니다.',
-            response: null,
-          },
-          { status: 403, }
-        );
-      }
-    } else if (post.status === 'PUBLISHED') {
-      // PUBLISHED 상태는 모든 사용자가 접근 가능
-      if (!post.is_published && !isAdmin) {
-        return NextResponse.json(
-          {
-            message: '공개되지 않은 포스트입니다.',
-            response: null,
-          },
-          { status: 403, }
-        );
-      }
-    } else {
-      // 알 수 없는 상태
-      if (!isAdmin) {
-        return NextResponse.json(
-          {
-            message: '접근할 수 없는 포스트입니다.',
-            response: null,
-          },
+          errorResponse,
           { status: 403, }
         );
       }
@@ -135,9 +97,7 @@ export async function GET(request: NextRequest, { params, }: Params) {
 
     // 조회수 증가
     await DB.posts().update({
-      where: {
-        slug,
-      },
+      where: { slug, },
       data: {
         views: {
           increment: 1,
@@ -145,21 +105,30 @@ export async function GET(request: NextRequest, { params, }: Params) {
       },
     });
 
-    return NextResponse.json({
-      message: '포스트 조회 성공',
-      response: {
-        ...post,
-        views: post.views + 1,
-      },
-    });
-  } catch (error) {
-    console.error('포스트 slug 조회 에러:', error);
+    const postWithUpdatedViews = {
+      ...findPost,
+      views: findPost.views + 1,
+    };
+
+    const successResponse: ApiResponse<typeof postWithUpdatedViews> = {
+      response: postWithUpdatedViews,
+      message: '포스트를 성공적으로 조회했습니다.',
+    };
 
     return NextResponse.json(
-      {
-        message: '포스트 조회 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('포스트 slug 조회 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '포스트 조회 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }

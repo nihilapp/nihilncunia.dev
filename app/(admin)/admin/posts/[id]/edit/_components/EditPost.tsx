@@ -1,21 +1,17 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { array, object, string } from 'yup';
 
-import { EditPostFormFields, EditPostStatusInfo } from './';
+import { EditPostFormFields, EditPostStatusInfo, EditPostHeader, EditPostContent, SaveStatus } from './';
 
-import { MarkdownEditor } from '@/(admin)/_components';
-import { Button } from '@/(common)/_components/ui/button';
-import { Input } from '@/(common)/_components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
+import { postFormValidationSchema, type PostFormInput } from '@/(admin)/admin/posts/_data/post-validation.schema';
+import { useAutoSave } from '@/(common)/_hooks/useAutoSave';
+import { useBeforeUnload } from '@/(common)/_hooks/useBeforeUnload';
 import { useGetCategories } from '@/_entities/categories';
-import { useGetPostById, useUpdatePost, PostStatus } from '@/_entities/posts';
-import type { PostFormData } from '@/_entities/posts';
+import { useGetPostById } from '@/_entities/posts';
 import { useGetSubcategories } from '@/_entities/subcategories';
 import { cn } from '@/_libs';
 
@@ -33,76 +29,10 @@ const EditPostVariants = cva(
 interface EditPostProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof EditPostVariants> {
-  params: Promise<{ id: string }>;
+  postId: string;
 }
 
-// Form 타입 정의
-interface PostFormInput {
-  title: string;
-  content: string;
-  excerpt?: string;
-  category_id: string;
-  subcategory_id?: string;
-  hashtags?: string[];
-}
-
-// Yup validation schema
-const validationSchema = object({
-  title: string()
-    .required('제목을 입력해주세요.')
-    .trim()
-    .min(1, '제목은 최소 1글자 이상이어야 합니다.')
-    .max(200, '제목은 200글자를 초과할 수 없습니다.'),
-  content: string()
-    .required('내용을 입력해주세요.')
-    .trim()
-    .min(1, '내용은 최소 1글자 이상이어야 합니다.'),
-  excerpt: string()
-    .trim()
-    .max(500, '요약은 500글자를 초과할 수 없습니다.')
-    .optional(),
-  category_id: string()
-    .required('카테고리를 선택해주세요.'),
-  subcategory_id: string()
-    .optional(),
-  hashtags: array()
-    .of(string())
-    .max(10, '해시태그는 최대 10개까지 추가할 수 있습니다.')
-    .optional(),
-});
-
-// 커스텀 validation 함수
-const validateFormData = async (data: PostFormInput) => {
-  try {
-    await validationSchema.validate(data, { abortEarly: false, });
-    return {};
-  } catch (error: any) {
-    const errors: Record<string, string> = {};
-    if (error.inner) {
-      error.inner.forEach((err: any) => {
-        if (err.path) {
-          errors[err.path] = err.message;
-        }
-      });
-    }
-    return errors;
-  }
-};
-
-export function EditPost({ className, params, ...props }: EditPostProps) {
-  const router = useRouter();
-  const [ postId, setPostId, ] = useState<string>('');
-  const [ customErrors, setCustomErrors, ] = useState<Record<string, string>>({});
-
-  // params에서 id 추출
-  useEffect(() => {
-    const getPostId = async () => {
-      const { id, } = await params;
-      setPostId(id);
-    };
-    getPostId();
-  }, [ params, ]);
-
+export function EditPost({ className, postId, ...props }: EditPostProps) {
   // React Hook Form 설정
   const {
     register,
@@ -110,8 +40,13 @@ export function EditPost({ className, params, ...props }: EditPostProps) {
     watch,
     setValue,
     reset,
-    formState: { isSubmitting, },
+    formState: {
+      isSubmitting,
+      errors,
+    },
   } = useForm<PostFormInput>({
+    mode: 'all',
+    resolver: zodResolver(postFormValidationSchema),
     defaultValues: {
       title: '',
       content: '',
@@ -128,147 +63,76 @@ export function EditPost({ className, params, ...props }: EditPostProps) {
   const selectedCategoryId = watch('category_id');
   const { subcategories, loading: subcategoriesLoading, } = useGetSubcategories(selectedCategoryId);
 
-  // 포스트 데이터 로드 시 폼에 설정
+  // 포스트 데이터로 폼 초기화
   useEffect(() => {
     if (post) {
-      const postData = post as any;
+      const hashtags = post.post_hashtags.map(ph => ph.hashtag.name);
+
       reset({
-        title: postData.title || '',
-        content: postData.content || '',
-        excerpt: postData.excerpt || '',
-        category_id: postData.category_id || '',
-        subcategory_id: postData.subcategory_id || '',
-        hashtags: postData.post_hashtags?.map((ph: any) => ph.hashtag.name) || [],
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt || '',
+        category_id: post.category_id,
+        subcategory_id: post.subcategory_id || '',
+        hashtags,
       });
     }
   }, [ post, reset, ]);
 
   // 카테고리 변경 시 서브카테고리 초기화
   useEffect(() => {
-    if (selectedCategoryId && post && selectedCategoryId !== (post as any).category_id) {
-      setValue('subcategory_id', ''); // 카테고리 변경 시 서브카테고리 초기화
-    }
-  }, [ selectedCategoryId, setValue, post, ]);
-
-  // Update Post Hook
-  const updatePostMutation = useUpdatePost();
-
-  // 폼 제출 함수들
-  const onClickSaveDraft = handleSubmit(async (data) => {
-    try {
-      // 커스텀 validation 체크
-      const validationErrors = await validateFormData(data);
-      if (Object.keys(validationErrors).length > 0) {
-        setCustomErrors(validationErrors);
-        return;
+    if (selectedCategoryId && post) {
+      // 기존 서브카테고리가 새 카테고리에 속하지 않으면 초기화
+      const currentSubcategory = subcategories.find(sub => sub.id === watch('subcategory_id'));
+      if (!currentSubcategory || currentSubcategory.category_id !== selectedCategoryId) {
+        setValue('subcategory_id', '');
       }
-      setCustomErrors({});
-
-      const formData: PostFormData = {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt || '',
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || '',
-        hashtags: data.hashtags || [],
-        status: PostStatus.DRAFT,
-        is_published: false,
-      };
-
-      await updatePostMutation.mutateAsync({
-        id: postId,
-        data: formData,
-      });
-      toast.success('임시 저장되었습니다!');
-    } catch (error) {
-      console.error('임시 저장 실패:', error);
-      toast.error('임시 저장에 실패했습니다.');
     }
+  }, [ selectedCategoryId, setValue, subcategories, watch, post, ]);
+
+  // 자동 저장 시스템
+  const formData = watch();
+  const {
+    status: autoSaveStatus,
+    lastSaved,
+    manualSave,
+  } = useAutoSave(postId, formData, {
+    enabled: !!post, // 포스트가 로드된 후에만 자동 저장 활성화
+    interval: 30000, // 30초
   });
 
-  const onClickUpdate = handleSubmit(async (data) => {
-    try {
-      // 커스텀 validation 체크
-      const validationErrors = await validateFormData(data);
-      if (Object.keys(validationErrors).length > 0) {
-        setCustomErrors(validationErrors);
-        return;
-      }
-      setCustomErrors({});
+  // 폼 데이터 변경 감지 (페이지 이탈 경고용)
+  const hasChanges = post && (
+    formData.title !== post.title ||
+    formData.content !== post.content ||
+    formData.excerpt !== (post.excerpt || '') ||
+    formData.category_id !== post.category_id ||
+    formData.subcategory_id !== (post.subcategory_id || '')
+  );
 
-      const formData: PostFormData = {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt || '',
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || '',
-        hashtags: data.hashtags || [],
-        status: (post as any)?.status || PostStatus.DRAFT,
-        is_published: (post as any)?.is_published || false,
-      };
-
-      await updatePostMutation.mutateAsync({
-        id: postId,
-        data: formData,
-      });
-      toast.success('포스트가 수정되었습니다!');
-      router.push('/admin/posts');
-    } catch (error) {
-      console.error('수정 실패:', error);
-      toast.error('수정에 실패했습니다.');
-    }
+  useBeforeUnload(!!hasChanges, {
+    message: '수정 중인 포스트가 있습니다. 정말로 페이지를 떠나시겠습니까?',
   });
 
-  const onClickPublish = handleSubmit(async (data) => {
-    try {
-      // 커스텀 validation 체크
-      const validationErrors = await validateFormData(data);
-      if (Object.keys(validationErrors).length > 0) {
-        setCustomErrors(validationErrors);
-        return;
-      }
-      setCustomErrors({});
-
-      const formData: PostFormData = {
-        title: data.title,
-        content: data.content,
-        excerpt: data.excerpt || '',
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || '',
-        hashtags: data.hashtags || [],
-        status: PostStatus.PUBLISHED,
-        is_published: true,
-      };
-
-      await updatePostMutation.mutateAsync({
-        id: postId,
-        data: formData,
-      });
-      toast.success('포스트가 발행되었습니다!');
-      router.push('/admin/posts');
-    } catch (error) {
-      console.error('발행 실패:', error);
-      toast.error('발행에 실패했습니다.');
-    }
-  });
-
-  // 로딩 상태
-  if (postLoading || !postId) {
+  // 로딩 상태 처리
+  if (postLoading) {
     return (
-      <div className={cn(EditPostVariants({}), className)} {...props}>
-        <div className='flex items-center justify-center h-64'>
-          <div className='text-lg text-gray-600'>포스트를 불러오는 중...</div>
+      <div className='min-h-screen flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto'></div>
+          <p className='mt-4 text-gray-600'>포스트를 불러오는 중...</p>
         </div>
       </div>
     );
   }
 
-  // 포스트가 없는 경우
+  // 포스트를 찾을 수 없는 경우
   if (!post) {
     return (
-      <div className={cn(EditPostVariants({}), className)} {...props}>
-        <div className='flex items-center justify-center h-64'>
-          <div className='text-lg text-red-600'>포스트를 찾을 수 없습니다.</div>
+      <div className='min-h-screen flex items-center justify-center'>
+        <div className='text-center'>
+          <h1 className='text-2xl font-bold text-gray-800 mb-4'>포스트를 찾을 수 없습니다</h1>
+          <p className='text-gray-600'>요청한 포스트가 존재하지 않거나 삭제되었습니다.</p>
         </div>
       </div>
     );
@@ -284,49 +148,29 @@ export function EditPost({ className, params, ...props }: EditPostProps) {
     >
       <div className='max-w-5xl mx-auto space-y-8'>
         {/* Page Header */}
-        <div className='bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8'>
-          <div className='flex items-center justify-between'>
-            <div>
-              <h1 className='text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-                포스트 수정
-              </h1>
-              <p className='text-gray-600 dark:text-gray-400 mt-2'>
-                기존 포스트를 수정하고 업데이트해보세요.
-              </p>
-            </div>
-
-            <div className='flex space-x-3'>
-              <Button
-                variant='outline'
-                onClick={onClickSaveDraft}
-                disabled={isSubmitting || updatePostMutation.isPending}
-                className='px-6 py-2 border-2 border-gray-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200'
-              >
-                {isSubmitting || updatePostMutation.isPending ? '저장 중...' : '임시 저장'}
-              </Button>
-
-              <Button
-                variant='outline'
-                onClick={onClickUpdate}
-                disabled={isSubmitting || updatePostMutation.isPending}
-                className='px-6 py-2 border-2 border-green-300 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200'
-              >
-                {isSubmitting || updatePostMutation.isPending ? '수정 중...' : '수정하기'}
-              </Button>
-
-              <Button
-                onClick={onClickPublish}
-                disabled={isSubmitting || updatePostMutation.isPending}
-                className='px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200'
-              >
-                {isSubmitting || updatePostMutation.isPending ? '발행 중...' : '발행하기'}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <EditPostHeader
+          post={post}
+          isSubmitting={isSubmitting}
+          handleSubmit={handleSubmit}
+        />
 
         {/* Post Form */}
         <div className='bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8 space-y-8'>
+          {/* 저장 상태 표시 */}
+          <div className='flex justify-between items-center py-2 px-4 bg-gray-50 dark:bg-slate-700 rounded-lg'>
+            <SaveStatus
+              status={autoSaveStatus}
+              lastSaved={lastSaved}
+            />
+            <button
+              type='button'
+              onClick={manualSave}
+              className='text-sm text-blue-600 hover:underline'
+            >
+              수동 저장
+            </button>
+          </div>
+
           {/* Form Fields */}
           <EditPostFormFields
             register={register}
@@ -334,7 +178,7 @@ export function EditPost({ className, params, ...props }: EditPostProps) {
             watch={watch}
             categories={categories}
             subcategories={subcategories}
-            customErrors={customErrors}
+            errors={errors}
             categoriesLoading={categoriesLoading}
             subcategoriesLoading={subcategoriesLoading}
           />
@@ -343,24 +187,11 @@ export function EditPost({ className, params, ...props }: EditPostProps) {
           <EditPostStatusInfo post={post} />
 
           {/* Content Editor */}
-          <div className='space-y-3'>
-            <label className='block text-lg font-semibold text-gray-800 dark:text-gray-200'>
-              내용 <span className='text-red-500'>*</span>
-            </label>
-            <div className='border-2 border-gray-200 dark:border-slate-600 rounded-xl overflow-hidden bg-white dark:bg-slate-700 shadow-inner'>
-              <MarkdownEditor
-                value={watch('content') || ''}
-                onChange={(content) => setValue('content', content)}
-                className='min-h-[600px]'
-              />
-            </div>
-            {customErrors.content && (
-              <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
-                <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-                {customErrors.content}
-              </p>
-            )}
-          </div>
+          <EditPostContent
+            setValue={setValue}
+            watch={watch}
+            errors={errors}
+          />
         </div>
       </div>
     </div>

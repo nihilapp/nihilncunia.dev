@@ -1,43 +1,62 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
+import type { ApiResponse, ApiError } from '@/_entities/common';
 import { DB } from '@/api/_libs';
 
 interface Params {
   params: Promise<{ email: string }>;
 }
 
-// GET /api/users/email/[email] - 이메일로 사용자 조회
-export async function GET(request: Request, { params, }: Params) {
+// GET /api/users/email/[email] - 이메일로 사용자 조회 (인증 불필요)
+export async function GET(request: NextRequest, { params, }: Params) {
   try {
     const { email, } = await params;
+    const decodedEmail = decodeURIComponent(email);
 
-    const user = await DB.user().findUnique({
-      where: {
-        email: decodeURIComponent(email),
+    const findUser = await DB.user().findUnique({
+      where: { email: decodedEmail, },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image_url: true,
+        last_sign_in: true,
+        created_at: true,
+        updated_at: true,
       },
     });
 
-    if (!user) {
+    if (!findUser) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '해당 이메일의 사용자를 찾을 수 없습니다.',
+      };
+
       return NextResponse.json(
-        {
-          message: '사용자를 찾을 수 없습니다.',
-          response: null,
-        },
+        errorResponse,
         { status: 404, }
       );
     }
 
-    return NextResponse.json({
-      message: '사용자 조회 성공',
-      response: user,
-    });
-  } catch (error) {
-    console.error('사용자 조회 에러:', error);
+    const successResponse: ApiResponse<typeof findUser> = {
+      response: findUser,
+      message: '사용자 조회를 성공적으로 완료했습니다.',
+    };
+
     return NextResponse.json(
-      {
-        message: '사용자 조회 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('사용자 조회 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '사용자 조회 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }

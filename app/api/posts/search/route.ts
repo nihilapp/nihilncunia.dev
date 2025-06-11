@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import type { ApiResponse, ApiError } from '@/_entities/common';
 import { DB } from '@/api/_libs';
 
-// GET /api/posts/search - 포스트 검색
+interface SearchResponse {
+  posts: any[];
+  total: number;
+  page: number;
+  limit: number;
+  query: string;
+}
+
+// GET /api/posts/search - 포스트 검색 (인증 불필요)
 export async function GET(req: NextRequest) {
   try {
     const { searchParams, } = new URL(req.url);
@@ -16,11 +25,13 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status') || 'PUBLISHED';
 
     if (!query.trim()) {
+      const errorResponse: ApiError = {
+        response: null,
+        message: '검색어를 입력해주세요.',
+      };
+
       return NextResponse.json(
-        {
-          message: '검색어를 입력해주세요.',
-          response: null,
-        },
+        errorResponse,
         { status: 400, }
       );
     }
@@ -105,8 +116,7 @@ export async function GET(req: NextRequest) {
       DB.posts().count({ where, }),
     ]);
 
-    return NextResponse.json({
-      message: '포스트 검색 성공',
+    const successResponse: ApiResponse<SearchResponse> = {
       response: {
         posts,
         total,
@@ -114,15 +124,23 @@ export async function GET(req: NextRequest) {
         limit,
         query,
       },
-    });
-  } catch (error) {
-    console.error('포스트 검색 에러:', error);
+      message: '포스트 검색을 성공적으로 완료했습니다.',
+    };
 
     return NextResponse.json(
-      {
-        message: '포스트 검색 실패',
-        response: null,
-      },
+      successResponse,
+      { status: 200, }
+    );
+  } catch (error: any) {
+    console.error('포스트 검색 중 오류:', error);
+
+    const errorResponse: ApiError = {
+      response: null,
+      message: '포스트 검색 중 오류가 발생했습니다.',
+    };
+
+    return NextResponse.json(
+      errorResponse,
       { status: 500, }
     );
   }

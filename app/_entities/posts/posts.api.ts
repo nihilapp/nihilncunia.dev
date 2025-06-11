@@ -122,4 +122,28 @@ export class PostsApi {
 
     return Api.getQuery<PostsResponse>(`/posts/search?${params.toString()}`);
   }
+
+  // 임시 저장
+  static async saveDraft(data: any) {
+    return Api.postQuery<PostEx, any>('/posts/draft', data);
+  }
+
+  // 임시 저장 목록 조회
+  static async getDrafts(page?: number, limit?: number) {
+    const params = new URLSearchParams();
+    if (page) params.append('page', page.toString());
+    if (limit) params.append('limit', limit.toString());
+
+    return Api.getQuery<PostsResponse>(`/posts/drafts?${params.toString()}`);
+  }
+
+  // 임시 저장 복구
+  static async restoreDraft(id: string) {
+    return Api.getQuery<PostEx>(`/posts/drafts/${id}/restore`);
+  }
+
+  // 자동 저장
+  static async autosave(id: string, data: any) {
+    return Api.patchQuery<PostEx, any>(`/posts/${id}/autosave`, data);
+  }
 }

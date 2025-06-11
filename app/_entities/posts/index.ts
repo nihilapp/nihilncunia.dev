@@ -32,3 +32,6 @@ export { useDeletePost } from './hooks/useDeletePost';
 export { useGetPostById } from './hooks/useGetPostById';
 export { useGetPosts } from './hooks/useGetPosts';
 export { useUpdatePost } from './hooks/useUpdatePost';
+export { useSaveDraft } from './hooks/useSaveDraft';
+export { useGetDrafts } from './hooks/useGetDrafts';
+export { useAutoSave } from './hooks/useAutoSave';

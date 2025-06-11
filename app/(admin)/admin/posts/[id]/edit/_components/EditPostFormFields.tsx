@@ -2,10 +2,11 @@
 
 import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { UseFormRegister, UseFormSetValue, UseFormWatch, FieldErrors } from 'react-hook-form';
 
 import { EditHashtagInput } from './EditHashtagInput';
 
+import { type PostFormInput } from '@/(admin)/admin/posts/_data/post-validation.schema';
 import { Input } from '@/(common)/_components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
 import { cn } from '@/_libs';
@@ -21,15 +22,6 @@ const EditPostFormFieldsVariants = cva(
   }
 );
 
-interface PostFormInput {
-  title: string;
-  content: string;
-  excerpt?: string;
-  category_id: string;
-  subcategory_id?: string;
-  hashtags?: string[];
-}
-
 interface EditPostFormFieldsProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof EditPostFormFieldsVariants> {
@@ -38,7 +30,7 @@ interface EditPostFormFieldsProps
   watch: UseFormWatch<PostFormInput>;
   categories: any[];
   subcategories: any[];
-  customErrors: Record<string, string>;
+  errors: FieldErrors<PostFormInput>;
   categoriesLoading?: boolean;
   subcategoriesLoading?: boolean;
 }
@@ -50,7 +42,7 @@ export function EditPostFormFields({
   watch,
   categories,
   subcategories,
-  customErrors,
+  errors,
   categoriesLoading = false,
   subcategoriesLoading = false,
   ...props
@@ -76,10 +68,10 @@ export function EditPostFormFields({
           placeholder='포스트 제목을 입력하세요'
           className='w-full text-xl p-6 h-16 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200'
         />
-        {customErrors.title && (
+        {errors.title && (
           <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
             <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-            {customErrors.title}
+            {errors.title.message}
           </p>
         )}
       </div>
@@ -95,10 +87,10 @@ export function EditPostFormFields({
           rows={5}
           className='w-full p-6 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 resize-none transition-all duration-200 bg-white dark:bg-slate-700 text-base'
         />
-        {customErrors.excerpt && (
+        {errors.excerpt && (
           <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
             <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-            {customErrors.excerpt}
+            {errors.excerpt.message}
           </p>
         )}
       </div>
@@ -133,10 +125,10 @@ export function EditPostFormFields({
               )}
             </SelectContent>
           </Select>
-          {customErrors.category_id && (
+          {errors.category_id && (
             <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
               <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-              {customErrors.category_id}
+              {errors.category_id.message}
             </p>
           )}
         </div>
@@ -170,10 +162,10 @@ export function EditPostFormFields({
               )}
             </SelectContent>
           </Select>
-          {customErrors.subcategory_id && (
+          {errors.subcategory_id && (
             <p className='text-red-500 text-sm font-medium flex items-center gap-2'>
               <span className='w-1 h-1 bg-red-500 rounded-full'></span>
-              {customErrors.subcategory_id}
+              {errors.subcategory_id.message}
             </p>
           )}
         </div>
@@ -184,7 +176,7 @@ export function EditPostFormFields({
         <EditHashtagInput
           setValue={setValue}
           watch={watch}
-          customErrors={customErrors}
+          errors={errors}
         />
       </div>
     </div>
