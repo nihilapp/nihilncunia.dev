@@ -39,3 +39,5 @@ export { useUpdatePost } from './hooks/useUpdatePost';
 export { useSaveDraft } from './hooks/useSaveDraft';
 export { useGetDrafts } from './hooks/useGetDrafts';
 export { useAutoSave } from './hooks/useAutoSave';
+export { useBatchDeletePosts } from './hooks/useBatchDeletePosts';
+export { useBatchUpdatePostStatus } from './hooks/useBatchUpdatePostStatus';

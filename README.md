@@ -65,8 +65,8 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [x] 🚨 **[1순위]** 임시 저장 포스트 복구 API (GET /api/posts/drafts/:id/restore)
 - [x] 🚨 **[1순위]** 포스트 자동 저장 API (PATCH /api/posts/:id/autosave)
 - [ ] ~~포스트 복제 API (POST /api/posts/:id/duplicate)~~ // 제거됨
-- [ ] ⚠️ **[2순위]** 포스트 상태 일괄 변경 API (PATCH /api/posts/batch-status)
-- [ ] ⚠️ **[2순위]** 포스트 일괄(선택) 삭제 API (DELETE /api/posts/batch)
+- [x] ⚠️ **[2순위]** 포스트 상태 일괄 변경 API (PATCH /api/posts/batch-status)
+- [x] ⚠️ **[2순위]** 포스트 일괄(선택) 삭제 API (DELETE /api/posts/batch)
 - [ ] 📈 **[3순위]** 관련 포스트 추천 API (GET /api/posts/:id/related)
 - [ ] ~~포스트 프리뷰 API (GET /api/posts/:id/preview)~~ // 제거됨
 - [ ] ✨ **[4순위]** 포스트 목록 정렬 옵션 확장 (최신순, 인기순, 조회순)
@@ -132,6 +132,10 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 📈 **[3순위]** 포스트 통계 페이지 (/admin/analytics)
 - [ ] ✨ **[4순위]** 백업 및 복원 페이지 (/admin/backup)
 - [x] ⚠️ **[2순위]** 포스트 작성/수정 페이지 내 카테고리/서브카테고리 즉석 생성 모달
+- [x] ⚠️ **[2순위]** 체크박스 선택 시스템 (일괄 작업)
+- [x] ⚠️ **[2순위]** 일괄 작업 툴바
+- [x] ⚠️ **[2순위]** 확인 모달 컴포넌트
+- [x] ⚠️ **[2순위]** 선택된 항목 카운터
 
 #### 상태 관리 및 API 통신
 
@@ -139,7 +143,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [x] TanStack React Query 설정 - **부분 완료**
 - [x] API 클라이언트 설정 (Axios) - **부분 완료**
 - [x] 커스텀 훅 구현 (React Query) - **부분 완료**
-- [ ] ⚠️ **[2순위]** 폼 관리 (React Hook Form + Yup) - **포스트 작성 폼용**
+- [x] 토스트 알림 시스템 (성공/오류 메시지)
 
 ### 🌐 3단계: 공개 블로그 페이지 (2주)
 

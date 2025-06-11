@@ -1,14 +1,26 @@
 'use client';
 
 import { cva, type VariantProps } from 'class-variance-authority';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+
+import { BatchActionToolbar } from './BatchActionToolbar';
+import { ConfirmDialog } from './ConfirmDialog';
+import { PostCard } from './PostCard';
 
 import { Button } from '@/(common)/_components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/(common)/_components/ui/card';
+import { Checkbox } from '@/(common)/_components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/(common)/_components/ui/select';
-import { useGetPosts, useDeletePost, PostStatus } from '@/_entities/posts';
+import {
+  PostStatus,
+  useBatchDeletePosts,
+  useBatchUpdatePostStatus,
+  useDeletePost,
+  useGetPosts
+} from '@/_entities/posts';
 import { cn } from '@/_libs';
 
 const PostListVariants = cva(
@@ -29,13 +41,77 @@ interface PostListProps
 export function PostList({ className, ...props }: PostListProps) {
   const router = useRouter();
   const [ statusFilter, setStatusFilter, ] = useState<PostStatus | 'ALL'>('ALL');
+  const [ selectedIds, setSelectedIds, ] = useState<string[]>([]);
+  const [ isAlertOpen, setIsAlertOpen, ] = useState(false);
+  const [ alertContent, setAlertContent, ] = useState({ title: '', description: '', onConfirm: () => {}, });
 
   // API 호출
-  const filters = statusFilter !== 'ALL' ? { status: statusFilter, } : undefined;
-  const { posts, loading, error, } = useGetPosts(filters);
+  const filters = statusFilter !== 'ALL' ? { status: statusFilter, } : {};
+  const {
+    posts: allPosts,
+    loading,
+    error,
+  } = useGetPosts(filters);
+  const posts = useMemo(() => allPosts?.posts || [], [ allPosts, ]);
   const deletePostMutation = useDeletePost();
+  const batchDeleteMutation = useBatchDeletePosts();
+  const batchUpdateStatusMutation = useBatchUpdatePostStatus();
 
-  console.log('posts', posts);
+  const handleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [ ...prev, id, ]);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === posts.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(posts.map((p) => p.id));
+    }
+  };
+
+  const openConfirmationAlert = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setAlertContent({ title, description, onConfirm, });
+    setIsAlertOpen(true);
+  };
+
+  const handleBatchDelete = () => {
+    openConfirmationAlert(
+      '일괄 삭제 확인',
+      `${selectedIds.length}개의 포스트를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`,
+      async () => {
+        try {
+          await batchDeleteMutation.mutateAsync(selectedIds);
+          toast.success(`${selectedIds.length}개의 포스트가 삭제되었습니다.`);
+          setSelectedIds([]);
+        } catch (error) {
+          console.error('일괄 삭제 실패:', error);
+          toast.error('일괄 삭제에 실패했습니다.');
+        }
+      }
+    );
+  };
+
+  const handleBatchUpdateStatus = (status: PostStatus) => {
+    openConfirmationAlert(
+      '상태 일괄 변경 확인',
+      `${selectedIds.length}개의 포스트 상태를 '${status}'(으)로 변경하시겠습니까?`,
+      async () => {
+        try {
+          await batchUpdateStatusMutation.mutateAsync({ postIds: selectedIds, status, });
+          toast.success('포스트 상태가 변경되었습니다.');
+          setSelectedIds([]);
+        } catch (error) {
+          console.error('상태 변경 실패:', error);
+          toast.error('상태 변경에 실패했습니다.');
+        }
+      }
+    );
+  };
 
   const onClickNewPost = () => {
     router.push('/admin/posts/new');
@@ -46,57 +122,19 @@ export function PostList({ className, ...props }: PostListProps) {
   };
 
   const onClickDeletePost = async (postId: string, title: string) => {
-    if (confirm(`"${title}" 포스트를 삭제하시겠습니까?`)) {
-      try {
-        await deletePostMutation.mutateAsync(postId);
-        toast.success('포스트가 삭제되었습니다.');
-      } catch (error) {
-        console.error('삭제 실패:', error);
-        toast.error('삭제에 실패했습니다.');
+    openConfirmationAlert(
+      '포스트 삭제 확인',
+      `"${title}" 포스트를 정말 삭제하시겠습니까?`,
+      async () => {
+        try {
+          await deletePostMutation.mutateAsync(postId);
+          toast.success('포스트가 삭제되었습니다.');
+        } catch (error) {
+          console.error('삭제 실패:', error);
+          toast.error('삭제에 실패했습니다.');
+        }
       }
-    }
-  };
-
-  const getStatusBadge = (status: PostStatus, isPublished: boolean) => {
-    if (isPublished && status === PostStatus.PUBLISHED) {
-      return (
-        <span className='inline-flex items-center px-3 py-1 text-xs font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full shadow-sm'>
-          <span className='w-1.5 h-1.5 bg-white rounded-full mr-1.5'></span>
-          발행됨
-        </span>
-      );
-    }
-
-    switch (status) {
-      case PostStatus.DRAFT:
-        return (
-          <span className='inline-flex items-center px-3 py-1 text-xs font-medium bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full shadow-sm'>
-            <span className='w-1.5 h-1.5 bg-white rounded-full mr-1.5'></span>
-            초안
-          </span>
-        );
-      case PostStatus.PENDING:
-        return (
-          <span className='inline-flex items-center px-3 py-1 text-xs font-medium bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-full shadow-sm'>
-            <span className='w-1.5 h-1.5 bg-white rounded-full mr-1.5'></span>
-            대기
-          </span>
-        );
-      case PostStatus.ARCHIVED:
-        return (
-          <span className='inline-flex items-center px-3 py-1 text-xs font-medium bg-gradient-to-r from-red-400 to-pink-400 text-white rounded-full shadow-sm'>
-            <span className='w-1.5 h-1.5 bg-white rounded-full mr-1.5'></span>
-            보관됨
-          </span>
-        );
-      default:
-        return (
-          <span className='inline-flex items-center px-3 py-1 text-xs font-medium bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-full shadow-sm'>
-            <span className='w-1.5 h-1.5 bg-white rounded-full mr-1.5'></span>
-            {status}
-          </span>
-        );
-    }
+    );
   };
 
   if (loading) {
@@ -143,30 +181,45 @@ export function PostList({ className, ...props }: PostListProps) {
             </div>
 
             {/* Status Filter */}
-            <div className='flex items-center space-x-3'>
-              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>필터:</label>
-              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PostStatus | 'ALL')}>
-                <SelectTrigger className='w-36 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
-                  <SelectItem value='ALL' className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>전체</SelectItem>
-                  <SelectItem value={PostStatus.PUBLISHED} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>발행됨</SelectItem>
-                  <SelectItem value={PostStatus.DRAFT} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>초안</SelectItem>
-                  <SelectItem value={PostStatus.PENDING} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>대기</SelectItem>
-                  <SelectItem value={PostStatus.ARCHIVED} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>보관됨</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className='flex items-center space-x-4'>
+              <div className='flex items-center space-x-3'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>필터:</label>
+                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PostStatus | 'ALL')}>
+                  <SelectTrigger className='w-36 border-2 border-gray-200 dark:border-slate-600 rounded-xl focus:border-blue-500 transition-all duration-200'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className='rounded-xl border-2 border-gray-200 dark:border-slate-600'>
+                    <SelectItem value='ALL' className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>전체</SelectItem>
+                    <SelectItem value={PostStatus.PUBLISHED} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>발행됨</SelectItem>
+                    <SelectItem value={PostStatus.DRAFT} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>초안</SelectItem>
+                    <SelectItem value={PostStatus.PENDING} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>대기</SelectItem>
+                    <SelectItem value={PostStatus.ARCHIVED} className='p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg'>보관됨</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={onClickNewPost}
+                className='px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200'
+              >
+                새 포스트 작성
+              </Button>
             </div>
           </div>
-
-          <Button
-            onClick={onClickNewPost}
-            className='px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200'
-          >
-            새 포스트 작성
-          </Button>
         </div>
+
+        {posts.length > 0 && (
+          <div className='mt-6 flex items-center space-x-4 border-t border-gray-200 dark:border-slate-700 pt-4'>
+            <Checkbox
+              id='select-all'
+              checked={selectedIds.length === posts.length && posts.length > 0}
+              onCheckedChange={handleSelectAll}
+              aria-label='모든 포스트 선택'
+            />
+            <label htmlFor='select-all' className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+              {selectedIds.length === posts.length ? '모두 선택 해제' : '모두 선택'}
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Posts Grid */}
@@ -190,72 +243,35 @@ export function PostList({ className, ...props }: PostListProps) {
       ) : (
         <div className='grid gap-6'>
           {posts.map((post: any) => (
-            <Card
+            <PostCard
               key={post.id}
-              className='bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-600'
-            >
-              <CardHeader className='pb-4'>
-                <div className='flex items-start justify-between'>
-                  <div className='flex-1'>
-                    <CardTitle className='text-xl mb-3 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200'>
-                      {post.title}
-                    </CardTitle>
-                    <div className='flex items-center flex-wrap gap-3 text-sm'>
-                      {getStatusBadge(post.status, post.is_published)}
-                      <span className='w-1 h-1 bg-gray-400 rounded-full'></span>
-                      <span className='text-gray-500 dark:text-gray-400 font-medium'>
-                        {new Date(post.created_at).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                      {post.category && (
-                        <>
-                          <span className='w-1 h-1 bg-gray-400 rounded-full'></span>
-                          <span className='px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full'>
-                            {post.category.name}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className='flex space-x-3 ml-4'>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={() => onClickEditPost(post.id)}
-                      className='px-4 py-2 border-2 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all duration-200'
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={() => onClickDeletePost(post.id, post.title)}
-                      disabled={deletePostMutation.isPending}
-                      className='px-4 py-2 border-2 border-red-300 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-all duration-200 disabled:opacity-50'
-                    >
-                      {deletePostMutation.isPending ? '삭제 중...' : '삭제'}
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-
-              {post.excerpt && (
-                <CardContent className='pt-0'>
-                  <div className='p-4 bg-gray-50 dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600'>
-                    <p className='text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-2'>
-                      {post.excerpt}
-                    </p>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
+              post={post}
+              checked={selectedIds.includes(post.id)}
+              onSelect={handleSelect}
+              onEdit={onClickEditPost}
+              onDelete={onClickDeletePost}
+            />
           ))}
         </div>
       )}
+
+      {/* Batch Action Toolbar */}
+      <BatchActionToolbar
+        selectedCount={selectedIds.length}
+        onPublish={() => handleBatchUpdateStatus(PostStatus.PUBLISHED)}
+        onArchive={() => handleBatchUpdateStatus(PostStatus.ARCHIVED)}
+        onDelete={handleBatchDelete}
+        onCancel={() => setSelectedIds([])}
+      />
+
+      {/* Confirmation Alert Dialog */}
+      <ConfirmDialog
+        open={isAlertOpen}
+        setOpen={setIsAlertOpen}
+        title={alertContent.title}
+        description={alertContent.description}
+        onConfirm={alertContent.onConfirm}
+      />
     </div>
   );
 }
