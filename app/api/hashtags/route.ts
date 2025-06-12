@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import type { CreateHashtag } from '@/_entities/hashtags';
-import { DB } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { DB, jwtAuth } from '@/api/_libs';
 
 // GET /api/hashtags - 모든 해시태그 조회 (검색 및 자동완성 지원)
 export async function GET(req: NextRequest) {
@@ -68,36 +67,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     // JWT 인증
-    const cookie = req.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
-    }
-
-    if (!serverTools.jwt) {
-      return NextResponse.json(
-        {
-          message: '인증 시스템 오류가 발생했습니다.',
-          response: null,
-        },
-        { status: 500, }
-      );
-    }
-
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
+    const authResult = await jwtAuth(req);
+    if (authResult.response) {
+      return authResult.response;
     }
 
     const body: CreateHashtag = await req.json();

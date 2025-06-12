@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import type { CreateCategory } from '@/_entities/categories';
-import { DB } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { DB, jwtAuth } from '@/api/_libs';
 
 // GET /api/categories - 모든 카테고리 조회
 export async function GET() {
@@ -47,36 +46,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     // JWT 인증
-    const cookie = req.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
-    }
-
-    if (!serverTools.jwt) {
-      return NextResponse.json(
-        {
-          message: '인증 시스템 오류가 발생했습니다.',
-          response: null,
-        },
-        { status: 500, }
-      );
-    }
-
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
+    const authResult = await jwtAuth(req);
+    if (authResult.response) {
+      return authResult.response;
     }
 
     const body: CreateCategory = await req.json();

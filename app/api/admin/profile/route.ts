@@ -1,44 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import type { UpdateUser } from '@/_entities/users';
-import { DB } from '@/api/_libs';
-import { serverTools } from '@/api/_libs/tools';
+import { DB, jwtAuth } from '@/api/_libs';
 
 // GET /api/admin/profile - 관리자 정보 조회
 export async function GET(req: NextRequest) {
   try {
     // JWT 인증
-    const cookie = req.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
+    const authResult = await jwtAuth(req);
+    if (authResult.response) {
+      return authResult.response;
     }
 
-    if (!serverTools.jwt) {
-      return NextResponse.json(
-        {
-          message: '인증 시스템 오류가 발생했습니다.',
-          response: null,
-        },
-        { status: 500, }
-      );
-    }
-
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
-    }
+    const tokenData = authResult.user!;
 
     // 관리자 정보 조회
     const user = await DB.user().findUnique({
@@ -84,37 +58,12 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     // JWT 인증
-    const cookie = req.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
+    const authResult = await jwtAuth(req);
+    if (authResult.response) {
+      return authResult.response;
     }
 
-    if (!serverTools.jwt) {
-      return NextResponse.json(
-        {
-          message: '인증 시스템 오류가 발생했습니다.',
-          response: null,
-        },
-        { status: 500, }
-      );
-    }
-
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
-    }
+    const tokenData = authResult.user!;
 
     const body: UpdateUser = await req.json();
     if (!body.name || !body.email) {

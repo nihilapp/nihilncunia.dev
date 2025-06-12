@@ -16,3 +16,5 @@ export {
   createSecurityErrorResponse,
   createSecureResponse
 } from './middleware';
+
+export { jwtAuth } from "./jwtAuth";
