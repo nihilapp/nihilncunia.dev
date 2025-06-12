@@ -1,4 +1,4 @@
-export { authenticate, createAuthResponse } from './auth';
+export { authenticate, createAuthResponse, requireAuth, requireRole } from './auth';
 export {
   corsMiddleware,
   setCorsHeaders,

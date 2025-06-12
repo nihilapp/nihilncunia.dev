@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
         id: findUser.id,
         email: findUser.email,
         name: findUser.name,
+        role: findUser.role,
       },
     };
 

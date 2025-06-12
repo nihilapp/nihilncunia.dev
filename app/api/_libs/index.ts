@@ -6,6 +6,8 @@ export { performTokenRefresh } from './performRefresh';
 export {
   authenticate,
   createAuthResponse,
+  requireAuth,
+  requireRole,
   corsMiddleware,
   setCorsHeaders,
   setSecurityHeaders,

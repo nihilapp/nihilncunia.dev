@@ -1,3 +1,5 @@
+import type { UserRole } from "@/_prisma/client";
+
 // 토큰 정보
 export interface TokenInfo {
   token: string;
@@ -9,6 +11,7 @@ export interface TokenData {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
   exp: number;
 }
 
@@ -35,6 +38,7 @@ export interface SignInResponse {
       id: string;
       email: string;
       name: string;
+      role: UserRole;
     };
     tokens: Tokens;
   };
@@ -68,6 +72,7 @@ export interface UserSession {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
 }
 
 // 인증 상태

@@ -35,11 +35,11 @@ export class Jwt {
   // 토큰 생성
   public async genTokens(user: User): Promise<Tokens> {
     const {
-      id, email, name,
+      id, email, name, role,
     } = user;
 
     const tokenPayload = {
-      id, email, name,
+      id, email, name, role,
     };
 
     const accessTokenSecret = await this.setSecret(process.env.NEXT_PUBLIC_ACCESS_TOKEN_SECRET);
