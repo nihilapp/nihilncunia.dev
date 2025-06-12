@@ -175,7 +175,7 @@ export async function POST(_request: NextRequest) {
     await serverTools.cookie!.set(
       'refreshToken',
       newTokens.refreshToken.token,
-      7 * 24 * 60 * 60 // 7일
+      30 * 24 * 60 * 60 // 30일
     );
 
     // 데이터베이스에 새 리프레시 토큰 저장
