@@ -1,0 +1,1 @@
+export { AuthCenter } from './AuthCenter';

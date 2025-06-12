@@ -6,7 +6,7 @@ import { cn } from '@/_libs';
 
 const AdminMainVariants = cva(
   [
-    `flex-1 ml-64 pt-20 min-h-screen`,
+    ``,
   ],
   {
     variants: {},
@@ -17,8 +17,8 @@ const AdminMainVariants = cva(
 
 interface AdminMainProps
   extends React.HTMLAttributes<HTMLElement>,
-  VariantProps<typeof AdminMainVariants> {
-  children: React.ReactNode;
+    VariantProps<typeof AdminMainVariants> {
+  className?: string;
 }
 
 export function AdminMain({
@@ -34,9 +34,7 @@ export function AdminMain({
       )}
       {...props}
     >
-      <div className='max-w-7xl mx-auto py-5'>
-        {children}
-      </div>
+      {children}
     </main>
   );
 }

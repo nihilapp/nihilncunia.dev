@@ -19,4 +19,4 @@ export {
   createSecureResponse
 } from './middleware';
 
-export { jwtAuth } from "./jwtAuth";
+export { jwtAuth } from './jwtAuth';

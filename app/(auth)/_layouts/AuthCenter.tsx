@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/_libs';
 
-const AdminHeaderVariants = cva(
+const AuthCenterVariants = cva(
   [
     ``,
   ],
@@ -15,25 +15,26 @@ const AdminHeaderVariants = cva(
   }
 );
 
-interface AdminHeaderProps
+interface AuthCenterProps
   extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof AdminHeaderVariants> {
+    VariantProps<typeof AuthCenterVariants> {
   className?: string;
 }
 
-export function AdminHeader({
+export function AuthCenter({
   className,
+  children,
   ...props
-}: AdminHeaderProps) {
+}: AuthCenterProps) {
   return (
-    <header
+    <main
       className={cn(
-        AdminHeaderVariants({}),
+        AuthCenterVariants({}),
         className
       )}
       {...props}
     >
-      admin header
-    </header>
+      {children}
+    </main>
   );
 }

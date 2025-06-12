@@ -51,7 +51,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 - [ ] 포스트 목록 조회 API (GET /api/posts)
 - [ ] 포스트 상세 조회 API (GET /api/posts/:id)
-- [ ] 포스트 slug 조회 API (GET /api/posts/slug/:slug)
 - [ ] 포스트 작성 API (POST /api/posts)
 - [ ] 포스트 수정 API (PUT /api/posts/:id)
 - [ ] 포스트 삭제 API (DELETE /api/posts/:id)
@@ -59,6 +58,10 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 포스트 발행/취소 API (PATCH /api/posts/:id/publish)
 - [ ] 포스트 조회수 증가 API (PATCH /api/posts/:id/views)
 - [ ] 포스트 좋아요 증가 API (PATCH /api/posts/:id/likes)
+- [ ] 포스트별 조회 이력 조회 API (GET /api/posts/:id/views)
+- [ ] 포스트별 좋아요 이력 조회 API (GET /api/posts/:id/likes)
+- [ ] 포스트별 좋아요 추가/취소 API (POST/DELETE /api/posts/:id/like)
+- [ ] 포스트별 중복 좋아요/조회 방지 로직
 - [ ] 카테고리별 포스트 필터링
 - [ ] 포스트 임시 저장 API (POST /api/posts/draft)
 - [ ] 임시 저장 포스트 조회 API (GET /api/posts/drafts)
@@ -142,6 +145,27 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] API 클라이언트 설정 (Axios)
 - [ ] 커스텀 훅 구현 (React Query)
 - [ ] 토스트 알림 시스템 (성공/오류 메시지)
+
+#### 포스트 상태 및 공개 범위
+
+- 포스트 상태(status):
+  - DRAFT: 임시저장
+  - ARCHIVED: 보관
+  - PENDING: 작성중
+  - COMPLETED: 작성완료
+- 공개 범위(publish):
+  - PUBLIC: 전체 공개
+  - PRIVATE: 비공개
+  - PROTECTED: 보호됨(비밀번호 등)
+
+#### 포스트 통계 및 인터랙션 UI
+
+- [ ] 포스트별 조회수 카운트 UI
+- [ ] 포스트별 좋아요 카운트 UI
+- [ ] 좋아요 버튼(중복 방지, 로그인 필요)
+- [ ] 조회수/좋아요 통계 페이지 (/admin/analytics)
+- [ ] 포스트별 조회/좋아요 이력 상세 페이지
+- [ ] 인기 포스트(조회수/좋아요 기준) 목록 UI
 
 ### 🌐 3단계: 공개 블로그 페이지 (2주)
 

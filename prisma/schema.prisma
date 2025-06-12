@@ -15,17 +15,27 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum PublishType {
+  PUBLIC
+  PRIVATE
+  PROTECTED
+}
+
 enum PostStatus {
-  DRAFT // 임시저장/작성중
-  PUBLISHED // 공개/작성완료
+  DRAFT // 임시저장
   ARCHIVED // 보관
-  PENDING // 작성대기
-  PROTECTED // 보호됨
+  PENDING // 작성중
+  COMPLETED // 작성완료
 }
 
 enum UserRole {
   ADMIN
   USER
+}
+
+enum DepthType {
+  MAIN
+  SUB
 }
 
 // 사용자 정보
@@ -59,45 +69,30 @@ model UserAuth {
   @@map("user_auths")
 }
 
-// 카테고리
+// 카테고리 (메인/서브 통합)
 model Category {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  slug        String   @unique
-  description String?
-  color       String? // 카테고리 색상 (HEX 코드)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id               String     @id @default(uuid())
+  name             String
+  description      String?
+  color            String?
+  depth            DepthType  @default(MAIN)
+  parent_id        String?
+  parent           Category?  @relation("CategoryToCategory", fields: [parent_id], references: [id])
+  children         Category[] @relation("CategoryToCategory")
+  created_at       DateTime   @default(now())
+  updated_at       DateTime   @updatedAt
+  posts            Post[]     @relation("PostCategory") // 메인 카테고리로 연결된 포스트들
+  subcategoryPosts Post[]     @relation("PostSubcategory") // 서브카테고리로 연결된 포스트들
+  Post             Post[]
 
-  subcategories Subcategory[] // 1:N 관계
-  posts         Post[] // 1:N 관계
-
+  @@unique([parent_id, name]) // 같은 부모 내에서 name 유니크
   @@map("categories")
-}
-
-// 서브카테고리
-model Subcategory {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String
-  description String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  // 관계
-  category_id String
-  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  posts       Post[] // 1:N 관계
-
-  @@unique([category_id, slug]) // 같은 카테고리 내에서 slug 유니크
-  @@map("subcategories")
 }
 
 // 해시태그
 model Hashtag {
   id         String   @id @default(uuid())
   name       String   @unique
-  slug       String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -108,28 +103,31 @@ model Hashtag {
 
 // 블로그 포스트
 model Post {
-  id           String     @id @default(uuid())
-  title        String // 제목 (필수)
-  slug         String     @unique // URL용 slug (필수)
-  content      String     @db.Text // 마크다운 형태의 글 내용 (필수)
-  excerpt      String? // 글 요약 (선택)
-  status       PostStatus @default(DRAFT) // 현 상태 (작성대기, 작성중, 작성완료)
-  is_published Boolean    @default(false) // 공개여부 (true & false)
-  views        Int        @default(0) // 조회수
-  likes        Int        @default(0) // 좋아요 수
-  created_at   DateTime   @default(now()) // 작성일자
-  updated_at   DateTime   @updatedAt // 수정일자
+  id         String      @id @default(uuid())
+  title      String // 제목 (필수)
+  content    String      @db.Text // 마크다운 형태의 글 내용 (필수)
+  excerpt    String? // 글 요약 (선택)
+  status     PostStatus  @default(DRAFT) // 현 상태 (임시저장, 보관, 작성중, 작성완료)
+  publish    PublishType @default(PUBLIC) // 공개범위 (퍼블릭, 프라이빗, 프로텍티드)
+  views      Int         @default(0) // 조회수
+  likes      Int         @default(0) // 좋아요 수
+  created_at DateTime    @default(now()) // 작성일자
+  updated_at DateTime    @updatedAt // 수정일자
 
   // 관계
   user_id        String
   category_id    String
-  subcategory_id String? // 서브카테고리는 선택사항
+  subcategory_id String?
 
-  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  category    Category     @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  subcategory Subcategory? @relation(fields: [subcategory_id], references: [id], onDelete: SetNull)
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  category    Category  @relation("PostCategory", fields: [category_id], references: [id], onDelete: Cascade)
+  subcategory Category? @relation("PostSubcategory", fields: [subcategory_id], references: [id], onDelete: SetNull)
 
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
+  Category      Category?     @relation(fields: [categoryId], references: [id])
+  categoryId    String?
+  PostView      PostView[]
+  PostLike      PostLike[]
 
   @@map("posts")
 }
@@ -146,4 +144,32 @@ model PostHashtag {
 
   @@unique([post_id, hashtag_id]) // 동일한 포스트-해시태그 조합 중복 방지
   @@map("post_hashtags")
+}
+
+// 포스트 조회 이력
+model PostView {
+  id        String   @id @default(uuid())
+  post_id   String
+  user_id   String?
+  ip        String?
+  viewed_at DateTime @default(now())
+
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@index([post_id])
+  @@map("post_views")
+}
+
+// 포스트 좋아요 이력
+model PostLike {
+  id       String   @id @default(uuid())
+  post_id  String
+  user_id  String
+  liked_at DateTime @default(now())
+
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_id, user_id])
+  @@index([post_id])
+  @@map("post_likes")
 }
