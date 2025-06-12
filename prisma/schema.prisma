@@ -23,11 +23,17 @@ enum PostStatus {
   PROTECTED // 보호됨
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 // 사용자 정보
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
   name         String
+  role         UserRole  @default(USER)
   image_url    String?
   last_sign_in DateTime?
   created_at   DateTime  @default(now())
