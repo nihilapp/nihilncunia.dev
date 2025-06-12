@@ -50,7 +50,13 @@ export async function middleware(request: NextRequest) {
 
     // 4. API 응답 처리
     if (response.ok) {
-      // 4.1. 갱신 성공: 다음 요청으로 진행하되, API가 설정한 쿠키를 포함
+      // 4.1. 갱신 성공: 응답에서 사용자 역할 확인
+      const data = await response.json();
+      if (data.response.role !== 'ADMIN') {
+        console.log('ADMIN 권한이 없어 접근을 차단합니다.');
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+
       console.log('관리자 토큰 갱신 성공, 관리자 페이지 접근 허용...');
       const nextResponse = NextResponse.next(); // 다음 미들웨어/페이지로 진행
 
