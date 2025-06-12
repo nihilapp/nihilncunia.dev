@@ -60,5 +60,4 @@ tasks.json
 tasks/
 
 # Cursor config
-/.cursor/
 app/_prisma
