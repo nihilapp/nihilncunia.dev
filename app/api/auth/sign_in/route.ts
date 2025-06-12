@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     await serverTools.cookie!.set(
       'refreshToken',
       tokens.refreshToken.token,
-      60 * 60 * 24 * 7 // 7일
+      60 * 60 * 24 * 30 // 30일
     );
 
     // 마지막 로그인 시간 업데이트
@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
         id: findUser.id,
         email: findUser.email,
         name: findUser.name,
+        role: findUser.role,
       },
     };
 

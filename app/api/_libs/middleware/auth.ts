@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { type UserSession } from '@/_entities/user-auth';
+import type { UserRole } from '@/_prisma/client';
 import { DB, serverTools } from '@/api/_libs';
 
 export interface AuthenticatedRequest extends NextRequest {
@@ -45,6 +46,7 @@ export async function authenticate(request: NextRequest): Promise<{
         id: true,
         name: true,
         email: true,
+        role: true,
       },
     });
 
@@ -112,6 +114,35 @@ export async function requireAuth(
   }
 
   // 인증된 사용자 정보를 request에 추가
+  const authenticatedRequest = request as AuthenticatedRequest;
+  authenticatedRequest.user = authResult.user;
+
+  return handler(authenticatedRequest);
+}
+
+export async function requireRole(
+  request: NextRequest,
+  role: UserRole,
+  handler: (request: AuthenticatedRequest) => Promise<NextResponse>
+): Promise<NextResponse> {
+  const authResult = await authenticate(request);
+
+  if (!authResult.success) {
+    return createAuthResponse(
+      false,
+      authResult.error!,
+      authResult.status!
+    );
+  }
+
+  if (authResult.user!.role !== role) {
+    return createAuthResponse(
+      false,
+      '권한이 없습니다.',
+      403
+    );
+  }
+
   const authenticatedRequest = request as AuthenticatedRequest;
   authenticatedRequest.user = authResult.user;
 

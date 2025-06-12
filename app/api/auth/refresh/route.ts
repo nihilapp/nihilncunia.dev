@@ -46,6 +46,7 @@ export async function GET(_request: NextRequest) {
         id: true,
         name: true,
         email: true,
+        role: true,
         created_at: true,
       },
     });
@@ -140,6 +141,12 @@ export async function POST(_request: NextRequest) {
     // 사용자 계정 확인
     const findUser = await DB.user().findUnique({
       where: { id: tokenData.id, },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+      },
     });
 
     if (!findUser) {
@@ -168,7 +175,7 @@ export async function POST(_request: NextRequest) {
     await serverTools.cookie!.set(
       'refreshToken',
       newTokens.refreshToken.token,
-      7 * 24 * 60 * 60 // 7일
+      30 * 24 * 60 * 60 // 30일
     );
 
     // 데이터베이스에 새 리프레시 토큰 저장
@@ -185,6 +192,7 @@ export async function POST(_request: NextRequest) {
           id: findUser.id,
           email: findUser.email,
           name: findUser.name,
+          role: findUser.role,
         },
       },
       { status: 200, }
