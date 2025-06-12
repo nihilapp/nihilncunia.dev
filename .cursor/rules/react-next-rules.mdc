@@ -9,6 +9,7 @@ alwaysApply: true
 
 ## React, Next.js 관련 규칙
 
+- 페이지 컴포넌트와 일반 컴포넌트의 작성 시 다음의 템플릿 '/file-template/component_example.md' 을 참고한다.
 - 컴포넌트 디자인 시 'shadcn' 컴포넌트를 사용한다. 해당 컴포넌트들은 '/app/(common)/_components/ui'에 위치한다.
 - 버튼은 'Button', 링크 버튼은 'LinkButton'을 사용한다. 모두 '/app/(common)/_components/ui'에 있다.
 - _components나 _layouts 폴더에는 반드시 'index.ts'를 만들고, 'export { 컴포넌트 } from ...' 형식으로 export 한다.
@@ -16,7 +17,7 @@ alwaysApply: true
 - 임포트 시 '@'는 'app' 폴더를 의미한다.
 - 로직 작성 시 가독성을 위해 공백 라인을 적극적으로 활용한다.
 - 공통 컴포넌트는 '/app/(common)/_components'에 생성하고, index.ts에 export 한다.
-- shadcn이 아닌 직접 작성 컴포넌트는 반드시 'class-variance-authority'를 사용한다. '/file template/component_example.tsx' 참고.
+- shadcn이 아닌 직접 작성 컴포넌트는 반드시 'class-variance-authority'를 사용한다.
 - 데이터 존재 여부 확인 변수는 'find'로 시작해야 한다.
 - page.tsx에는 'use client'를 사용하지 않는다(서버 컴포넌트 유지).
 - page.tsx에는 반드시 metadata를 작성한다. (setMeta 함수는 'app/_libs'에 위치)
