@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import type { ApiResponse, ApiError } from '@/_entities/common';
-import { DB } from '@/api/_libs';
-import { serverTools } from '@/api/_libs';
+import { DB, jwtAuth } from '@/api/_libs';
 
 interface Params {
 	params: Promise<{ slug: string }>;
@@ -66,17 +65,10 @@ export async function GET(request: NextRequest, { params, }: Params) {
 
     // 포스트 접근 권한 확인
     let isAdmin = false;
-    const cookie = request.cookies?.get('accessToken');
+    const authResult = await jwtAuth(request, false);
 
-    if (cookie && serverTools.jwt) {
-      try {
-        const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-        if (tokenData && tokenData.id) {
-          isAdmin = true;
-        }
-      } catch (error) {
-        // 토큰이 유효하지 않아도 계속 진행 (일반 사용자로 처리)
-      }
+    if (authResult.user) {
+      isAdmin = true;
     }
 
     // 포스트 상태별 접근 제어

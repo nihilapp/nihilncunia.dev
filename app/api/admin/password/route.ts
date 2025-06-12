@@ -1,25 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import type { UpdateUserPassword } from '@/_entities/users';
-import { DB } from '@/api/_libs';
+import { DB, jwtAuth } from '@/api/_libs';
 import { serverTools } from '@/api/_libs/tools';
 
 // PUT /api/admin/password - 관리자 비밀번호 변경
 export async function PUT(req: NextRequest) {
   try {
     // JWT 인증
-    const cookie = req.cookies.get('accessToken');
-    if (!cookie) {
-      return NextResponse.json(
-        {
-          message: '인증 정보가 없습니다.',
-          response: null,
-        },
-        { status: 401, }
-      );
+    const authResult = await jwtAuth(req);
+    if (authResult.response) {
+      return authResult.response;
     }
 
-    if (!serverTools.jwt || !serverTools.bcrypt) {
+    if (!serverTools.bcrypt) {
       return NextResponse.json(
         {
           message: '인증 시스템 오류가 발생했습니다.',
@@ -28,17 +22,7 @@ export async function PUT(req: NextRequest) {
         { status: 500, }
       );
     }
-
-    const tokenData = await serverTools.jwt.tokenInfo('accessToken', cookie.value);
-    if (!tokenData || !tokenData.id) {
-      return NextResponse.json(
-        {
-          message: '관리자 권한이 없습니다.',
-          response: null,
-        },
-        { status: 403, }
-      );
-    }
+    const tokenData = authResult.user!;
 
     const body: UpdateUserPassword = await req.json();
     if (!body.currentPassword || !body.newPassword) {
