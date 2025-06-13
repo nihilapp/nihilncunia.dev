@@ -54,6 +54,11 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] CSRF 보호 구현
 - [ ] XSS 방지 설정
 - [ ] API 요청 유효성 검사
+#### 공통 상태 관리
+
+- [x] useLoading - 로딩 상태 관리
+- [x] useDone - 완료 상태 관리
+
 
 ### 📝 2단계: 콘텐츠 관리 시스템 (3주)
 
@@ -339,7 +344,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 댓글 통계 및 관리
 - [ ] 백업 및 복원 페이지 (/admin/backup)
 - [ ] 블로그 설정 페이지 (/admin/settings)
-
+### 🌐 3단계: 공개 블로그 및 보안 (2주)
 #### 공개 블로그 페이지
 
 ##### Backend API 구현
@@ -373,37 +378,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] Footer 컴포넌트
 - [ ] Navigation 컴포넌트
 - [ ] 포스트 카드 컴포넌트
-- [ ] 카테고리 배지 컴포넌트
-- [ ] 해시태그 컴포넌트
-- [ ] 공유 버튼 컴포넌트
-- [ ] 댓글 섹션 컴포넌트 (공개 페이지용)
-
-#### SEO 최적화
-
-##### Backend API 구현
-
-- [ ] GET /api/sitemap.xml - 사이트맵 생성
-- [ ] GET /api/rss.xml - RSS 피드
-- [ ] GET /api/robots.txt - 로봇 설정
-
-##### Frontend Hooks 구현
-
-- [ ] useMetaTags - 동적 메타 태그
-- [ ] useStructuredData - JSON-LD
-- [ ] useOpenGraph - OG 태그
-- [ ] useTwitterCard - 트위터 카드
-
-##### UI/최적화 구현
-
-- [ ] 동적 메타 태그 생성
-- [ ] Open Graph 태그 설정
-- [ ] Twitter Card 메타 태그
-- [ ] 구조화된 데이터 (JSON-LD) 구현
-- [ ] 이미지 최적화 (Next.js Image)
-- [ ] 코드 스플리팅 최적화
-- [ ] 번들 크기 최적화
-- [ ] 캐싱 전략 구현
-- [ ] 지연 로딩 구현
 
 #### 보안 설정
 
