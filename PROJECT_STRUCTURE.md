@@ -74,7 +74,8 @@
 
 ### 3) 인증 관련 페이지 (app/(auth)/) - 사용자 전용
 
-- `/auth/sign-in` : 로그인 페이지
+- `/auth/signin` : 로그인 페이지
+- `/auth/signup` : 회원가입 페이지
 
 ---
 
@@ -82,16 +83,24 @@
 
 #### 인증 관련
 
-- `/api/auth/sign-in` (POST) : 로그인
-- `/api/auth/sign-out` (POST) : 로그아웃
+- `/api/auth/sign_up` (POST) : 회원가입
+- `/api/auth/sign_in` (POST) : 로그인
+- `/api/auth/sign_out` (POST) : 로그아웃
 - `/api/auth/refresh` (POST) : 리프레시 토큰 갱신
-- `/api/auth/verify` (GET) : 토큰 검증
+- `/api/auth/session` (GET) : 세션 조회
 
 #### 사용자 관련
 
-- `/api/admin/profile` (GET) : 사용자 정보 조회
-- `/api/admin/profile` (PUT) : 사용자 정보 수정
-- `/api/admin/password` (PUT) : 사용자 비밀번호 변경
+- `/api/users` (GET) : 사용자 목록 조회
+- `/api/users/:id` (GET) : 사용자 상세 조회
+- `/api/users/email/:email` (GET) : 이메일로 사용자 조회
+- `/api/users/name/:name` (GET) : 사용자명으로 사용자 조회
+- `/api/users` (POST) : 사용자 생성
+- `/api/users/:id` (PUT) : 사용자 정보 수정
+- `/api/users/:id/password` (PUT) : 사용자 비밀번호 수정
+- `/api/users/:id/image` (PUT) : 사용자 이미지 수정
+- `/api/users/:id` (DELETE) : 사용자 삭제
+- `/api/users` (DELETE) : 사용자 일괄 삭제
 
 #### 블로그 포스트 관련
 

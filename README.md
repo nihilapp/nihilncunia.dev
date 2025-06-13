@@ -38,6 +38,14 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [x] HTTP-only 쿠키 설정
 - [x] User 전용 타입 정의 구현
 
+##### Frontend Hooks 구현
+
+- [x] useSignUp - 회원가입
+- [x] useSignIn - 로그인
+- [x] useSignOut - 로그아웃
+- [x] useRefresh - 토큰 리프레시
+- [x] useGetSession - 세션 조회
+
 #### 보안 설정
 
 - [ ] CORS 설정
@@ -51,41 +59,41 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [ ] GET /api/posts - 포스트 목록 조회
-- [ ] GET /api/posts/:id - 포스트 상세 조회
-- [ ] POST /api/posts - 포스트 작성
-- [ ] PUT /api/posts/:id - 포스트 수정
-- [ ] DELETE /api/posts/:id - 포스트 삭제
-- [ ] GET /api/posts/search - 포스트 검색
-- [ ] PATCH /api/posts/:id/publish - 포스트 발행/취소
-- [ ] PATCH /api/posts/:id/views - 포스트 조회수 증가
-- [ ] PATCH /api/posts/:id/likes - 포스트 좋아요 증가
-- [ ] GET /api/posts/:id/views - 포스트별 조회 이력 조회
-- [ ] GET /api/posts/:id/likes - 포스트별 좋아요 이력 조회
-- [ ] POST/DELETE /api/posts/:id/like - 포스트별 좋아요 추가/취소
-- [ ] POST /api/posts/draft - 포스트 임시 저장
-- [ ] GET /api/posts/drafts - 임시 저장 포스트 조회
-- [ ] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
-- [ ] PATCH /api/posts/:id/autosave - 포스트 자동 저장
-- [ ] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
-- [ ] DELETE /api/posts/batch - 포스트 일괄(선택) 삭제
-- [ ] GET /api/posts/:id/related - 관련 포스트 추천
+- [x] GET /api/posts - 포스트 목록 조회
+- [x] GET /api/posts/:id - 포스트 상세 조회
+- [x] POST /api/posts - 포스트 작성
+- [x] PUT /api/posts/:id - 포스트 수정
+- [x] DELETE /api/posts/:id - 포스트 삭제
+- [x] GET /api/posts/search - 포스트 검색
+- [x] PATCH /api/posts/:id/publish - 포스트 발행/취소
+- [x] PATCH /api/posts/:id/views - 포스트 조회수 증가
+- [x] PATCH /api/posts/:id/likes - 포스트 좋아요 증가
+- [x] GET /api/posts/:id/views - 포스트별 조회 이력 조회
+- [x] GET /api/posts/:id/likes - 포스트별 좋아요 이력 조회
+- [x] POST/DELETE /api/posts/:id/like - 포스트별 좋아요 추가/취소
+- [x] POST /api/posts/draft - 포스트 임시 저장
+- [x] GET /api/posts/drafts - 임시 저장 포스트 조회
+- [x] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
+- [x] PATCH /api/posts/:id/autosave - 포스트 자동 저장
+- [x] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
+- [x] DELETE /api/posts/batch - 포스트 일괄(선택) 삭제
+- [x] GET /api/posts/:id/related - 관련 포스트 추천
 
 ##### Frontend Hooks 구현
 
-- [ ] useGetPosts - 포스트 목록 조회
-- [ ] useGetPost - 포스트 상세 조회
-- [ ] useCreatePost - 포스트 작성
-- [ ] useUpdatePost - 포스트 수정
-- [ ] useDeletePost - 포스트 삭제
-- [ ] useSearchPosts - 포스트 검색
-- [ ] usePublishPost - 포스트 발행/취소
-- [ ] usePostViews - 포스트 조회수 관련
-- [ ] usePostLikes - 포스트 좋아요 관련
-- [ ] useDraftPost - 임시 저장
-- [ ] useAutosavePost - 자동 저장
-- [ ] useBatchPosts - 일괄 작업
-- [ ] useRelatedPosts - 관련 포스트
+- [x] useGetPosts - 포스트 목록 조회
+- [x] useGetPost - 포스트 상세 조회
+- [x] useCreatePost - 포스트 작성
+- [x] useUpdatePost - 포스트 수정
+- [x] useDeletePost - 포스트 삭제
+- [x] useSearchPosts - 포스트 검색
+- [x] usePublishPost - 포스트 발행/취소
+- [x] usePostViews - 포스트 조회수 관련
+- [x] usePostLikes - 포스트 좋아요 관련
+- [x] useDraftPost - 임시 저장
+- [x] useAutosavePost - 자동 저장
+- [x] useBatchPosts - 일괄 작업
+- [x] useRelatedPosts - 관련 포스트
 
 ##### UI 구현
 
@@ -105,19 +113,19 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [ ] GET /api/categories - 카테고리 목록 조회
-- [ ] POST /api/categories - 카테고리 생성
-- [ ] PUT /api/categories/:id - 카테고리 수정
-- [ ] DELETE /api/categories/:id - 카테고리 삭제
-- [ ] GET /api/categories/:id/posts - 카테고리별 포스트 목록
+- [x] GET /api/categories - 카테고리 목록 조회
+- [x] POST /api/categories - 카테고리 생성
+- [x] PUT /api/categories/:id - 카테고리 수정
+- [x] DELETE /api/categories/:id - 카테고리 삭제
+- [x] GET /api/categories/:id/posts - 카테고리별 포스트 목록
 
 ##### Frontend Hooks 구현
 
-- [ ] useGetCategories - 카테고리 목록 조회
-- [ ] useCreateCategory - 카테고리 생성
-- [ ] useUpdateCategory - 카테고리 수정
-- [ ] useDeleteCategory - 카테고리 삭제
-- [ ] useGetCategoryPosts - 카테고리별 포스트
+- [x] useGetCategories - 카테고리 목록 조회
+- [x] useCreateCategory - 카테고리 생성
+- [x] useUpdateCategory - 카테고리 수정
+- [x] useDeleteCategory - 카테고리 삭제
+- [x] useGetCategoryPosts - 카테고리별 포스트
 
 ##### UI 구현
 
@@ -131,19 +139,19 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [ ] GET /api/subcategories - 서브카테고리 목록 조회
-- [ ] POST /api/subcategories - 서브카테고리 생성
-- [ ] PUT /api/subcategories/:id - 서브카테고리 수정
-- [ ] DELETE /api/subcategories/:id - 서브카테고리 삭제
-- [ ] GET /api/subcategories/:id/posts - 서브카테고리별 포스트 목록
+- [x] GET /api/subcategories - 서브카테고리 목록 조회
+- [x] POST /api/subcategories - 서브카테고리 생성
+- [x] PUT /api/subcategories/:id - 서브카테고리 수정
+- [x] DELETE /api/subcategories/:id - 서브카테고리 삭제
+- [x] GET /api/subcategories/:id/posts - 서브카테고리별 포스트 목록
 
 ##### Frontend Hooks 구현
 
-- [ ] useGetSubcategories - 서브카테고리 목록 조회
-- [ ] useCreateSubcategory - 서브카테고리 생성
-- [ ] useUpdateSubcategory - 서브카테고리 수정
-- [ ] useDeleteSubcategory - 서브카테고리 삭제
-- [ ] useGetSubcategoryPosts - 서브카테고리별 포스트
+- [x] useGetSubcategories - 서브카테고리 목록 조회
+- [x] useCreateSubcategory - 서브카테고리 생성
+- [x] useUpdateSubcategory - 서브카테고리 수정
+- [x] useDeleteSubcategory - 서브카테고리 삭제
+- [x] useGetSubcategoryPosts - 서브카테고리별 포스트
 
 ##### UI 구현
 
@@ -157,21 +165,21 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [ ] GET /api/hashtags - 해시태그 목록 조회
-- [ ] POST /api/hashtags - 해시태그 생성
-- [ ] PUT /api/hashtags/:id - 해시태그 수정
-- [ ] DELETE /api/hashtags/:id - 해시태그 삭제
-- [ ] GET /api/hashtags/:id/posts - 해시태그별 포스트 목록
-- [ ] GET /api/hashtags/autocomplete - 해시태그 자동완성
+- [x] GET /api/hashtags - 해시태그 목록 조회
+- [x] POST /api/hashtags - 해시태그 생성
+- [x] PUT /api/hashtags/:id - 해시태그 수정
+- [x] DELETE /api/hashtags/:id - 해시태그 삭제
+- [x] GET /api/hashtags/:id/posts - 해시태그별 포스트 목록
+- [x] GET /api/hashtags/autocomplete - 해시태그 자동완성
 
 ##### Frontend Hooks 구현
 
-- [ ] useGetHashtags - 해시태그 목록 조회
-- [ ] useCreateHashtag - 해시태그 생성
-- [ ] useUpdateHashtag - 해시태그 수정
-- [ ] useDeleteHashtag - 해시태그 삭제
-- [ ] useGetHashtagPosts - 해시태그별 포스트
-- [ ] useHashtagAutocomplete - 해시태그 자동완성
+- [x] useGetHashtags - 해시태그 목록 조회
+- [x] useCreateHashtag - 해시태그 생성
+- [x] useUpdateHashtag - 해시태그 수정
+- [x] useDeleteHashtag - 해시태그 삭제
+- [x] useGetHashtagPosts - 해시태그별 포스트
+- [x] useHashtagAutocomplete - 해시태그 자동완성
 
 ##### UI 구현
 
@@ -442,21 +450,15 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ### 임시 저장 시스템 완성
 
-- [ ] POST /api/posts/draft - 포스트 임시 저장
-- [ ] GET /api/posts/drafts - 임시 저장 포스트 목록 조회
-- [ ] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
-- [ ] PATCH /api/posts/:id/autosave - 포스트 자동 저장 (30초 간격)
-- [ ] 자동 저장 훅 구현 (useAutosave)
-- [ ] 임시 저장 목록 컴포넌트
-- [ ] 복구 기능 UI
-- [ ] 저장 상태 표시 컴포넌트
+- [x] POST /api/posts/draft - 포스트 임시 저장
+- [x] GET /api/posts/drafts - 임시 저장 포스트 목록 조회
+- [x] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
+- [x] PATCH /api/posts/:id/autosave - 포스트 자동 저장 (30초 간격)
 
-### 포스트 작성 플로우 개선
+### B. 일괄 작업 시스템
 
-- [ ] 새 포스트 작성 페이지에서 포스트 ID 추적 시스템
-- [ ] 임시 저장 시 기존 포스트 업데이트 (새 포스트 생성 방지)
-- [ ] 포스트 작성 상태 관리 (DRAFT → 임시저장 → 발행)
-- [ ] 포스트 목록에서 개별 포스트 상세보기 기능 (미리보기 또는 새창)
+- [x] DELETE /api/posts/batch - 포스트 일괄 삭제
+- [x] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
 
 ## 2순위: 중요 구현 과제 (2주 내)
 
