@@ -1,3 +1,5 @@
+import type { UseMutationOptions } from '@tanstack/react-query';
+
 export interface ApiError {
   message: string;
   response: null;
@@ -7,6 +9,12 @@ export interface ApiResponse<T> {
   message: string;
   response: T;
 }
+
+export type MutationOptions<TData, TVariables> = UseMutationOptions<
+  ApiResponse<TData>,
+  unknown,
+  TVariables
+>;
 
 type OpenGraphType = 'article' | 'book' | 'music.song' | 'music.album' | 'music.playlist' | 'music.radio_station' | 'profile' | 'website' | 'video.tv_show' | 'video.other' | 'video.movie' | 'video.episode';
 

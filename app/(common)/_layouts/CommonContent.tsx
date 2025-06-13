@@ -32,7 +32,7 @@ export function CommonContent({ className, children, ...props }: Props) {
       )}
       {...props}
     >
-      <CommonSidebar />
+      {/* <CommonSidebar /> */}
       <CommonMain>
         {children}
       </CommonMain>

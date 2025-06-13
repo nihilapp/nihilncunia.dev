@@ -1,12 +1,9 @@
 'use client';
 
-import { type VariantProps } from 'class-variance-authority';
-import { redirect } from 'next/navigation';
+import { cva, type VariantProps } from 'class-variance-authority';
 import React from 'react';
 
 import { Button } from './ui/button';
-
-import { useAuthActions, useUserSession, useSignOut } from '@/_entities/auth';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof Button> {
   className?: string;
@@ -20,28 +17,8 @@ export function SignOutButton({
   variant = 'default',
   ...props
 }: Props) {
-  const userSession = useUserSession();
-  const { setUserSession, } = useAuthActions();
-  const signOut = useSignOut();
 
-  const onClickSignOut = () => {
-    if (!userSession) return;
-
-    signOut.mutate(
-      {
-        id: userSession.id,
-      },
-      {
-        onSuccess() {
-          setUserSession(null);
-          redirect('/auth/signin');
-        },
-        onError(error) {
-          console.error(error);
-        },
-      }
-    );
-  };
+  const onClickSignOut = () => {};
 
   return (
     <Button

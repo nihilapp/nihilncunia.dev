@@ -10,5 +10,6 @@ export type {
   ApiError,
   ApiResponse,
   SiteConfig,
-  SiteMetadata
+  SiteMetadata,
+  MutationOptions
 } from './common.types';

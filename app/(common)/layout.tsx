@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { CommonLayout } from './_layouts/CommonLayout';
+import { CommonContent } from '@/(common)/_layouts';
+import { CommonFooter } from '@/(common)/_layouts/CommonFooter';
+import { CommonHeader } from '@/(common)/_layouts/CommonHeader';
+import { CommonNav } from '@/(common)/_layouts/CommonNav';
 
 interface Props {
   children: React.ReactNode;
@@ -8,8 +11,13 @@ interface Props {
 
 export default function Layout({ children, }: Props) {
   return (
-    <CommonLayout>
-      {children}
-    </CommonLayout>
+    <>
+      <CommonHeader />
+      <CommonNav />
+      <CommonContent>
+        {children}
+      </CommonContent>
+      <CommonFooter />
+    </>
   );
 }

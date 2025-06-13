@@ -40,15 +40,16 @@ export function ComponentExample({
 
 ```tsx
 import React from "react";
-import { setMeta } from "@/app/_libs";
+import { setMeta } from "@/_libs";
 
 interface Props {
   children?: React.ReactNode;
 }
 
 export const metadata = setMeta({
-  title: "페이지 제목",
-  url: "/test",
+  title: "페이지 제목", // 제목 필수
+  url: "/test", // url 필수
+  // description 은 필수가 아니므로 적지 않아도 됨.
 });
 
 export default function Page({ children }: Props) {

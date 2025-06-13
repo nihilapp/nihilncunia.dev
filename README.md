@@ -12,31 +12,31 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 프로젝트 초기 설정
 
-- [ ] Next.js 14+ 프로젝트 생성 및 기본 구조 설정
-- [ ] TypeScript 설정 및 타입 안전성 확보
-- [ ] TailwindCSS v4 설정 및 기본 스타일링
-- [ ] shadcn/ui 설치 및 컴포넌트 라이브러리 구성
-- [ ] ESLint, Prettier 코드 품질 도구 설정
-- [ ] 라우트 그룹 생성 ((common), (auth), (admin))
+- [x] Next.js 14+ 프로젝트 생성 및 기본 구조 설정
+- [x] TypeScript 설정 및 타입 안전성 확보
+- [x] TailwindCSS v4 설정 및 기본 스타일링
+- [x] shadcn/ui 설치 및 컴포넌트 라이브러리 구성
+- [x] ESLint, Prettier 코드 품질 도구 설정
+- [x] 라우트 그룹 생성 ((common), (auth), (admin))
 
 #### 데이터베이스 및 백엔드 설정
 
-- [ ] Prisma 스키마 설계 (User, Post, Category, Hashtag 등)
-- [ ] 데이터베이스 연결 및 마이그레이션
-- [ ] Prisma Client 생성 및 설정
-- [ ] API 라우트 기본 구조 생성
-- [ ] 환경 변수 설정 (.env.local)
+- [x] Prisma 스키마 설계 (User, Post, Category, Hashtag 등)
+- [x] 데이터베이스 연결 및 마이그레이션
+- [x] Prisma Client 생성 및 설정
+- [x] API 라우트 기본 구조 생성
+- [x] 환경 변수 설정 (.env.local)
 
 #### 인증 시스템 구현
 
-- [ ] JWT 유틸리티 함수 구현 (/app/api/\_libs/tools/jwt.ts)
-- [ ] bcrypt 비밀번호 해싱 구현 (/app/api/\_libs/tools/bcrypt.ts)
-- [ ] 사용자 로그인 API (POST /api/auth/sign_in)
-- [ ] 로그아웃 API (POST /api/auth/sign_out)
-- [ ] 토큰 갱신 & 검증 API (POST/GET /api/auth/refresh)
-- [ ] 인증 미들웨어 구현 (/app/api/\_libs/middleware/auth.ts)
-- [ ] HTTP-only 쿠키 설정
-- [ ] User 전용 타입 정의 구현
+- [x] JWT 유틸리티 함수 구현 (/app/api/\_libs/tools/jwt.ts)
+- [x] bcrypt 비밀번호 해싱 구현 (/app/api/\_libs/tools/bcrypt.ts)
+- [x] 사용자 로그인 API (POST /api/auth/sign_in)
+- [x] 로그아웃 API (POST /api/auth/sign_out)
+- [x] 토큰 갱신 & 검증 API (POST/GET /api/auth/refresh)
+- [x] 인증 미들웨어 구현 (/app/api/\_libs/middleware/auth.ts)
+- [x] HTTP-only 쿠키 설정
+- [x] User 전용 타입 정의 구현
 
 #### 보안 설정
 
@@ -47,129 +47,261 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ### 📝 2단계: 콘텐츠 관리 시스템 (3주)
 
-#### 블로그 포스트 CRUD API
+#### 블로그 포스트 CRUD
 
-- [ ] 포스트 목록 조회 API (GET /api/posts)
-- [ ] 포스트 상세 조회 API (GET /api/posts/:id)
-- [ ] 포스트 작성 API (POST /api/posts)
-- [ ] 포스트 수정 API (PUT /api/posts/:id)
-- [ ] 포스트 삭제 API (DELETE /api/posts/:id)
-- [ ] 포스트 검색 API (GET /api/posts/search)
-- [ ] 포스트 발행/취소 API (PATCH /api/posts/:id/publish)
-- [ ] 포스트 조회수 증가 API (PATCH /api/posts/:id/views)
-- [ ] 포스트 좋아요 증가 API (PATCH /api/posts/:id/likes)
-- [ ] 포스트별 조회 이력 조회 API (GET /api/posts/:id/views)
-- [ ] 포스트별 좋아요 이력 조회 API (GET /api/posts/:id/likes)
-- [ ] 포스트별 좋아요 추가/취소 API (POST/DELETE /api/posts/:id/like)
-- [ ] 포스트별 중복 좋아요/조회 방지 로직
-- [ ] 카테고리별 포스트 필터링
-- [ ] 포스트 임시 저장 API (POST /api/posts/draft)
-- [ ] 임시 저장 포스트 조회 API (GET /api/posts/drafts)
-- [ ] 임시 저장 포스트 복구 API (GET /api/posts/drafts/:id/restore)
-- [ ] 포스트 자동 저장 API (PATCH /api/posts/:id/autosave)
-- [ ] 포스트 상태 일괄 변경 API (PATCH /api/posts/batch-status)
-- [ ] 포스트 일괄(선택) 삭제 API (DELETE /api/posts/batch)
-- [ ] 관련 포스트 추천 API (GET /api/posts/:id/related)
-- [ ] 포스트 목록 정렬 옵션 확장 (최신순, 인기순, 조회순)
+##### Backend API 구현
+
+- [ ] GET /api/posts - 포스트 목록 조회
+- [ ] GET /api/posts/:id - 포스트 상세 조회
+- [ ] POST /api/posts - 포스트 작성
+- [ ] PUT /api/posts/:id - 포스트 수정
+- [ ] DELETE /api/posts/:id - 포스트 삭제
+- [ ] GET /api/posts/search - 포스트 검색
+- [ ] PATCH /api/posts/:id/publish - 포스트 발행/취소
+- [ ] PATCH /api/posts/:id/views - 포스트 조회수 증가
+- [ ] PATCH /api/posts/:id/likes - 포스트 좋아요 증가
+- [ ] GET /api/posts/:id/views - 포스트별 조회 이력 조회
+- [ ] GET /api/posts/:id/likes - 포스트별 좋아요 이력 조회
+- [ ] POST/DELETE /api/posts/:id/like - 포스트별 좋아요 추가/취소
+- [ ] POST /api/posts/draft - 포스트 임시 저장
+- [ ] GET /api/posts/drafts - 임시 저장 포스트 조회
+- [ ] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
+- [ ] PATCH /api/posts/:id/autosave - 포스트 자동 저장
+- [ ] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
+- [ ] DELETE /api/posts/batch - 포스트 일괄(선택) 삭제
+- [ ] GET /api/posts/:id/related - 관련 포스트 추천
+
+##### Frontend Hooks 구현
+
+- [ ] useGetPosts - 포스트 목록 조회
+- [ ] useGetPost - 포스트 상세 조회
+- [ ] useCreatePost - 포스트 작성
+- [ ] useUpdatePost - 포스트 수정
+- [ ] useDeletePost - 포스트 삭제
+- [ ] useSearchPosts - 포스트 검색
+- [ ] usePublishPost - 포스트 발행/취소
+- [ ] usePostViews - 포스트 조회수 관련
+- [ ] usePostLikes - 포스트 좋아요 관련
+- [ ] useDraftPost - 임시 저장
+- [ ] useAutosavePost - 자동 저장
+- [ ] useBatchPosts - 일괄 작업
+- [ ] useRelatedPosts - 관련 포스트
+
+##### UI 구현
+
+- [ ] 포스트 목록 페이지 (/admin/posts)
+- [ ] 포스트 작성 페이지 (/admin/posts/new)
+- [ ] 포스트 수정 페이지 (/admin/posts/[id]/edit)
+- [ ] 포스트 상세 보기 모달/페이지
+- [ ] 포스트 검색 컴포넌트
+- [ ] 포스트 상태 변경 UI
+- [ ] 조회수/좋아요 표시 UI
+- [ ] 임시 저장 목록 UI
+- [ ] 자동 저장 상태 표시
+- [ ] 일괄 작업 UI (체크박스, 툴바)
+- [ ] 관련 포스트 표시 UI
 
 #### 카테고리 관리 시스템
 
-- [ ] 카테고리 목록 조회 API (GET /api/categories)
-- [ ] 카테고리 생성 API (POST /api/categories)
-- [ ] 카테고리 수정 API (PUT /api/categories/:id)
-- [ ] 카테고리 삭제 API (DELETE /api/categories/:id)
-- [ ] 카테고리별 포스트 목록 API
-- [ ] 포스트 작성 중 카테고리 즉석 생성 기능
+##### Backend API 구현
+
+- [ ] GET /api/categories - 카테고리 목록 조회
+- [ ] POST /api/categories - 카테고리 생성
+- [ ] PUT /api/categories/:id - 카테고리 수정
+- [ ] DELETE /api/categories/:id - 카테고리 삭제
+- [ ] GET /api/categories/:id/posts - 카테고리별 포스트 목록
+
+##### Frontend Hooks 구현
+
+- [ ] useGetCategories - 카테고리 목록 조회
+- [ ] useCreateCategory - 카테고리 생성
+- [ ] useUpdateCategory - 카테고리 수정
+- [ ] useDeleteCategory - 카테고리 삭제
+- [ ] useGetCategoryPosts - 카테고리별 포스트
+
+##### UI 구현
+
+- [ ] 카테고리 관리 페이지 (/admin/categories)
+- [ ] 카테고리 생성/수정 모달
+- [ ] 카테고리 목록 컴포넌트
+- [ ] 카테고리 선택 드롭다운
+- [ ] 즉석 카테고리 생성 UI
 
 #### 서브카테고리 관리 시스템
 
-- [ ] 서브카테고리 목록 조회 API (GET /api/subcategories)
-- [ ] 서브카테고리 생성 API (POST /api/subcategories)
-- [ ] 서브카테고리 수정 API (PUT /api/subcategories/:id)
-- [ ] 서브카테고리 삭제 API (DELETE /api/subcategories/:id)
-- [ ] 카테고리별 서브카테고리 필터링
-- [ ] 서브카테고리별 포스트 필터링
-- [ ] 포스트 작성 중 서브카테고리 즉석 생성 기능
+##### Backend API 구현
+
+- [ ] GET /api/subcategories - 서브카테고리 목록 조회
+- [ ] POST /api/subcategories - 서브카테고리 생성
+- [ ] PUT /api/subcategories/:id - 서브카테고리 수정
+- [ ] DELETE /api/subcategories/:id - 서브카테고리 삭제
+- [ ] GET /api/subcategories/:id/posts - 서브카테고리별 포스트 목록
+
+##### Frontend Hooks 구현
+
+- [ ] useGetSubcategories - 서브카테고리 목록 조회
+- [ ] useCreateSubcategory - 서브카테고리 생성
+- [ ] useUpdateSubcategory - 서브카테고리 수정
+- [ ] useDeleteSubcategory - 서브카테고리 삭제
+- [ ] useGetSubcategoryPosts - 서브카테고리별 포스트
+
+##### UI 구현
+
+- [ ] 서브카테고리 관리 페이지 (/admin/subcategories)
+- [ ] 서브카테고리 생성/수정 모달
+- [ ] 서브카테고리 목록 컴포넌트
+- [ ] 서브카테고리 선택 드롭다운
+- [ ] 즉석 서브카테고리 생성 UI
 
 #### 해시태그 시스템
 
-- [ ] 해시태그 목록 조회 API (GET /api/hashtags)
-- [ ] 해시태그 생성 API (POST /api/hashtags)
-- [ ] 해시태그 수정 API (PUT /api/hashtags/:id)
-- [ ] 해시태그 삭제 API (DELETE /api/hashtags/:id)
-- [ ] 해시태그별 포스트 필터링
-- [ ] 해시태그 자동 완성 기능
-- [ ] 포스트-해시태그 연결 로직
+##### Backend API 구현
 
-#### 사용자 프로필 관리
+- [ ] GET /api/hashtags - 해시태그 목록 조회
+- [ ] POST /api/hashtags - 해시태그 생성
+- [ ] PUT /api/hashtags/:id - 해시태그 수정
+- [ ] DELETE /api/hashtags/:id - 해시태그 삭제
+- [ ] GET /api/hashtags/:id/posts - 해시태그별 포스트 목록
+- [ ] GET /api/hashtags/autocomplete - 해시태그 자동완성
 
-- [ ] 사용자 정보 조회 API (GET /api/admin/profile)
-- [ ] 사용자 정보 수정 API (PUT /api/admin/profile)
-- [ ] 사용자 비밀번호 변경 API (PUT /api/admin/password)
-- [ ] 사용자 프로필 관리 페이지 (/admin/profile)
+##### Frontend Hooks 구현
+
+- [ ] useGetHashtags - 해시태그 목록 조회
+- [ ] useCreateHashtag - 해시태그 생성
+- [ ] useUpdateHashtag - 해시태그 수정
+- [ ] useDeleteHashtag - 해시태그 삭제
+- [ ] useGetHashtagPosts - 해시태그별 포스트
+- [ ] useHashtagAutocomplete - 해시태그 자동완성
+
+##### UI 구현
+
+- [ ] 해시태그 관리 페이지 (/admin/hashtags)
+- [ ] 해시태그 생성/수정 모달
+- [ ] 해시태그 목록 컴포넌트
+- [ ] 해시태그 입력 필드 (자동완성)
+- [ ] 해시태그 배지 컴포넌트
+
+#### 관리자 관리 시스템
+
+##### Backend API 구현
+
+- [x] GET /api/users - 관리자 목록 조회
+- [x] GET /api/users/:id - 관리자 상세 조회
+- [x] GET /api/users/email/:email - 이메일로 관리자 조회
+- [x] GET /api/users/name/:name - 관리자명으로 관리자 조회
+- [x] POST /api/users - 관리자 생성
+- [x] PUT /api/users/:id - 관리자 정보 수정
+- [x] PUT /api/users/:id/password - 관리자 비밀번호 수정
+- [x] PUT /api/users/:id/image - 관리자 이미지 수정
+- [x] DELETE /api/users/:id - 관리자 삭제
+- [x] DELETE /api/users - 관리자 일괄 삭제
+
+##### Frontend Hooks 구현
+
+- [x] useGetUsers - 관리자 목록 조회
+- [x] useGetUserById - 관리자 상세 조회
+- [x] useGetUserByEmail - 이메일로 관리자 조회
+- [x] useGetUserByUsername - 관리자명으로 관리자 조회
+- [x] useCreateUser - 관리자 생성
+- [x] useUpdateUser - 관리자 정보 수정
+- [x] useUpdateUserPassword - 관리자 비밀번호 수정
+- [x] useUpdateUserImage - 관리자 이미지 수정
+- [x] useDeleteUser - 관리자 삭제
+- [x] useDeleteUsers - 관리자 일괄 삭제
+- [x] useUserSession - 관리자 세션 관리
+- [x] useUserActions - 관리자 액션 관리
+
+##### UI 구현
+
+- [ ] 관리자 목록 페이지 (/admin/users)
+- [ ] 관리자 상세 페이지 (/admin/users/[id])
+- [ ] 관리자 생성 모달
+- [ ] 관리자 수정 모달
+- [ ] 관리자 삭제 확인 모달
+- [ ] 관리자 일괄 삭제 UI
+- [ ] 관리자 검색 필터
+- [ ] 관리자 권한 관리 UI
+- [ ] 관리자 상태 표시 UI
+- [ ] 관리자 프로필 이미지 업로드 UI
 
 #### 마크다운 에디터 구현
+
+##### Backend API 구현
+
+- [ ] POST /api/upload/image - 이미지 업로드
+- [ ] DELETE /api/upload/image/:id - 이미지 삭제
+- [ ] GET /api/upload/images - 이미지 목록 조회
+
+##### Frontend Hooks 구현
+
+- [ ] useUploadImage - 이미지 업로드
+- [ ] useDeleteImage - 이미지 삭제
+- [ ] useGetImages - 이미지 목록 조회
+- [ ] useMarkdownEditor - 에디터 상태 관리
+- [ ] useAutosave - 자동 저장
+
+##### UI 구현
 
 - [ ] 마크다운 에디터 컴포넌트 (shadcn/ui 기반)
 - [ ] 실시간 프리뷰 기능
 - [ ] 미리보기 버튼 OFF/ON 표시 개선
 - [ ] 탭 키 들여쓰기 기능 (스페이스 2칸)
-- [ ] 이미지 업로드 기능
+- [ ] 이미지 업로드 UI
 - [ ] 드래그 앤 드롭 이미지 업로드
+- [ ] 이미지 갤러리 모달
+- [ ] 에디터 툴바
 - [ ] 마크다운 렌더링 최적화
 
-#### 어드민 페이지 구현
+#### 어드민 대시보드
+
+##### Backend API 구현
+
+- [ ] GET /api/admin/stats - 전체 통계 데이터
+- [ ] GET /api/admin/posts/stats - 포스트 통계
+- [ ] GET /api/admin/views/stats - 조회수 통계
+- [ ] GET /api/admin/likes/stats - 좋아요 통계
+- [ ] GET /api/admin/categories/stats - 카테고리별 통계
+- [ ] GET /api/admin/backup - 데이터 백업
+- [ ] POST /api/admin/restore - 데이터 복원
+
+##### Frontend Hooks 구현
+
+- [ ] useAdminStats - 전체 통계
+- [ ] usePostStats - 포스트 통계
+- [ ] useViewStats - 조회수 통계
+- [ ] useLikeStats - 좋아요 통계
+- [ ] useCategoryStats - 카테고리 통계
+- [ ] useBackup - 백업/복원
+
+##### UI 구현
 
 - [ ] 어드민 대시보드 (/admin)
-- [ ] 포스트 관리 페이지 (/admin/posts)
-- [ ] 새 포스트 작성 페이지 (/admin/posts/new)
-- [ ] 포스트 수정 페이지 (/admin/posts/[id]/edit)
-- [ ] 임시 저장 포스트 관리 페이지 (/admin/posts/drafts)
-- [ ] 카테고리 관리 페이지 (/admin/categories)
-- [ ] 서브카테고리 관리 페이지 (/admin/subcategories)
-- [ ] 해시태그 관리 페이지 (/admin/hashtags)
-- [ ] 사용자 프로필 페이지 (/admin/profile)
-- [ ] 블로그 설정 페이지 (/admin/settings)
+- [ ] 통계 차트 컴포넌트
 - [ ] 포스트 통계 페이지 (/admin/analytics)
 - [ ] 백업 및 복원 페이지 (/admin/backup)
-- [ ] 포스트 작성/수정 페이지 내 카테고리/서브카테고리 즉석 생성 모달
-- [ ] 체크박스 선택 시스템 (일괄 작업)
-- [ ] 일괄 작업 툴바
-- [ ] 확인 모달 컴포넌트
-- [ ] 선택된 항목 카운터
+- [ ] 블로그 설정 페이지 (/admin/settings)
 
-#### 상태 관리 및 API 통신
+#### 공개 블로그 페이지
 
-- [ ] Zustand 스토어 설정 (/app/\_entities)
-- [ ] TanStack React Query 설정
-- [ ] API 클라이언트 설정 (Axios)
-- [ ] 커스텀 훅 구현 (React Query)
-- [ ] 토스트 알림 시스템 (성공/오류 메시지)
+##### Backend API 구현
 
-#### 포스트 상태 및 공개 범위
+- [ ] GET /api/blog - 블로그 메인 데이터
+- [ ] GET /api/blog/posts - 공개 포스트 목록
+- [ ] GET /api/blog/posts/:id - 공개 포스트 상세
+- [ ] GET /api/blog/categories - 공개 카테고리 목록
+- [ ] GET /api/blog/search - 블로그 검색
+- [ ] GET /api/blog/about - 블로그 소개 데이터
 
-- 포스트 상태(status):
-  - DRAFT: 임시저장
-  - ARCHIVED: 보관
-  - PENDING: 작성중
-  - COMPLETED: 작성완료
-- 공개 범위(publish):
-  - PUBLIC: 전체 공개
-  - PRIVATE: 비공개
-  - PROTECTED: 보호됨(비밀번호 등)
+##### Frontend Hooks 구현
 
-#### 포스트 통계 및 인터랙션 UI
+- [ ] useBlogMain - 블로그 메인
+- [ ] useBlogPosts - 공개 포스트 목록
+- [ ] useBlogPost - 공개 포스트 상세
+- [ ] useBlogCategories - 공개 카테고리
+- [ ] useBlogSearch - 블로그 검색
+- [ ] useBlogAbout - 블로그 소개
 
-- [ ] 포스트별 조회수 카운트 UI
-- [ ] 포스트별 좋아요 카운트 UI
-- [ ] 좋아요 버튼(중복 방지, 로그인 필요)
-- [ ] 조회수/좋아요 통계 페이지 (/admin/analytics)
-- [ ] 포스트별 조회/좋아요 이력 상세 페이지
-- [ ] 인기 포스트(조회수/좋아요 기준) 목록 UI
-
-### 🌐 3단계: 공개 블로그 페이지 (2주)
-
-#### 프론트엔드 블로그 페이지
+##### UI 구현
 
 - [ ] 홈페이지 (/) - 최신 포스트 목록
 - [ ] 전체 포스트 목록 페이지 (/posts)
@@ -178,24 +310,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 카테고리별 포스트 목록 (/categories/[category])
 - [ ] 블로그 검색 페이지 (/search)
 - [ ] 블로그 소개 페이지 (/about)
-
-#### 인증 페이지
-
-- [ ] 사용자 로그인 페이지 (/auth/sign-in)
-- [ ] 로그인 폼 컴포넌트 (shadcn/ui)
-- [ ] 인증 상태 관리
-
-#### UI/UX 구현
-
-- [ ] 반응형 디자인 (모바일/태블릿/데스크톱)
-- [ ] 다크 모드 지원
-- [ ] 로딩 상태 및 스켈레톤 UI
-- [ ] 에러 처리 및 사용자 피드백
-- [ ] 페이지네이션 구현
-- [ ] 검색 기능 UI
-
-#### 공통 컴포넌트
-
 - [ ] Header 컴포넌트
 - [ ] Footer 컴포넌트
 - [ ] Navigation 컴포넌트
@@ -203,6 +317,53 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 카테고리 배지 컴포넌트
 - [ ] 해시태그 컴포넌트
 - [ ] 공유 버튼 컴포넌트
+
+#### SEO 최적화
+
+##### Backend API 구현
+
+- [ ] GET /api/sitemap.xml - 사이트맵 생성
+- [ ] GET /api/rss.xml - RSS 피드
+- [ ] GET /api/robots.txt - 로봇 설정
+
+##### Frontend Hooks 구현
+
+- [ ] useMetaTags - 동적 메타 태그
+- [ ] useStructuredData - JSON-LD
+- [ ] useOpenGraph - OG 태그
+- [ ] useTwitterCard - 트위터 카드
+
+##### UI/최적화 구현
+
+- [ ] 동적 메타 태그 생성
+- [ ] Open Graph 태그 설정
+- [ ] Twitter Card 메타 태그
+- [ ] 구조화된 데이터 (JSON-LD) 구현
+- [ ] 이미지 최적화 (Next.js Image)
+- [ ] 코드 스플리팅 최적화
+- [ ] 번들 크기 최적화
+- [ ] 캐싱 전략 구현
+- [ ] 지연 로딩 구현
+
+#### 보안 설정
+
+##### Backend 구현
+
+- [ ] CORS 설정
+- [ ] CSRF 보호 구현
+- [ ] XSS 방지 설정
+- [ ] Rate Limiting 구현
+- [ ] API 요청 유효성 검사
+- [ ] 파일 업로드 보안
+- [ ] 에러 로깅 시스템
+
+##### Frontend 구현
+
+- [ ] CSRF 토큰 처리
+- [ ] XSS 방지 (입력 검증)
+- [ ] 인증 상태 관리
+- [ ] 에러 처리 및 사용자 피드백
+- [ ] 보안 헤더 설정
 
 ### 🚀 4단계: SEO 최적화 및 배포 (1주)
 
@@ -394,3 +555,58 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 공개 블로그 페이지 기본 구조
 - [ ] 통계 기능 기초
 - [ ] 성능 최적화
+
+## 📁 페이지 라우트 구조
+
+### (admin) 어드민 라우트
+
+| 경로                     | 설명                  |
+| ------------------------ | --------------------- |
+| `/admin`                 | 어드민 대시보드(메인) |
+| `/admin/posts`           | 포스트 목록/관리      |
+| `/admin/posts/new`       | 새 포스트 작성        |
+| `/admin/posts/[id]/edit` | 포스트 수정           |
+| `/admin/posts/drafts`    | 임시 저장 포스트 목록 |
+| `/admin/categories`      | 카테고리 관리         |
+| `/admin/subcategories`   | 서브카테고리 관리     |
+| `/admin/hashtags`        | 해시태그 관리         |
+| `/admin/profile`         | 사용자 프로필 관리    |
+| `/admin/settings`        | 블로그 설정           |
+| `/admin/analytics`       | 통계/분석             |
+| `/admin/backup`          | 백업 및 복원          |
+
+### (auth) 인증 라우트
+
+| 경로           | 설명            |
+| -------------- | --------------- |
+| `/auth/signin` | 로그인 페이지   |
+| `/auth/signup` | 회원가입 페이지 |
+
+### (common) 공개 블로그 라우트
+
+| 경로                     | 설명                        |
+| ------------------------ | --------------------------- |
+| `/`                      | 블로그 홈(최신 포스트 목록) |
+| `/posts`                 | 전체 포스트 목록            |
+| `/posts/[id]`            | 포스트 상세                 |
+| `/categories`            | 카테고리 목록               |
+| `/categories/[category]` | 카테고리별 포스트 목록      |
+| `/search`                | 블로그 검색                 |
+| `/about`                 | 블로그 소개                 |
+
+---
+
+### 📄 라우트 구조 설명
+
+- **(admin)**
+  블로그 관리 기능(포스트, 카테고리, 해시태그, 통계, 설정 등)을 위한 어드민 전용 라우트 그룹입니다.
+  모든 경로는 `/admin` 하위에 위치하며, 인증된 사용자만 접근 가능합니다.
+
+- **(auth)**
+  인증(로그인/회원가입 등) 관련 라우트 그룹입니다. (예: `/auth/signin`, `/auth/signup`)
+
+- **(common)**
+  일반 사용자를 위한 공개 블로그 페이지입니다.
+  포스트, 카테고리, 검색, 소개 등 방문자가 접근 가능한 모든 페이지가 포함됩니다.
+
+---
