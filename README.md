@@ -31,9 +31,11 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 - [x] JWT 유틸리티 함수 구현 (/app/api/\_libs/tools/jwt.ts)
 - [x] bcrypt 비밀번호 해싱 구현 (/app/api/\_libs/tools/bcrypt.ts)
-- [x] 사용자 로그인 API (POST /api/auth/sign_in)
-- [x] 로그아웃 API (POST /api/auth/sign_out)
-- [x] 토큰 갱신 & 검증 API (POST/GET /api/auth/refresh)
+- [ ] 사용자 회원가입 API (POST /api/auth/sign_up)
+- [ ] 사용자 로그인 API (POST /api/auth/sign_in)
+- [ ] 로그아웃 API (POST /api/auth/sign_out)
+- [ ] 토큰 갱신 & 검증 API (POST/GET /api/auth/refresh)
+- [x] 세션 조회 API (GET /api/auth/session)
 - [x] 인증 미들웨어 구현 (/app/api/\_libs/middleware/auth.ts)
 - [x] HTTP-only 쿠키 설정
 - [x] User 전용 타입 정의 구현
@@ -59,25 +61,25 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [x] GET /api/posts - 포스트 목록 조회
-- [x] GET /api/posts/:id - 포스트 상세 조회
-- [x] POST /api/posts - 포스트 작성
-- [x] PUT /api/posts/:id - 포스트 수정
-- [x] DELETE /api/posts/:id - 포스트 삭제
-- [x] GET /api/posts/search - 포스트 검색
-- [x] PATCH /api/posts/:id/publish - 포스트 발행/취소
-- [x] PATCH /api/posts/:id/views - 포스트 조회수 증가
-- [x] PATCH /api/posts/:id/likes - 포스트 좋아요 증가
-- [x] GET /api/posts/:id/views - 포스트별 조회 이력 조회
-- [x] GET /api/posts/:id/likes - 포스트별 좋아요 이력 조회
-- [x] POST/DELETE /api/posts/:id/like - 포스트별 좋아요 추가/취소
-- [x] POST /api/posts/draft - 포스트 임시 저장
-- [x] GET /api/posts/drafts - 임시 저장 포스트 조회
-- [x] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
-- [x] PATCH /api/posts/:id/autosave - 포스트 자동 저장
-- [x] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
-- [x] DELETE /api/posts/batch - 포스트 일괄(선택) 삭제
-- [x] GET /api/posts/:id/related - 관련 포스트 추천
+- [ ] GET /api/posts - 포스트 목록 조회
+- [ ] GET /api/posts/:id - 포스트 상세 조회
+- [ ] POST /api/posts - 포스트 작성
+- [ ] PUT /api/posts/:id - 포스트 수정
+- [ ] DELETE /api/posts/:id - 포스트 삭제
+- [ ] GET /api/posts/search - 포스트 검색
+- [ ] PATCH /api/posts/:id/publish - 포스트 발행/취소
+- [ ] PATCH /api/posts/:id/views - 포스트 조회수 증가
+- [ ] PATCH /api/posts/:id/likes - 포스트 좋아요 증가
+- [ ] GET /api/posts/:id/views - 포스트별 조회 이력 조회
+- [ ] GET /api/posts/:id/likes - 포스트별 좋아요 이력 조회
+- [ ] POST/DELETE /api/posts/:id/like - 포스트별 좋아요 추가/취소
+- [ ] POST /api/posts/draft - 포스트 임시 저장
+- [ ] GET /api/posts/drafts - 임시 저장 포스트 조회
+- [ ] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
+- [ ] PATCH /api/posts/:id/autosave - 포스트 자동 저장
+- [ ] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
+- [ ] DELETE /api/posts/batch - 포스트 일괄(선택) 삭제
+- [ ] GET /api/posts/:id/related - 관련 포스트 추천
 
 ##### Frontend Hooks 구현
 
@@ -113,11 +115,11 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [x] GET /api/categories - 카테고리 목록 조회
-- [x] POST /api/categories - 카테고리 생성
-- [x] PUT /api/categories/:id - 카테고리 수정
-- [x] DELETE /api/categories/:id - 카테고리 삭제
-- [x] GET /api/categories/:id/posts - 카테고리별 포스트 목록
+- [ ] GET /api/categories - 카테고리 목록 조회
+- [ ] POST /api/categories - 카테고리 생성
+- [ ] PUT /api/categories/:id - 카테고리 수정
+- [ ] DELETE /api/categories/:id - 카테고리 삭제
+- [ ] GET /api/categories/:id/posts - 카테고리별 포스트 목록
 
 ##### Frontend Hooks 구현
 
@@ -139,11 +141,11 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [x] GET /api/subcategories - 서브카테고리 목록 조회
-- [x] POST /api/subcategories - 서브카테고리 생성
-- [x] PUT /api/subcategories/:id - 서브카테고리 수정
-- [x] DELETE /api/subcategories/:id - 서브카테고리 삭제
-- [x] GET /api/subcategories/:id/posts - 서브카테고리별 포스트 목록
+- [ ] GET /api/subcategories - 서브카테고리 목록 조회
+- [ ] POST /api/subcategories - 서브카테고리 생성
+- [ ] PUT /api/subcategories/:id - 서브카테고리 수정
+- [ ] DELETE /api/subcategories/:id - 서브카테고리 삭제
+- [ ] GET /api/subcategories/:id/posts - 서브카테고리별 포스트 목록
 
 ##### Frontend Hooks 구현
 
@@ -165,12 +167,12 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [x] GET /api/hashtags - 해시태그 목록 조회
-- [x] POST /api/hashtags - 해시태그 생성
-- [x] PUT /api/hashtags/:id - 해시태그 수정
-- [x] DELETE /api/hashtags/:id - 해시태그 삭제
-- [x] GET /api/hashtags/:id/posts - 해시태그별 포스트 목록
-- [x] GET /api/hashtags/autocomplete - 해시태그 자동완성
+- [ ] GET /api/hashtags - 해시태그 목록 조회
+- [ ] POST /api/hashtags - 해시태그 생성
+- [ ] PUT /api/hashtags/:id - 해시태그 수정
+- [ ] DELETE /api/hashtags/:id - 해시태그 삭제
+- [ ] GET /api/hashtags/:id/posts - 해시태그별 포스트 목록
+- [ ] GET /api/hashtags/autocomplete - 해시태그 자동완성
 
 ##### Frontend Hooks 구현
 
@@ -193,16 +195,16 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ##### Backend API 구현
 
-- [x] GET /api/users - 관리자 목록 조회
-- [x] GET /api/users/:id - 관리자 상세 조회
-- [x] GET /api/users/email/:email - 이메일로 관리자 조회
-- [x] GET /api/users/name/:name - 관리자명으로 관리자 조회
-- [x] POST /api/users - 관리자 생성
-- [x] PUT /api/users/:id - 관리자 정보 수정
-- [x] PUT /api/users/:id/password - 관리자 비밀번호 수정
-- [x] PUT /api/users/:id/image - 관리자 이미지 수정
-- [x] DELETE /api/users/:id - 관리자 삭제
-- [x] DELETE /api/users - 관리자 일괄 삭제
+- [ ] GET /api/users - 관리자 목록 조회
+- [ ] GET /api/users/:id - 관리자 상세 조회
+- [ ] GET /api/users/email/:email - 이메일로 관리자 조회
+- [ ] GET /api/users/name/:name - 관리자명으로 관리자 조회
+- [ ] POST /api/users - 관리자 생성
+- [ ] PUT /api/users/:id - 관리자 정보 수정
+- [ ] PUT /api/users/:id/password - 관리자 비밀번호 수정
+- [ ] PUT /api/users/:id/image - 관리자 이미지 수정
+- [ ] DELETE /api/users/:id - 관리자 삭제
+- [ ] DELETE /api/users - 관리자 일괄 삭제
 
 ##### Frontend Hooks 구현
 
@@ -231,6 +233,52 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 관리자 권한 관리 UI
 - [ ] 관리자 상태 표시 UI
 - [ ] 관리자 프로필 이미지 업로드 UI
+
+#### 댓글 시스템 구현
+
+##### Backend API 구현
+
+- [ ] GET /api/comments - 댓글 목록 조회
+- [ ] GET /api/comments/:id - 댓글 상세 조회
+- [ ] GET /api/comments/post/:postId - 포스트별 댓글 목록
+- [ ] POST /api/comments - 댓글 작성 (방문자)
+- [ ] POST /api/comments/:id/reply - 댓글 답글 작성 (관리자)
+- [ ] PUT /api/comments/:id - 댓글 수정 (관리자)
+- [ ] DELETE /api/comments/:id - 댓글 삭제 (관리자)
+- [ ] PATCH /api/comments/:id/approve - 댓글 승인/거부
+- [ ] POST /api/comments/verify - 댓글 작성자 인증 (비밀번호 확인)
+
+##### Frontend Hooks 구현
+
+- [ ] useGetComments - 댓글 목록 조회
+- [ ] useGetComment - 댓글 상세 조회
+- [ ] useGetPostComments - 포스트별 댓글 목록
+- [ ] useCreateComment - 댓글 작성
+- [ ] useReplyComment - 댓글 답글 작성
+- [ ] useUpdateComment - 댓글 수정
+- [ ] useDeleteComment - 댓글 삭제
+- [ ] useApproveComment - 댓글 승인/거부
+- [ ] useVerifyComment - 댓글 작성자 인증
+
+##### UI 구현
+
+- [ ] 댓글 목록 컴포넌트 (공개 페이지)
+- [ ] 댓글 작성 폼 (이메일, 닉네임, 비밀번호, 내용)
+- [ ] 댓글 답글 컴포넌트 (2단계 구조)
+- [ ] 댓글 관리 페이지 (/admin/comments)
+- [ ] 댓글 승인/거부 UI
+- [ ] 댓글 검색 및 필터링
+- [ ] 댓글 일괄 작업 UI
+- [ ] 이메일 알림 설정 UI
+
+##### 이메일 알림 시스템
+
+- [ ] Nodemailer 설정 및 구성
+- [ ] 댓글 작성 시 관리자 알림 이메일
+- [ ] 답글 작성 시 원댓글 작성자 알림 이메일
+- [ ] 이메일 템플릿 구성 (HTML/텍스트)
+- [ ] 이메일 발송 큐 시스템 (선택사항)
+- [ ] 이메일 발송 로그 및 실패 처리
 
 #### 마크다운 에디터 구현
 
@@ -269,6 +317,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] GET /api/admin/views/stats - 조회수 통계
 - [ ] GET /api/admin/likes/stats - 좋아요 통계
 - [ ] GET /api/admin/categories/stats - 카테고리별 통계
+- [ ] GET /api/admin/comments/stats - 댓글 통계
 - [ ] GET /api/admin/backup - 데이터 백업
 - [ ] POST /api/admin/restore - 데이터 복원
 
@@ -279,6 +328,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] useViewStats - 조회수 통계
 - [ ] useLikeStats - 좋아요 통계
 - [ ] useCategoryStats - 카테고리 통계
+- [ ] useCommentStats - 댓글 통계
 - [ ] useBackup - 백업/복원
 
 ##### UI 구현
@@ -286,6 +336,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 어드민 대시보드 (/admin)
 - [ ] 통계 차트 컴포넌트
 - [ ] 포스트 통계 페이지 (/admin/analytics)
+- [ ] 댓글 통계 및 관리
 - [ ] 백업 및 복원 페이지 (/admin/backup)
 - [ ] 블로그 설정 페이지 (/admin/settings)
 
@@ -325,6 +376,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 카테고리 배지 컴포넌트
 - [ ] 해시태그 컴포넌트
 - [ ] 공유 버튼 컴포넌트
+- [ ] 댓글 섹션 컴포넌트 (공개 페이지용)
 
 #### SEO 최적화
 
@@ -364,6 +416,8 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] API 요청 유효성 검사
 - [ ] 파일 업로드 보안
 - [ ] 에러 로깅 시스템
+- [ ] 댓글 스팸 방지 시스템
+- [ ] 이메일 발송 보안 및 제한
 
 ##### Frontend 구현
 
@@ -414,12 +468,14 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 고급 기능
 
-- [ ] 댓글 시스템
 - [ ] 이메일 뉴스레터 구독
 - [ ] Google Analytics 연동
 - [ ] 방문자 통계 대시보드
 - [ ] 소셜 미디어 연동
 - [ ] 다국어 지원 (i18n)
+- [ ] 댓글 알림 시스템 고도화
+- [ ] 댓글 좋아요/싫어요 기능
+- [ ] 댓글 신고 시스템
 
 #### 개발자 경험 개선
 
@@ -448,36 +504,37 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 ## 1순위: 긴급 구현 과제 (1주 내)
 
-### 임시 저장 시스템 완성
+### A. 인증 시스템 API 구현
 
-- [x] POST /api/posts/draft - 포스트 임시 저장
-- [x] GET /api/posts/drafts - 임시 저장 포스트 목록 조회
-- [x] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
-- [x] PATCH /api/posts/:id/autosave - 포스트 자동 저장 (30초 간격)
+- [ ] POST /api/auth/sign_up - 회원가입
+- [ ] POST /api/auth/sign_in - 로그인
+- [ ] POST /api/auth/sign_out - 로그아웃
+- [ ] POST /api/auth/refresh - 토큰 리프레시
 
-### B. 일괄 작업 시스템
+### B. 핵심 API 구현
 
-- [x] DELETE /api/posts/batch - 포스트 일괄 삭제
-- [x] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
+- [ ] 모든 엔티티의 백엔드 API 구현 (posts, categories, subcategories, hashtags, users)
+- [ ] 임시 저장 시스템 API 구현
+- [ ] 일괄 작업 시스템 API 구현
 
 ## 2순위: 중요 구현 과제 (2주 내)
 
-### A. 마크다운 에디터 고도화
+### A. 댓글 시스템 구현
+
+- [ ] 댓글 데이터베이스 스키마 설계 (Comment, CommentReply 테이블)
+- [ ] 댓글 백엔드 API 구현 (CRUD, 승인, 인증)
+- [ ] 댓글 프론트엔드 훅 구현
+- [ ] 댓글 UI 컴포넌트 구현
+- [ ] 이메일 알림 시스템 구현 (Nodemailer)
+- [ ] 댓글 관리자 페이지 구현
+
+### B. 마크다운 에디터 고도화
 
 - [ ] 에디터 툴바 구현 (굵기, 기울임, 링크, 헤더 등)
 - [ ] 키보드 단축키 지원 (Ctrl+B, Ctrl+I 등)
 - [ ] 마크다운 문법 도움말
 - [ ] 에디터 전체화면 모드
 - [ ] 폰트 크기 조절 기능
-
-### B. 일괄 작업 시스템
-
-- [ ] DELETE /api/posts/batch - 포스트 일괄 삭제
-- [ ] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
-- [ ] 체크박스 선택 시스템
-- [ ] 일괄 작업 툴바
-- [ ] 확인 모달 컴포넌트
-- [ ] 선택된 항목 카운터
 
 ### C. 사용자 경험 개선
 
@@ -511,6 +568,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 포스트별 조회수/좋아요 통계 페이지
 - [ ] 카테고리별 인기도 분석
 - [ ] 월별/일별 방문자 통계
+- [ ] 댓글 통계 및 분석
 - [ ] 어드민 대시보드 차트 구현
 
 ## 4순위: 개선 및 최적화 과제 (필요시)
@@ -545,11 +603,14 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] API 요청 제한 (Rate Limiting)
 - [ ] XSS 방지 (마크다운 렌더링 시)
 - [ ] CSRF 토큰 강화
+- [ ] 댓글 스팸 방지 시스템
+- [ ] 이메일 발송 보안 및 제한
 
 ## 🎯 다음 스프린트 계획
 
-- [ ] 임시 저장 시스템 API 4개 구현
-- [ ] 자동 저장 훅 및 UI 구현
+- [ ] 인증 시스템 API 4개 구현
+- [ ] 핵심 엔티티 API 구현 완료
+- [ ] 댓글 시스템 설계 및 구현 시작
 - [ ] 마크다운 에디터 툴바 구현
 - [ ] 일괄 작업 시스템 구현
 - [ ] 토스트 알림 시스템
@@ -572,6 +633,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 | `/admin/categories`      | 카테고리 관리         |
 | `/admin/subcategories`   | 서브카테고리 관리     |
 | `/admin/hashtags`        | 해시태그 관리         |
+| `/admin/comments`        | 댓글 관리             |
 | `/admin/profile`         | 사용자 프로필 관리    |
 | `/admin/settings`        | 블로그 설정           |
 | `/admin/analytics`       | 통계/분석             |
@@ -601,7 +663,7 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 ### 📄 라우트 구조 설명
 
 - **(admin)**
-  블로그 관리 기능(포스트, 카테고리, 해시태그, 통계, 설정 등)을 위한 어드민 전용 라우트 그룹입니다.
+  블로그 관리 기능(포스트, 카테고리, 해시태그, 댓글, 통계, 설정 등)을 위한 어드민 전용 라우트 그룹입니다.
   모든 경로는 `/admin` 하위에 위치하며, 인증된 사용자만 접근 가능합니다.
 
 - **(auth)**

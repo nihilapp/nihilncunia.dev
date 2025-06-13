@@ -31,7 +31,15 @@
   - 해시태그(이름)
 
 - **PostHashtag**
+
   - 포스트-해시태그 연결 테이블
+
+- **Comment**
+
+  - 댓글(내용, 작성자 정보, 포스트, 승인 상태 등)
+
+- **CommentReply**
+  - 댓글 답글(내용, 관리자 답글, 원댓글 등)
 
 #### 테이블 관계
 
@@ -41,6 +49,9 @@
 - Post ↔ Hashtag: 다대다(Many-to-Many, PostHashtag 중간 테이블)
 - User ↔ UserAuth: 일대일(One-to-One)
 - Post ↔ User: 다대일(Many-to-One, 작성자)
+- Comment ↔ Post: 다대일(Many-to-One)
+- CommentReply ↔ Comment: 다대일(Many-to-One)
+- CommentReply ↔ User: 다대일(Many-to-One, 관리자)
 
 ---
 
@@ -67,6 +78,7 @@
 - `/admin/categories` : 카테고리 관리 페이지
 - `/admin/subcategories` : 서브카테고리 관리 페이지
 - `/admin/hashtags` : 해시태그 관리 페이지
+- `/admin/comments` : 댓글 관리 페이지
 - `/admin/profile` : 사용자 프로필 관리 페이지
 - `/admin/settings` : 블로그 설정 페이지
 
@@ -147,6 +159,18 @@
 - `/api/hashtags/:id` (DELETE) : 해시태그 삭제(사용자)
 - `/api/posts?hashtag=태그명` (GET) : 해시태그별 포스트 조회
 
+#### 댓글 관련
+
+- `/api/comments` (GET) : 댓글 목록 조회
+- `/api/comments/:id` (GET) : 댓글 상세 조회
+- `/api/comments/post/:postId` (GET) : 포스트별 댓글 목록
+- `/api/comments` (POST) : 댓글 작성(방문자)
+- `/api/comments/:id/reply` (POST) : 댓글 답글 작성(관리자)
+- `/api/comments/:id` (PUT) : 댓글 수정(관리자)
+- `/api/comments/:id` (DELETE) : 댓글 삭제(관리자)
+- `/api/comments/:id/approve` (PATCH) : 댓글 승인/거부
+- `/api/comments/verify` (POST) : 댓글 작성자 인증(비밀번호 확인)
+
 #### 파일 업로드(예정)
 
 - `/api/upload/image` (POST) : 이미지 업로드
@@ -162,9 +186,9 @@
 
 ## 3. 각 라우트별 주요 기능 요약
 
-- 공개 라우트: 블로그 포스트 열람, 카테고리/해시태그별 필터, 검색, 소개 등
-- 사용자(관리자) 라우트: 포스트/카테고리/서브카테고리/해시태그 CRUD, 임시 저장, 일괄 작업, 사용자 정보 관리, 블로그 설정 등
-- API 라우트: 프론트엔드와의 데이터 통신, 인증, 보안, CRUD, 임시 저장, 자동 저장, 일괄 작업, 이미지 업로드, SEO 등
+- 공개 라우트: 블로그 포스트 열람, 카테고리/해시태그별 필터, 검색, 소개, 댓글 작성 등
+- 사용자(관리자) 라우트: 포스트/카테고리/서브카테고리/해시태그/댓글 CRUD, 임시 저장, 일괄 작업, 사용자 정보 관리, 블로그 설정 등
+- API 라우트: 프론트엔드와의 데이터 통신, 인증, 보안, CRUD, 임시 저장, 자동 저장, 일괄 작업, 댓글 관리, 이미지 업로드, SEO 등
 
 ---
 
