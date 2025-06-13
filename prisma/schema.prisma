@@ -57,9 +57,9 @@ model User {
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
-  user_auth       UserAuth? // 1:1 관계
-  posts           Post[] // 1:N 관계 (작성한 포스트들)
-  comment_replies CommentReply[] // 1:N 관계 (작성한 답글들)
+  user_auth UserAuth? // 1:1 관계
+  posts     Post[]    // 1:N 관계 (작성한 포스트들)
+  comments  Comment[] // 1:N 관계 (작성한 댓글들)
 
   @@map("users")
 }
@@ -186,34 +186,23 @@ model PostLike {
 
 // 댓글
 model Comment {
-  id            String        @id @default(uuid())
-  content       String        @db.Text
-  author_name   String // 작성자 이름
-  author_email  String // 작성자 이메일
-  author_ip     String? // 작성자 IP
-  password_hash String // 비밀번호 해시 (수정/삭제용)
-  status        CommentStatus @default(PENDING)
-  post_id       String
-  created_at    DateTime      @default(now())
-  updated_at    DateTime      @updatedAt
+  id                String        @id @default(uuid())
+  content           String        @db.Text
+  author_name       String // 작성자 이름
+  author_email      String // 작성자 이메일
+  author_ip         String? // 작성자 IP
+  password_hash     String // 비밀번호 해시 (수정/삭제용)
+  status            CommentStatus @default(PENDING)
+  post_id           String
+  user_id           String?
+  parent_comment_id String?
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
 
-  post    Post           @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  replies CommentReply[] // 1:N 관계 (답글들)
+  post    Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user    User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  parent  Comment? @relation("CommentReplies", fields: [parent_comment_id], references: [id])
+  replies Comment[] @relation("CommentReplies")
 
   @@map("comments")
-}
-
-// 댓글 답글 (관리자 전용)
-model CommentReply {
-  id         String   @id @default(uuid())
-  content    String   @db.Text
-  comment_id String
-  user_id    String // 관리자 ID
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  comment Comment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("comment_replies")
 }
