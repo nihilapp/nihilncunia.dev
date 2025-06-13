@@ -48,14 +48,14 @@ export class UsersApi {
   }
 
   static async delete(deleteUser: DeleteUser) {
-    return Api.deleteWithDataQuery<User, DeleteUser>(
+    return Api.deleteWithDataQuery<null, DeleteUser>(
       `/users/${deleteUser.id}`,
       deleteUser
     );
   }
 
   static async deleteMany(deleteUsers: DeleteUsers) {
-    return Api.deletesQuery<DeletesUsersResponse, DeleteUsers>(
+    return Api.deletesQuery<null, DeleteUsers>(
       `/users`,
       deleteUsers
     );

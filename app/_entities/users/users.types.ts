@@ -34,7 +34,3 @@ export interface DeleteUser {
 export interface DeleteUsers {
   ids: string[];
 }
-
-export interface DeletesUsersResponse {
-  count: number;
-}

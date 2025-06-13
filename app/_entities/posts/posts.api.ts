@@ -1,5 +1,3 @@
-import { Api } from '@/_libs';
-import type { Post } from '@/_prisma/client';
 import type {
   CreatePost,
   UpdatePost,
@@ -7,8 +5,11 @@ import type {
   PublishPostParams,
   DraftPost,
   AutosavePostParams,
-  BatchPosts,
+  BatchPosts
 } from './posts.types';
+
+import { Api } from '@/_libs';
+import type { Post } from '@/_prisma/client';
 
 export class PostsApi {
   static async getAll() {
@@ -28,7 +29,7 @@ export class PostsApi {
   }
 
   static async delete(deletePost: DeletePost) {
-    return Api.deleteWithDataQuery<Post, DeletePost>(
+    return Api.deleteWithDataQuery<null, DeletePost>(
       `/posts/${deletePost.id}`,
       deletePost
     );
@@ -89,7 +90,7 @@ export class PostsApi {
   }
 
   static async batchDelete(batchPosts: BatchPosts) {
-    return Api.deletesQuery<Post[], BatchPosts>('/posts/batch', batchPosts);
+    return Api.deletesQuery<null, BatchPosts>('/posts/batch', batchPosts);
   }
 
   static async getRelated(id: string) {

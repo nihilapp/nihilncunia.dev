@@ -1,6 +1,7 @@
+import type { CreateHashtag, UpdateHashtag, DeleteHashtag } from './hashtags.types';
+
 import { Api } from '@/_libs';
 import type { Hashtag, Post } from '@/_prisma/client';
-import type { CreateHashtag, UpdateHashtag, DeleteHashtag } from './hashtags.types';
 
 export class HashtagsApi {
   static async getAll() {
@@ -20,7 +21,7 @@ export class HashtagsApi {
   }
 
   static async delete(deleteHashtag: DeleteHashtag) {
-    return Api.deleteWithDataQuery<Hashtag, DeleteHashtag>(
+    return Api.deleteWithDataQuery<null, DeleteHashtag>(
       `/hashtags/${deleteHashtag.id}`,
       deleteHashtag
     );

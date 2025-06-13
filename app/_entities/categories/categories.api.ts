@@ -1,6 +1,7 @@
+import type { CreateCategory, UpdateCategory, DeleteCategory } from './categories.types';
+
 import { Api } from '@/_libs';
 import type { Category, Post } from '@/_prisma/client';
-import type { CreateCategory, UpdateCategory, DeleteCategory } from './categories.types';
 
 export class CategoriesApi {
   static async getAll() {
@@ -20,7 +21,7 @@ export class CategoriesApi {
   }
 
   static async delete(deleteCategory: DeleteCategory) {
-    return Api.deleteWithDataQuery<Category, DeleteCategory>(
+    return Api.deleteWithDataQuery<null, DeleteCategory>(
       `/categories/${deleteCategory.id}`,
       deleteCategory
     );

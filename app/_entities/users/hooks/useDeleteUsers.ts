@@ -1,13 +1,13 @@
 import {
   useMutation,
-  useQueryClient,
+  useQueryClient
 } from '@tanstack/react-query';
 
 import type { MutationOptions } from '@/_entities/common';
 import { UsersApi, usersKeys } from '@/_entities/users';
-import type { DeletesUsersResponse, DeleteUsers } from '@/_entities/users';
+import type { DeleteUsers } from '@/_entities/users';
 
-export function useDeleteUsers(options?: MutationOptions<DeletesUsersResponse, DeleteUsers>) {
+export function useDeleteUsers(options?: MutationOptions<null, DeleteUsers>) {
   const queryClient = useQueryClient();
 
   const query = useMutation({

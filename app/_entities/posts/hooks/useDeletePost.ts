@@ -3,9 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { MutationOptions } from '@/_entities/common';
 import { postsKeys, PostsApi } from '@/_entities/posts';
 import type { DeletePost } from '@/_entities/posts';
-import type { Post } from '@/_prisma/client';
 
-export function useDeletePost(options?: MutationOptions<Post, DeletePost>) {
+export function useDeletePost(options?: MutationOptions<null, DeletePost>) {
   const queryClient = useQueryClient();
 
   const query = useMutation({

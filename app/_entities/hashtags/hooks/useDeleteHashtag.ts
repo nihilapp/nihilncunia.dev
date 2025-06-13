@@ -3,9 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { MutationOptions } from '@/_entities/common';
 import { hashtagsKeys, HashtagsApi } from '@/_entities/hashtags';
 import type { DeleteHashtag } from '@/_entities/hashtags';
-import type { Hashtag } from '@/_prisma/client';
 
-export function useDeleteHashtag(options?: MutationOptions<Hashtag, DeleteHashtag>) {
+export function useDeleteHashtag(options?: MutationOptions<null, DeleteHashtag>) {
   const queryClient = useQueryClient();
 
   const query = useMutation({

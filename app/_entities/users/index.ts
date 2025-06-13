@@ -5,8 +5,7 @@ export type {
   UpdateUserPassword,
   UpdateUserImage,
   DeleteUser,
-  DeleteUsers,
-  DeletesUsersResponse
+  DeleteUsers
 } from './users.types';
 
 export {
