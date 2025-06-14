@@ -40,14 +40,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [x] HTTP-only 쿠키 설정
 - [x] User 전용 타입 정의 구현
 
-##### Frontend Hooks 구현
-
-- [x] useSignUp - 회원가입
-- [x] useSignIn - 로그인
-- [x] useSignOut - 로그아웃
-- [x] useRefresh - 토큰 리프레시
-- [x] useGetSession - 세션 조회
-
 #### 보안 설정
 
 - [ ] CORS 설정
@@ -63,28 +55,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 ### 📝 2단계: 콘텐츠 관리 시스템 (3주)
 
 #### 블로그 포스트 CRUD
-
-##### Backend API 구현
-
-- [ ] GET /api/posts - 포스트 목록 조회
-- [ ] GET /api/posts/:id - 포스트 상세 조회
-- [ ] POST /api/posts - 포스트 작성
-- [ ] PUT /api/posts/:id - 포스트 수정
-- [ ] DELETE /api/posts/:id - 포스트 삭제
-- [ ] GET /api/posts/search - 포스트 검색
-- [ ] PATCH /api/posts/:id/publish - 포스트 발행/취소
-- [ ] PATCH /api/posts/:id/views - 포스트 조회수 증가
-- [ ] PATCH /api/posts/:id/likes - 포스트 좋아요 증가
-- [ ] GET /api/posts/:id/views - 포스트별 조회 이력 조회
-- [ ] GET /api/posts/:id/likes - 포스트별 좋아요 이력 조회
-- [ ] POST/DELETE /api/posts/:id/like - 포스트별 좋아요 추가/취소
-- [ ] POST /api/posts/draft - 포스트 임시 저장
-- [ ] GET /api/posts/drafts - 임시 저장 포스트 조회
-- [ ] GET /api/posts/drafts/:id/restore - 임시 저장 포스트 복구
-- [ ] PATCH /api/posts/:id/autosave - 포스트 자동 저장
-- [ ] PATCH /api/posts/batch-status - 포스트 상태 일괄 변경
-- [ ] DELETE /api/posts/batch - 포스트 일괄(선택) 삭제
-- [ ] GET /api/posts/:id/related - 관련 포스트 추천
 
 ##### Frontend Hooks 구현
 
@@ -118,14 +88,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 카테고리 관리 시스템
 
-##### Backend API 구현
-
-- [ ] GET /api/categories - 카테고리 목록 조회
-- [ ] POST /api/categories - 카테고리 생성
-- [ ] PUT /api/categories/:id - 카테고리 수정
-- [ ] DELETE /api/categories/:id - 카테고리 삭제
-- [ ] GET /api/categories/:id/posts - 카테고리별 포스트 목록
-
 ##### Frontend Hooks 구현
 
 - [x] useGetCategories - 카테고리 목록 조회
@@ -143,14 +105,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 즉석 카테고리 생성 UI
 
 #### 서브카테고리 관리 시스템
-
-##### Backend API 구현
-
-- [ ] GET /api/subcategories - 서브카테고리 목록 조회
-- [ ] POST /api/subcategories - 서브카테고리 생성
-- [ ] PUT /api/subcategories/:id - 서브카테고리 수정
-- [ ] DELETE /api/subcategories/:id - 서브카테고리 삭제
-- [ ] GET /api/subcategories/:id/posts - 서브카테고리별 포스트 목록
 
 ##### Frontend Hooks 구현
 
@@ -170,15 +124,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 해시태그 시스템
 
-##### Backend API 구현
-
-- [ ] GET /api/hashtags - 해시태그 목록 조회
-- [ ] POST /api/hashtags - 해시태그 생성
-- [ ] PUT /api/hashtags/:id - 해시태그 수정
-- [ ] DELETE /api/hashtags/:id - 해시태그 삭제
-- [ ] GET /api/hashtags/:id/posts - 해시태그별 포스트 목록
-- [ ] GET /api/hashtags/autocomplete - 해시태그 자동완성
-
 ##### Frontend Hooks 구현
 
 - [x] useGetHashtags - 해시태그 목록 조회
@@ -197,19 +142,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 해시태그 배지 컴포넌트
 
 #### 관리자 관리 시스템
-
-##### Backend API 구현
-
-- [ ] GET /api/users - 관리자 목록 조회
-- [ ] GET /api/users/:id - 관리자 상세 조회
-- [ ] GET /api/users/email/:email - 이메일로 관리자 조회
-- [ ] GET /api/users/name/:name - 관리자명으로 관리자 조회
-- [ ] POST /api/users - 관리자 생성
-- [ ] PUT /api/users/:id - 관리자 정보 수정
-- [ ] PUT /api/users/:id/password - 관리자 비밀번호 수정
-- [ ] PUT /api/users/:id/image - 관리자 이미지 수정
-- [ ] DELETE /api/users/:id - 관리자 삭제
-- [ ] DELETE /api/users - 관리자 일괄 삭제
 
 ##### Frontend Hooks 구현
 
@@ -240,18 +172,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 관리자 프로필 이미지 업로드 UI
 
 #### 댓글 시스템 구현
-
-##### Backend API 구현
-
-- [ ] GET /api/comments - 댓글 목록 조회
-- [ ] GET /api/comments/:id - 댓글 상세 조회
-- [ ] GET /api/comments/post/:postId - 포스트별 댓글 목록
-- [ ] POST /api/comments - 댓글 작성 (방문자)
-- [ ] POST /api/comments/:id/reply - 댓글 답글 작성 (관리자)
-- [ ] PUT /api/comments/:id - 댓글 수정 (관리자)
-- [ ] DELETE /api/comments/:id - 댓글 삭제 (관리자)
-- [ ] PATCH /api/comments/:id/approve - 댓글 승인/거부
-- [ ] POST /api/comments/verify - 댓글 작성자 인증 (비밀번호 확인)
 
 ##### Frontend Hooks 구현
 
@@ -287,12 +207,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 
 #### 마크다운 에디터 구현
 
-##### Backend API 구현
-
-- [ ] POST /api/upload/image - 이미지 업로드
-- [ ] DELETE /api/upload/image/:id - 이미지 삭제
-- [ ] GET /api/upload/images - 이미지 목록 조회
-
 ##### Frontend Hooks 구현
 
 - [ ] useUploadImage - 이미지 업로드
@@ -314,17 +228,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 마크다운 렌더링 최적화
 
 #### 어드민 대시보드
-
-##### Backend API 구현
-
-- [ ] GET /api/admin/stats - 전체 통계 데이터
-- [ ] GET /api/admin/posts/stats - 포스트 통계
-- [ ] GET /api/admin/views/stats - 조회수 통계
-- [ ] GET /api/admin/likes/stats - 좋아요 통계
-- [ ] GET /api/admin/categories/stats - 카테고리별 통계
-- [ ] GET /api/admin/comments/stats - 댓글 통계
-- [ ] GET /api/admin/backup - 데이터 백업
-- [ ] POST /api/admin/restore - 데이터 복원
 
 ##### Frontend Hooks 구현
 
@@ -348,15 +251,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 ### 🌐 3단계: 공개 블로그 및 보안 (2주)
 
 #### 공개 블로그 페이지
-
-##### Backend API 구현
-
-- [ ] GET /api/blog - 블로그 메인 데이터
-- [ ] GET /api/blog/posts - 공개 포스트 목록
-- [ ] GET /api/blog/posts/:id - 공개 포스트 상세
-- [ ] GET /api/blog/categories - 공개 카테고리 목록
-- [ ] GET /api/blog/search - 블로그 검색
-- [ ] GET /api/blog/about - 블로그 소개 데이터
 
 ##### Frontend Hooks 구현
 
@@ -382,18 +276,6 @@ Next.js와 최신 기술 스택을 활용한 개인 블로그 웹사이트입니
 - [ ] 포스트 카드 컴포넌트
 
 #### 보안 설정
-
-##### Backend 구현
-
-- [ ] CORS 설정
-- [ ] CSRF 보호 구현
-- [ ] XSS 방지 설정
-- [ ] Rate Limiting 구현
-- [ ] API 요청 유효성 검사
-- [ ] 파일 업로드 보안
-- [ ] 에러 로깅 시스템
-- [ ] 댓글 스팸 방지 시스템
-- [ ] 이메일 발송 보안 및 제한
 
 ##### Frontend 구현
 
