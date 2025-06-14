@@ -1,19 +1,23 @@
 import type { Token } from '@/_entities/auth';
+import { serverTools } from '@/api/_libs/tools';
 
-// 토큰 만료 여부를 확인하는 유틸 함수
-// exp: 만료 시간(초 단위, UNIX timestamp)
-export function isTokenExpired(exp: number): boolean {
-  // 현재 시간(초 단위)
-  const now = Math.floor(Date.now() / 1000);
-  return exp < now;
+interface TokenValidity {
+  accessToken: Token | null;
+  refreshToken: Token | null;
+  accessValid: boolean;
+  refreshValid: boolean;
 }
 
 // 액세스/리프레시 토큰의 만료 여부를 한 번에 판단하는 함수
-export function checkTokenValidity(
-  accessToken?: Token | null,
-  refreshToken?: Token | null
-): { accessValid: boolean; refreshValid: boolean } {
-  const accessValid = !!accessToken && !isTokenExpired(accessToken.exp);
-  const refreshValid = !!refreshToken && !isTokenExpired(refreshToken.exp);
-  return { accessValid, refreshValid, };
+export async function checkTokenValidity(): Promise<TokenValidity> {
+  const accessToken: Token = await serverTools.cookie.get('accessToken');
+  const refreshToken: Token = await serverTools.cookie.get('refreshToken');
+
+  // 0보다 크면 유효.
+  const accessValid = !!accessToken
+    && serverTools.jwt.expCheck(accessToken.exp) > 0;
+  const refreshValid = !!refreshToken
+    && serverTools.jwt.expCheck(refreshToken.exp) > 0;
+
+  return { accessToken, refreshToken, accessValid, refreshValid, };
 }

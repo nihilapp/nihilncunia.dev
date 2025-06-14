@@ -30,7 +30,7 @@ export class DB {
   }
 
   static subcategories() {
-    return this.client().subcategory;
+    return this.client().subCategory;
   }
 
   static hashtags() {
