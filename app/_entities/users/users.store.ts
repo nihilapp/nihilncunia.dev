@@ -5,7 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { UserSession } from '@/_entities/users/users.types';
 
 interface UserActions {
-
+  setUserSession: (userSession: UserSession) => void;
 }
 
 interface UserState {

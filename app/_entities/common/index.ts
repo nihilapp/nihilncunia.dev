@@ -9,6 +9,7 @@ export { useDone } from './hooks/useDone';
 export type {
   ApiError,
   ApiResponse,
+  CreateResponse,
   SiteConfig,
   SiteMetadata,
   MutationOptions

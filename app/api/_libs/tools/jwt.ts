@@ -1,10 +1,6 @@
 import { jwtVerify, SignJWT } from 'jose';
 
-import {
-  type TokenMode,
-  type TokenData,
-  type Tokens
-} from '@/_entities/user-auth';
+import type { TokenInfo, TokenMode, Tokens } from '@/_entities/auth';
 import { User } from '@/_prisma/client';
 
 export class Jwt {
@@ -27,8 +23,6 @@ export class Jwt {
       return expireTime;
     }
 
-    // 잘못된 형식이면 기본값 사용
-    console.warn(`잘못된 토큰 만료 시간 형식: ${expireTime}, 기본값 사용: ${defaultValue}`);
     return defaultValue;
   }
 
@@ -45,12 +39,6 @@ export class Jwt {
     const accessTokenSecret = await this.setSecret(process.env.NEXT_PUBLIC_ACCESS_TOKEN_SECRET);
     const refreshTokenSecret = await this.setSecret(process.env.NEXT_PUBLIC_REFRESH_TOKEN_SECRET);
 
-    // 환경 변수에서 만료 시간을 가져오고 올바른 형식으로 변환
-    console.log('DEBUG - 환경 변수 값:', {
-      access: process.env.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRE_TIME,
-      refresh: process.env.NEXT_PUBLIC_REFRESH_TOKEN_EXPIRE_TIME,
-    });
-
     const accessTokenExpire = this.validateExpireTime(
       process.env.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRE_TIME,
       '1h'
@@ -59,11 +47,6 @@ export class Jwt {
       process.env.NEXT_PUBLIC_REFRESH_TOKEN_EXPIRE_TIME,
       '30d'
     );
-
-    console.log('DEBUG - 변환된 값:', {
-      access: accessTokenExpire,
-      refresh: refreshTokenExpire,
-    });
 
     const accessToken = await new SignJWT(tokenPayload)
       .setProtectedHeader({ alg: 'HS256', })
@@ -83,11 +66,11 @@ export class Jwt {
     const refreshTokenInfo = await this.tokenInfo('refreshToken', refreshToken);
 
     return {
-      accessToken: {
+      access: {
         token: accessToken,
         exp: accessTokenInfo.exp,
       },
-      refreshToken: {
+      refresh: {
         token: refreshToken,
         exp: refreshTokenInfo.exp,
       },
@@ -98,7 +81,7 @@ export class Jwt {
   public async tokenInfo(
     mode: TokenMode,
     token: string
-  ): Promise<TokenData> {
+  ): Promise<TokenInfo> {
     const secretString = mode === 'accessToken'
       ? process.env.NEXT_PUBLIC_ACCESS_TOKEN_SECRET
       : process.env.NEXT_PUBLIC_REFRESH_TOKEN_SECRET;
@@ -114,7 +97,7 @@ export class Jwt {
         }
       );
 
-      return payload as unknown as TokenData;
+      return payload as unknown as TokenInfo;
     } catch (error: any) {
       console.error(
         `${mode} 토큰 검증 실패:`,

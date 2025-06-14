@@ -10,6 +10,9 @@ CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
 -- CreateEnum
 CREATE TYPE "DepthType" AS ENUM ('MAIN', 'SUB');
 
+-- CreateEnum
+CREATE TYPE "CommentStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'SPAM');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -111,6 +114,24 @@ CREATE TABLE "post_likes" (
     CONSTRAINT "post_likes_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "comments" (
+    "id" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "author_name" TEXT NOT NULL,
+    "author_email" TEXT NOT NULL,
+    "author_ip" TEXT,
+    "password_hash" TEXT NOT NULL,
+    "status" "CommentStatus" NOT NULL DEFAULT 'PENDING',
+    "post_id" TEXT NOT NULL,
+    "user_id" TEXT,
+    "parent_comment_id" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "comments_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -164,3 +185,12 @@ ALTER TABLE "post_views" ADD CONSTRAINT "post_views_post_id_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "post_likes" ADD CONSTRAINT "post_likes_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "posts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "comments" ADD CONSTRAINT "comments_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "posts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "comments" ADD CONSTRAINT "comments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "comments" ADD CONSTRAINT "comments_parent_comment_id_fkey" FOREIGN KEY ("parent_comment_id") REFERENCES "comments"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
+import type { Token, Tokens } from '@/_entities/auth';
+import { Api } from '@/_libs';
+import { isTokenExpired, serverTools } from '@/api/_libs';
+
 // 미들웨어가 실행될 경로를 정의합니다.
 // 블로그이므로 관리자 페이지(admin/)에만 인증이 필요합니다.
 export const config = {
@@ -13,99 +17,39 @@ export const config = {
 };
 
 export async function middleware(request: NextRequest) {
-  console.log('--- 관리자 인증 미들웨어 시작 ---');
-  console.log('관리자 페이지 요청 경로:', request.nextUrl.pathname);
+  const { pathname, } = request.nextUrl;
 
-  // 1. 쿠키에서 리프레시 토큰 가져오기
-  const refreshToken = request.cookies.get('refreshToken')?.value;
-  console.log('쿠키 내 리프레시 토큰:', refreshToken ? '발견됨' : '찾을 수 없음');
+  // 쿠키에서 토큰을 가져옵니다.
+  const accessToken = await serverTools.cookie.get<Token>('access');
+  const refreshToken = await serverTools.cookie.get<Token>('refresh');
 
-  // 2. 리프레시 토큰이 없으면 로그인 페이지로 리다이렉트
-  if (!refreshToken) {
-    console.log('관리자 인증 토큰 없음, 로그인 페이지로 리다이렉트합니다...');
-    const signInUrl = new URL('/auth/signin', request.url);
-    // 관리자 페이지 경로를 쿼리 파라미터로 추가하여 로그인 후 리다이렉트할 수 있도록 함
-    signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
-    return NextResponse.redirect(signInUrl);
+  // 1. 액세스 토큰이 없으면 로그인으로 이동
+  if (pathname.startsWith('/admin') && !accessToken) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 3. 내부 API 라우트를 호출하여 토큰 갱신/검증 시도
-  // 미들웨어는 자체 서버에서 실행되므로 절대 URL 사용
-  const refreshUrl = new URL('/api/auth/refresh', request.url);
-  console.log('토큰 갱신 API 호출:', refreshUrl.toString());
+  // 2. 액세스 토큰이 있으면 유효성 검사
+  if (accessToken) {
+    const tokenInfo = await serverTools.jwt.tokenInfo('accessToken', accessToken.token);
+    const isAccessValid = !isTokenExpired(tokenInfo.exp);
 
-  try {
-    const response = await fetch(refreshUrl, {
-      method: 'POST',
-      headers: {
-        // 현재 요청의 쿠키를 그대로 전달하여 리프레시 토큰을 API로 보냄
-        Cookie: request.cookies.toString(),
-        'Content-Type': 'application/json',
-      },
-      // refresh API가 본문을 요구하지 않더라도 명시적으로 빈 객체 또는 필요한 데이터 전송
-      body: JSON.stringify({}),
-    });
-
-    console.log('토큰 갱신 API 상태:', response.status);
-
-    // 4. API 응답 처리
-    if (response.ok) {
-      // 4.1. 갱신 성공: 응답에서 사용자 역할 확인
-      const data = await response.json();
-      if (data.response.role !== 'ADMIN') {
-        console.log('ADMIN 권한이 없어 접근을 차단합니다.');
-        return NextResponse.redirect(new URL('/', request.url));
-      }
-
-      console.log('관리자 토큰 갱신 성공, 관리자 페이지 접근 허용...');
-      const nextResponse = NextResponse.next(); // 다음 미들웨어/페이지로 진행
-
-      // refresh API 응답의 Set-Cookie 헤더를 가져와서 nextResponse에 설정
-      // (새 액세스 토큰과 리프레시 토큰이 쿠키로 설정됨)
-      const setCookieHeaders = response.headers.getSetCookie();
-      if (setCookieHeaders.length > 0) {
-        console.log('갱신 API 응답의 쿠키를 설정합니다.');
-        setCookieHeaders.forEach((cookie) => {
-          nextResponse.headers.append('Set-Cookie', cookie);
-        });
-      } else {
-        console.log('갱신 API 응답에 Set-Cookie 헤더가 없습니다.');
-        // 만약 refresh API 가 쿠키를 항상 설정하지 않는다면 이 부분 수정 필요
-        // 예를 들어, 토큰이 유효해서 갱신이 필요 없었을 수도 있음
-        // 이 경우엔 그냥 next() 만 해도 됨
-      }
-
-      return nextResponse;
-    } else {
-      // 4.2. 갱신 실패 (예: 리프레시 토큰 만료 또는 무효): 로그인 페이지로 리다이렉트
-      console.log('관리자 토큰 갱신 실패, 로그인 페이지로 리다이렉트합니다...');
-      const signInUrl = new URL('/auth/signin', request.url);
-      signInUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
-
-      // 실패 시 기존 쿠키 삭제 응답 생성
-      const redirectResponse = NextResponse.redirect(signInUrl);
-      console.log('유효하지 않은 관리자 인증 쿠키를 삭제합니다.');
-      redirectResponse.cookies.delete('refreshToken');
-      redirectResponse.cookies.delete('accessToken'); // accessToken 쿠키도 함께 삭제
-
-      // refresh API 응답에 쿠키 삭제 헤더가 있을 수 있으므로, 그것도 반영
-      const setCookieHeaders = response.headers.getSetCookie();
-      if (setCookieHeaders.length > 0) {
-        setCookieHeaders.forEach((cookie) => {
-          redirectResponse.headers.append('Set-Cookie', cookie);
-        });
-      }
-
-      return redirectResponse;
+    if (isAccessValid) {
+      // 액세스 토큰이 유효하면 정상 진행
+      return NextResponse.next();
     }
-  } catch (error) {
-    // 5. fetch 중 네트워크 오류 등 발생 시 처리
-    console.error('관리자 토큰 갱신 API 호출 중 오류 발생:', error);
-    // 오류 발생 시 안전하게 로그인 페이지로 보내거나 오류 페이지 표시
-    const signInUrl = new URL('/auth/signin', request.url);
-    signInUrl.searchParams.set('error', 'admin_auth_error');
-    return NextResponse.redirect(signInUrl);
-  } finally {
-    console.log('--- 관리자 인증 미들웨어 종료 ---');
+
+    // 액세스 토큰이 만료된 경우
+    // 3. 리프레시 토큰이 없거나 만료되었으면 로그인으로 이동
+    if (!refreshToken || isTokenExpired(refreshToken.exp)) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // 4. 리프레시 토큰이 유효하면 재발급 요청 (쿠키 등록은 라우트에서 처리)
+    const res = await Api.postQuery<Tokens, null>('/auth/refresh', null);
+    console.log('처리 결과:', res.message);
+    return NextResponse.next();
   }
+
+  // 5. 그 외의 경우(예외)에도 정상 진행
+  return NextResponse.next();
 }

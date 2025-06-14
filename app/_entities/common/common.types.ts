@@ -3,11 +3,19 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 export interface ApiError {
   message: string;
   response: null;
+  status: number;
 }
 
 export interface ApiResponse<T> {
   message: string;
   response: T;
+  status: number;
+}
+
+export interface CreateResponse<T> {
+  message?: string;
+  data?: T;
+  status: number;
 }
 
 export type MutationOptions<TData, TVariables> = UseMutationOptions<
