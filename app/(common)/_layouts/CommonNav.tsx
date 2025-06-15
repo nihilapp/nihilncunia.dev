@@ -36,6 +36,21 @@ export function CommonNav({ className, ...props }: Props) {
         <li>
           <Link href='/'>홈</Link>
         </li>
+        <li>
+          <Link href='/admin'>관리자</Link>
+        </li>
+        {/* <SignedIn>
+          <li>
+            <UserButton />
+            <SignOutButton />
+          </li>
+        </SignedIn>
+        <SignedOut>
+          <li>
+            <SignInButton />
+            <SignUpButton />
+          </li>
+        </SignedOut> */}
       </ul>
     </nav>
   );

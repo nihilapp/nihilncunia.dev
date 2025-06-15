@@ -50,16 +50,16 @@ enum CommentStatus {
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
-  name         String
+  username     String
   role         UserRole  @default(USER)
   image_url    String?
   last_sign_in DateTime?
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
-  user_auth UserAuth? // 1:1 관계
-  posts     Post[]    // 1:N 관계 (작성한 포스트들)
-  comments  Comment[] // 1:N 관계 (작성한 댓글들)
+  UserAuth UserAuth? // 1:1 관계
+  posts    Post[] // 1:N 관계 (작성한 포스트들)
+  comments Comment[] // 1:N 관계 (작성한 댓글들)
 
   @@map("users")
 }
@@ -199,9 +199,9 @@ model Comment {
   created_at        DateTime      @default(now())
   updated_at        DateTime      @updatedAt
 
-  post    Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  user    User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  parent  Comment? @relation("CommentReplies", fields: [parent_comment_id], references: [id])
+  post    Post      @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user    User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parent_comment_id], references: [id])
   replies Comment[] @relation("CommentReplies")
 
   @@map("comments")

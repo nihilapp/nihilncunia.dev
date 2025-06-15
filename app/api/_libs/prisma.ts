@@ -29,10 +29,6 @@ export class DB {
     return this.client().category;
   }
 
-  static subcategories() {
-    return this.client().subCategory;
-  }
-
   static hashtags() {
     return this.client().hashtag;
   }

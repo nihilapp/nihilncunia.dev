@@ -8,7 +8,7 @@
 - [ ] POST `/api/auth/sign_in` - 로그인하여 액세스 토큰과 리프레시 토큰을 발급합니다. (요청 데이터: `email`, `password`)
 - [ ] POST `/api/auth/sign_out` - 로그인 상태를 해제하고 쿠키의 토큰을 삭제합니다.
 - [ ] POST `/api/auth/refresh` - 리프레시 토큰을 검증한 뒤 새 토큰을 발급합니다.
-- [x] GET `/api/auth/session` - 현재 로그인한 사용자 세션을 조회합니다.
+- [ ] GET `/api/auth/session` - 현재 로그인한 사용자 세션을 조회합니다.
 
 ## 2. 사용자(User) API
 

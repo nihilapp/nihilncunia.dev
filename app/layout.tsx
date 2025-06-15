@@ -1,8 +1,8 @@
-import React from 'react';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Metadata } from 'next';
-import '@/_styles/tailwind.css';
 import Script from 'next/script';
+import React from 'react';
+import '@/_styles/tailwind.css';
 
 import { siteConfig } from './_config';
 import { Providers } from './_layouts';
