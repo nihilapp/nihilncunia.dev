@@ -46,23 +46,21 @@
 - [ ] DELETE `/api/posts/batch` - 선택한 포스트들을 한꺼번에 삭제합니다.
 - [ ] GET `/api/posts/:id/related` - 해당 포스트와 관련된 글을 추천합니다.
 
-## 4. 카테고리(Category) API
+## 4. 카테고리(Category) API - 계층 구조
 
-- [ ] GET `/api/categories` - 모든 카테고리를 조회합니다.
-- [ ] POST `/api/categories` - 카테고리를 생성합니다.
+- [ ] GET `/api/categories` - 모든 카테고리를 계층 구조로 조회합니다.
+- [ ] GET `/api/categories/flat` - 모든 카테고리를 평면 목록으로 조회합니다.
+- [ ] GET `/api/categories/:id` - 특정 카테고리 상세 정보를 조회합니다.
+- [ ] GET `/api/categories/slug/:slug` - 슬러그로 카테고리를 조회합니다.
+- [ ] POST `/api/categories` - 카테고리를 생성합니다. (요청 데이터: `name`, `slug`, `description`, `parent_id`, `order`)
 - [ ] PUT `/api/categories/:id` - 카테고리 정보를 수정합니다.
+- [ ] PATCH `/api/categories/:id/order` - 카테고리 순서를 변경합니다.
+- [ ] PATCH `/api/categories/:id/status` - 카테고리 활성화/비활성화를 변경합니다.
 - [ ] DELETE `/api/categories/:id` - 카테고리를 삭제합니다.
 - [ ] GET `/api/categories/:id/posts` - 특정 카테고리에 속한 포스트 목록을 조회합니다.
+- [ ] GET `/api/categories/:id/children` - 특정 카테고리의 하위 카테고리를 조회합니다.
 
-## 5. 서브카테고리(Subcategory) API
-
-- [ ] GET `/api/subcategories` - 모든 서브카테고리를 조회합니다.
-- [ ] GET `/api/subcategories?category_id=카테고리ID` - 특정 카테고리에 속한 서브카테고리 목록을 조회합니다.
-- [ ] POST `/api/subcategories` - 서브카테고리를 생성합니다.
-- [ ] PUT `/api/subcategories/:id` - 서브카테고리를 수정합니다.
-- [ ] DELETE `/api/subcategories/:id` - 서브카테고리를 삭제합니다.
-
-## 6. 해시태그(Hashtag) API
+## 5. 해시태그(Hashtag) API
 
 - [ ] GET `/api/hashtags` - 모든 해시태그를 조회합니다.
 - [ ] POST `/api/hashtags` - 해시태그를 생성합니다.
@@ -71,7 +69,25 @@
 - [ ] GET `/api/hashtags/:id/posts` - 해당 해시태그가 달린 포스트 목록을 조회합니다.
 - [ ] GET `/api/hashtags/autocomplete` - 키워드로 해시태그 자동완성 목록을 가져옵니다.
 
-## 7. 댓글(Comment) API
+## 6. 포스트 조회/좋아요(PostView/PostLike) API
+
+- [ ] GET `/api/posts/:id/views` - 특정 포스트의 조회 기록을 조회합니다.
+- [ ] POST `/api/posts/:id/view` - 포스트 조회수를 증가시키고 조회 기록을 저장합니다.
+- [ ] GET `/api/posts/:id/likes` - 특정 포스트의 좋아요 기록을 조회합니다.
+- [ ] POST `/api/posts/:id/like` - 포스트에 좋아요를 추가합니다.
+- [ ] DELETE `/api/posts/:id/like` - 포스트 좋아요를 취소합니다.
+- [ ] GET `/api/analytics/views` - 전체 조회수 통계를 조회합니다.
+- [ ] GET `/api/analytics/likes` - 전체 좋아요 통계를 조회합니다.
+
+## 7. 이메일 로그(EmailLog) API
+
+- [ ] GET `/api/email-logs` - 이메일 발송 로그 목록을 조회합니다.
+- [ ] GET `/api/email-logs/:id` - 특정 이메일 로그 상세 정보를 조회합니다.
+- [ ] POST `/api/email-logs` - 이메일 발송 로그를 생성합니다.
+- [ ] POST `/api/email-logs/:id/resend` - 실패한 이메일을 재발송합니다.
+- [ ] GET `/api/email-logs/stats` - 이메일 발송 통계를 조회합니다.
+
+## 8. 댓글(Comment) API
 
 - [ ] GET `/api/comments` - 댓글 목록을 조회합니다.
 - [ ] GET `/api/comments/:id` - 특정 댓글의 상세 정보를 조회합니다.
@@ -83,18 +99,21 @@
 - [ ] PATCH `/api/comments/:id/approve` - 댓글 승인 또는 거부 상태를 변경합니다.
 - [ ] POST `/api/comments/verify` - 비밀번호 검증을 통해 댓글 작성자를 확인합니다.
 
-## 8. 파일 업로드(Upload) API
+## 9. 파일 업로드(Upload) API
 
 - [ ] POST `/api/upload/image` - 이미지를 업로드합니다.
-- [ ] DELETE `/api/upload/image/:id` - 업로드된 이미지를 삭제합니다.
-- [ ] GET `/api/upload/images` - 이미지 목록을 조회합니다.
+- [ ] GET `/api/upload/images` - 업로드된 이미지 목록을 조회합니다.
+- [ ] GET `/api/upload/images/:id` - 특정 이미지 상세 정보를 조회합니다.
+- [ ] PUT `/api/upload/images/:id` - 이미지 메타데이터를 수정합니다. (alt_text 등)
+- [ ] DELETE `/api/upload/images/:id` - 업로드된 이미지를 삭제합니다.
+- [ ] POST `/api/upload/images/batch-delete` - 여러 이미지를 일괄 삭제합니다.
 
-## 9. SEO 및 기타 API
+## 10. SEO 및 기타 API
 
 - [ ] GET `/api/sitemap.xml` - 사이트맵을 동적으로 생성합니다.
 - [ ] GET `/api/rss.xml` - RSS 피드를 제공합니다.
 
-## 10. 어드민(Admin) 통계/백업 API
+## 11. 어드민(Admin) 통계/백업 API
 
 - [ ] GET `/api/admin/stats` - 전체 통계 데이터 조회
 - [ ] GET `/api/admin/posts/stats` - 포스트 통계 데이터 조회
@@ -105,7 +124,7 @@
 - [ ] GET `/api/admin/backup` - 데이터 백업
 - [ ] POST `/api/admin/restore` - 데이터 복원
 
-## 11. 공개 블로그(Blog) API
+## 12. 공개 블로그(Blog) API
 
 - [ ] GET `/api/blog` - 블로그 메인 데이터 조회
 - [ ] GET `/api/blog/posts` - 공개 포스트 목록 조회
@@ -114,6 +133,6 @@
 - [ ] GET `/api/blog/search` - 블로그 검색
 - [ ] GET `/api/blog/about` - 블로그 소개 데이터 조회
 
-## 12. 기타/보안/SEO 관련 API
+## 13. 기타/보안/SEO 관련 API
 
 - [ ] CORS, CSRF, XSS, Rate Limiting, 파일 업로드 보안, 에러 로깅, 댓글 스팸 방지, 이메일 발송 보안 등 보안 관련 API/미들웨어 구현 필요

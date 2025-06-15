@@ -2,8 +2,10 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { SessionProvider } from 'next-auth/react';
 import React from 'react';
 
+import { SessionRefresh } from '@/(common)/_components';
 import { Toaster } from '@/(common)/_components/ui/sonner';
 
 interface Props {
@@ -32,12 +34,13 @@ const queryClient = new QueryClient({
 
 export function Providers({ children, }: Props) {
   return (
-    <>
+    <SessionProvider>
       <QueryClientProvider client={queryClient}>
+        <SessionRefresh />
         {children}
         <ReactQueryDevtools />
         <Toaster />
       </QueryClientProvider>
-    </>
+    </SessionProvider>
   );
 }

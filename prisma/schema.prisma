@@ -15,27 +15,17 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum PublishType {
-  PUBLIC
-  PRIVATE
-  PROTECTED
-}
-
+// 포스트 상태
 enum PostStatus {
   DRAFT // 임시저장
-  ARCHIVED // 보관
-  PENDING // 작성중
-  COMPLETED // 작성완료
+  PUBLISHED // 발행됨
+  ARCHIVED // 보관됨
 }
 
+// 관리자 권한
 enum UserRole {
-  ADMIN
-  USER
-}
-
-enum DepthType {
-  MAIN
-  SUB
+  ADMIN // 관리자
+  SUPER_ADMIN // 슈퍼 관리자
 }
 
 // 댓글 상태
@@ -43,58 +33,55 @@ enum CommentStatus {
   PENDING // 승인 대기
   APPROVED // 승인됨
   REJECTED // 거부됨
-  SPAM // 스팸
 }
 
-// 사용자 정보
-model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  username     String
-  role         UserRole  @default(USER)
-  image_url    String?
-  last_sign_in DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+// 이메일 발송 타입
+enum EmailType {
+  COMMENT_NOTIFICATION // 댓글 알림
+  REPLY_NOTIFICATION // 답글 알림
+}
 
-  UserAuth UserAuth? // 1:1 관계
-  posts    Post[] // 1:N 관계 (작성한 포스트들)
-  comments Comment[] // 1:N 관계 (작성한 댓글들)
+// 이메일 발송 상태
+enum EmailStatus {
+  SENT // 발송 완료
+  FAILED // 발송 실패
+}
+
+// 관리자 (나만 사용)
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  username   String
+  password   String // bcrypt 해시
+  role       UserRole @default(ADMIN)
+  image      String? // 프로필 이미지 URL
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // 관계
+  posts Post[] // 작성한 포스트들
 
   @@map("users")
 }
 
-// 사용자 인증 정보
-model UserAuth {
-  id              String   @id @default(uuid())
-  user_id         String   @unique // User 모델과의 관계를 위한 외래 키
-  hashed_password String
-  refresh_token   String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("user_auths")
-}
-
-// 카테고리 (메인/서브 통합)
+// 카테고리 (계층 구조)
 model Category {
-  id               String     @id @default(uuid())
-  name             String
-  description      String?
-  color            String?
-  depth            DepthType  @default(MAIN)
-  parent_id        String?
-  parent           Category?  @relation("CategoryToCategory", fields: [parent_id], references: [id])
-  children         Category[] @relation("CategoryToCategory")
-  created_at       DateTime   @default(now())
-  updated_at       DateTime   @updatedAt
-  posts            Post[]     @relation("PostCategory") // 메인 카테고리로 연결된 포스트들
-  subcategoryPosts Post[]     @relation("PostSubcategory") // 서브카테고리로 연결된 포스트들
-  Post             Post[]
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique // URL용 슬러그
+  description String?
+  parent_id   String? // 상위 카테고리 ID (null이면 최상위)
+  order       Int      @default(0) // 정렬 순서
+  level       Int      @default(0) // 계층 레벨 (0: 최상위, 1: 1단계 하위...)
+  is_active   Boolean  @default(true) // 활성화 상태
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  @@unique([parent_id, name]) // 같은 부모 내에서 name 유니크
+  // 관계
+  parent   Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+  posts    Post[] // 카테고리에 속한 포스트들
+
   @@map("categories")
 }
 
@@ -103,8 +90,8 @@ model Hashtag {
   id         String   @id @default(uuid())
   name       String   @unique
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
 
+  // 관계
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
 
   @@map("hashtags")
@@ -112,97 +99,133 @@ model Hashtag {
 
 // 블로그 포스트
 model Post {
-  id         String      @id @default(uuid())
-  title      String // 제목 (필수)
-  content    String      @db.Text // 마크다운 형태의 글 내용 (필수)
-  excerpt    String? // 글 요약 (선택)
-  status     PostStatus  @default(DRAFT) // 현 상태 (임시저장, 보관, 작성중, 작성완료)
-  publish    PublishType @default(PUBLIC) // 공개범위 (퍼블릭, 프라이빗, 프로텍티드)
-  views      Int         @default(0) // 조회수
-  likes      Int         @default(0) // 좋아요 수
-  created_at DateTime    @default(now()) // 작성일자
-  updated_at DateTime    @updatedAt // 수정일자
+  id                 String     @id @default(uuid())
+  title              String // 제목
+  slug               String     @unique // URL용 슬러그
+  content            String     @db.Text // 마크다운 내용
+  excerpt            String? // 요약
+  cover              String? // 커버 이미지
+  status             PostStatus @default(DRAFT) // 포스트 상태
+  published_at       DateTime? // 발행 시간
+  category_id        String? // 카테고리 ID
+  author_id          String // 작성자 ID
+  view_count         Int        @default(0) // 조회수
+  likes_count        Int        @default(0) // 좋아요 수 (캐시)
+  is_comment_enabled Boolean    @default(true) // 댓글 허용 여부
+  seo_title          String? // SEO 제목
+  seo_description    String? // SEO 설명
+  created_at         DateTime   @default(now())
+  updated_at         DateTime   @updatedAt
 
   // 관계
-  user_id        String
-  category_id    String
-  subcategory_id String?
-
-  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  category    Category  @relation("PostCategory", fields: [category_id], references: [id], onDelete: Cascade)
-  subcategory Category? @relation("PostSubcategory", fields: [subcategory_id], references: [id], onDelete: SetNull)
-
+  author        User            @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  category      Category?       @relation(fields: [category_id], references: [id], onDelete: SetNull)
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
-  Category      Category?     @relation(fields: [categoryId], references: [id])
-  categoryId    String?
-  PostView      PostView[]
-  PostLike      PostLike[]
-  comments      Comment[] // 1:N 관계 (댓글들)
+  comments      Comment[] // 댓글들
+  likes         PostLike[] // 좋아요들
+  views         PostView[] // 조회 기록들
+  images        UploadedImage[] // 업로드된 이미지들
 
   @@map("posts")
 }
 
 // 포스트-해시태그 중간 테이블 (Many-to-Many 관계)
 model PostHashtag {
-  id         String   @id @default(uuid())
   post_id    String
   hashtag_id String
-  created_at DateTime @default(now())
 
+  // 관계
   post    Post    @relation(fields: [post_id], references: [id], onDelete: Cascade)
   hashtag Hashtag @relation(fields: [hashtag_id], references: [id], onDelete: Cascade)
 
-  @@unique([post_id, hashtag_id]) // 동일한 포스트-해시태그 조합 중복 방지
+  @@id([post_id, hashtag_id]) // 복합 기본 키
   @@map("post_hashtags")
 }
 
-// 포스트 조회 이력
-model PostView {
-  id        String   @id @default(uuid())
-  post_id   String
-  user_id   String?
-  ip        String?
-  viewed_at DateTime @default(now())
-
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
-
-  @@index([post_id])
-  @@map("post_views")
-}
-
-// 포스트 좋아요 이력
+// 포스트 좋아요 (IP 기반)
 model PostLike {
-  id       String   @id @default(uuid())
-  post_id  String
-  user_id  String
-  liked_at DateTime @default(now())
+  id           String   @id @default(uuid())
+  post_id      String
+  visitor_ip   String // 방문자 IP
+  browser_info String? // 브라우저 정보
+  created_at   DateTime @default(now())
 
+  // 관계
   post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
-  @@unique([post_id, user_id])
-  @@index([post_id])
+  @@unique([post_id, visitor_ip]) // 중복 방지
   @@map("post_likes")
 }
 
-// 댓글
+// 댓글 (방문자용)
 model Comment {
-  id                String        @id @default(uuid())
-  content           String        @db.Text
-  author_name       String // 작성자 이름
-  author_email      String // 작성자 이메일
-  author_ip         String? // 작성자 IP
-  password_hash     String // 비밀번호 해시 (수정/삭제용)
-  status            CommentStatus @default(PENDING)
-  post_id           String
-  user_id           String?
-  parent_comment_id String?
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @updatedAt
+  id               String        @id @default(uuid())
+  post_id          String // 포스트 ID
+  parent_id        String? // 답글용 부모 댓글 ID
+  name             String // 방문자 닉네임
+  email            String // 방문자 이메일
+  password         String // 해시된 비밀번호 (수정/삭제용)
+  content          String        @db.Text // 댓글 내용
+  status           CommentStatus @default(PENDING) // 댓글 상태
+  visitor_ip       String? // IP 주소
+  browser_info     String? // 브라우저 정보
+  is_reply         Boolean       @default(false) // 답글 여부
+  admin_reply      String? // 관리자 답글
+  admin_replied_at DateTime? // 답글 작성 시간
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
 
+  // 관계
   post    Post      @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  user    User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  parent  Comment?  @relation("CommentReplies", fields: [parent_comment_id], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parent_id], references: [id])
   replies Comment[] @relation("CommentReplies")
 
   @@map("comments")
+}
+
+// 업로드된 이미지
+model UploadedImage {
+  id                String   @id @default(uuid())
+  storage_filename  String // 저장된 파일명
+  original_filename String // 원본 파일명
+  file_path         String // 파일 경로
+  file_size         Int // 파일 크기 (bytes)
+  mime_type         String // MIME 타입
+  alt_text          String? // 대체 텍스트
+  post_id           String? // 연결된 포스트 ID
+  created_at        DateTime @default(now())
+
+  // 관계
+  post Post? @relation(fields: [post_id], references: [id], onDelete: SetNull)
+
+  @@map("uploaded_images")
+}
+
+// 포스트 조회 기록
+model PostView {
+  id           String   @id @default(uuid())
+  post_id      String
+  visitor_ip   String
+  browser_info String?
+  created_at   DateTime @default(now())
+
+  // 관계
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@index([post_id])
+  @@index([visitor_ip])
+  @@map("post_views")
+}
+
+// 이메일 발송 로그
+model EmailLog {
+  id              String      @id @default(uuid())
+  recipient_email String // 수신자
+  subject         String // 제목
+  type            EmailType // 이메일 타입
+  status          EmailStatus // 발송 상태
+  error_message   String? // 오류 메시지
+  created_at      DateTime    @default(now())
+
+  @@map("email_logs")
 }

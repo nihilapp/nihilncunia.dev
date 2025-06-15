@@ -21,10 +21,6 @@ export class DB {
     return this.client().user;
   }
 
-  static userAuth() {
-    return this.client().userAuth;
-  }
-
   static categories() {
     return this.client().category;
   }
@@ -39,5 +35,25 @@ export class DB {
 
   static postHashtags() {
     return this.client().postHashtag;
+  }
+
+  static comments() {
+    return this.client().comment;
+  }
+
+  static uploadedImages() {
+    return this.client().uploadedImage;
+  }
+
+  static postLikes() {
+    return this.client().postLike;
+  }
+
+  static postViews() {
+    return this.client().postView;
+  }
+
+  static emailLogs() {
+    return this.client().emailLog;
   }
 }

@@ -4,6 +4,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import Link from 'next/link';
 import React from 'react';
 
+import { SignedIn, SignedOut } from '@/(common)/_components';
+import { SignOutButton } from '@/(common)/_components/SignOutButton';
+import { LinkButton } from '@/(common)/_components/ui/LinkButton';
 import { cn } from '@/_libs';
 
 interface Props
@@ -36,21 +39,18 @@ export function CommonNav({ className, ...props }: Props) {
         <li>
           <Link href='/'>홈</Link>
         </li>
-        <li>
-          <Link href='/admin'>관리자</Link>
-        </li>
-        {/* <SignedIn>
+        <SignedIn>
           <li>
-            <UserButton />
+            <LinkButton href='/admin/dashboard'>관리자 대시보드</LinkButton>
             <SignOutButton />
           </li>
         </SignedIn>
         <SignedOut>
           <li>
-            <SignInButton />
-            <SignUpButton />
+            <LinkButton href='/auth/signin'>로그인</LinkButton>
+            <LinkButton href='/auth/signup'>회원가입</LinkButton>
           </li>
-        </SignedOut> */}
+        </SignedOut>
       </ul>
     </nav>
   );
