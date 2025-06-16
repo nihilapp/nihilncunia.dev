@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 
+import { messageData } from '@/_data';
 import type { User } from '@/_prisma/client';
 import { createResponse, DB } from '@/api/_libs';
 
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest, { params, }: Params) {
 
     if (!user) {
       return createResponse<null>({
-        message: '사용자 상세 정보 조회를 실패했습니다.',
+        message: messageData.common.notFound,
         status: 404,
       });
     }
