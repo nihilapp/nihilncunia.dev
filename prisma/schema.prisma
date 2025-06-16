@@ -59,9 +59,36 @@ model User {
   updated_at DateTime @updatedAt
 
   // 관계
-  posts Post[] // 작성한 포스트들
+  posts       Post[] // 작성한 포스트들
+  owned_blogs Blog[] // 소유한 블로그들 (임시)
 
   @@map("users")
+}
+
+// 블로그 (임시)
+model Blog {
+  id          String   @id @default(uuid())
+  name        String   @unique // 블로그 이름 (URL용)
+  title       String // 블로그 제목
+  description String? // 블로그 설명
+  owner_id    String // 블로그 소유자
+  slug        String   @unique // URL 슬러그 (/blog/my-tech-blog)
+  domain      String? // 커스텀 도메인 (선택사항)
+  theme       String   @default("default") // 테마 설정
+  is_active   Boolean  @default(true) // 활성화 상태
+  is_public   Boolean  @default(true) // 공개/비공개
+  settings    Json? // 블로그별 설정 (댓글 허용, 이메일 알림 등)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // 관계
+  owner      User       @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  posts      Post[] // 블로그 포스트들
+  categories Category[] // 블로그 카테고리들
+  hashtags   Hashtag[] // 블로그 해시태그들
+  comments   Comment[] // 블로그 댓글들
+
+  @@map("blogs")
 }
 
 // 카테고리 (계층 구조)
@@ -74,6 +101,7 @@ model Category {
   order       Int      @default(0) // 정렬 순서
   level       Int      @default(0) // 계층 레벨 (0: 최상위, 1: 1단계 하위...)
   is_active   Boolean  @default(true) // 활성화 상태
+  blog_id     String? // 블로그 ID (임시)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -81,6 +109,7 @@ model Category {
   parent   Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
   children Category[] @relation("CategoryHierarchy")
   posts    Post[] // 카테고리에 속한 포스트들
+  blog     Blog?      @relation(fields: [blog_id], references: [id], onDelete: Cascade) // 블로그 관계 (임시)
 
   @@map("categories")
 }
@@ -89,10 +118,12 @@ model Category {
 model Hashtag {
   id         String   @id @default(uuid())
   name       String   @unique
+  blog_id    String? // 블로그 ID (임시)
   created_at DateTime @default(now())
 
   // 관계
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
+  blog          Blog?         @relation(fields: [blog_id], references: [id], onDelete: Cascade) // 블로그 관계 (임시)
 
   @@map("hashtags")
 }
@@ -109,6 +140,7 @@ model Post {
   published_at       DateTime? // 발행 시간
   category_id        String? // 카테고리 ID
   author_id          String // 작성자 ID
+  blog_id            String? // 블로그 ID (임시)
   view_count         Int        @default(0) // 조회수
   likes_count        Int        @default(0) // 좋아요 수 (캐시)
   is_comment_enabled Boolean    @default(true) // 댓글 허용 여부
@@ -120,6 +152,7 @@ model Post {
   // 관계
   author        User            @relation(fields: [author_id], references: [id], onDelete: Cascade)
   category      Category?       @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  blog          Blog?           @relation(fields: [blog_id], references: [id], onDelete: Cascade) // 블로그 관계 (임시)
   post_hashtags PostHashtag[] // M:N 관계를 위한 중간 테이블
   comments      Comment[] // 댓글들
   likes         PostLike[] // 좋아요들
@@ -161,6 +194,7 @@ model PostLike {
 model Comment {
   id               String        @id @default(uuid())
   post_id          String // 포스트 ID
+  blog_id          String? // 블로그 ID (임시)
   parent_id        String? // 답글용 부모 댓글 ID
   name             String // 방문자 닉네임
   email            String // 방문자 이메일
@@ -177,6 +211,7 @@ model Comment {
 
   // 관계
   post    Post      @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  blog    Blog?     @relation(fields: [blog_id], references: [id], onDelete: Cascade) // 블로그 관계 (임시)
   parent  Comment?  @relation("CommentReplies", fields: [parent_id], references: [id])
   replies Comment[] @relation("CommentReplies")
 

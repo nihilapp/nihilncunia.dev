@@ -25,3 +25,15 @@ export interface UpdateUserPassword {
 export interface UpdateUserIamge {
   image_url?: string;
 }
+
+export interface DeleteUser {
+  id: string;
+}
+
+export interface DeleteUsers {
+  ids: string[];
+}
+
+export interface DeleteUsersResponse {
+  count: number;
+}

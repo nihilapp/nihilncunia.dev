@@ -19,13 +19,20 @@ export const messageData = {
     emailInUse: '이미 등록된 이메일입니다.',
     invalidCredentials: '이메일 또는 비밀번호가 올바르지 않습니다.',
     sessionExpired: '세션이 만료되었습니다. 다시 로그인해주세요.',
+    alreadyExists: '이미 존재하는 계정입니다.',
+    notFound: '계정을 찾을 수 없습니다.',
+    deleted: '계정이 삭제되었습니다.',
   },
 
   user: {
     createSuccess: '관리자가 생성되었습니다.',
+    createError: '관리자 생성 중 오류가 발생했습니다.',
     updateSuccess: '관리자 정보가 수정되었습니다.',
+    updateError: '관리자 정보 수정 중 오류가 발생했습니다.',
     passwordChangeSuccess: '비밀번호가 변경되었습니다.',
+    passwordChangeError: '비밀번호 변경 중 오류가 발생했습니다.',
     imageChangeSuccess: '프로필 이미지가 변경되었습니다.',
+    imageChangeError: '프로필 이미지 변경 중 오류가 발생했습니다.',
     listSuccess: '관리자 목록 조회가 완료되었습니다.',
     listError: '관리자 목록 조회를 실패했습니다.',
     fetchSuccess: '관리자 상세 정보 조회가 완료되었습니다.',
@@ -33,6 +40,7 @@ export const messageData = {
     emailExists: '해당 이메일은 이미 사용 중입니다.',
     nameExists: '해당 이름은 이미 존재합니다.',
     deleteSuccess: '관리자가 삭제되었습니다.',
+    deleteError: '관리자 삭제 중 오류가 발생했습니다.',
     notFound: '해당 관리자를 찾을 수 없습니다.',
   },
 
@@ -47,6 +55,8 @@ export const messageData = {
     restoreSuccess: '임시 저장본을 복구했습니다.',
     autoSaveSuccess: '자동 저장되었습니다.',
     batchDeleteSuccess: '포스트가 일괄 삭제되었습니다.',
+    alreadyExists: '이미 존재하는 포스트입니다.',
+    notFound: '포스트를 찾을 수 없습니다.',
   },
 
   category: {
@@ -55,12 +65,16 @@ export const messageData = {
     deleteSuccess: '카테고리가 삭제되었습니다.',
     reorderSuccess: '카테고리 순서가 변경되었습니다.',
     statusChangeSuccess: '카테고리 상태가 변경되었습니다.',
+    alreadyExists: '이미 존재하는 카테고리입니다.',
+    notFound: '카테고리를 찾을 수 없습니다.',
   },
 
   hashtag: {
     createSuccess: '해시태그가 생성되었습니다.',
     updateSuccess: '해시태그가 수정되었습니다.',
     deleteSuccess: '해시태그가 삭제되었습니다.',
+    alreadyExists: '이미 존재하는 해시태그입니다.',
+    notFound: '해시태그를 찾을 수 없습니다.',
   },
 
   comment: {
@@ -70,18 +84,25 @@ export const messageData = {
     deleteSuccess: '댓글이 삭제되었습니다.',
     approveSuccess: '댓글 상태가 변경되었습니다.',
     verifyFail: '비밀번호가 일치하지 않습니다.',
+    alreadyExists: '이미 등록된 댓글입니다.',
+    notFound: '댓글을 찾을 수 없습니다.',
   },
 
   upload: {
     imageUploadSuccess: '이미지가 업로드되었습니다.',
     imageDeleteSuccess: '이미지가 삭제되었습니다.',
     imageUpdateSuccess: '이미지 정보가 수정되었습니다.',
+    alreadyExists: '이미 업로드된 파일입니다.',
+    notFound: '파일을 찾을 수 없습니다.',
   },
 
   email: {
     logCreated: '이메일 로그가 저장되었습니다.',
     resendSuccess: '이메일이 재발송되었습니다.',
     statsFetched: '이메일 통계가 조회되었습니다.',
+    alreadyExists: '이미 발송된 이메일입니다.',
+    notFound: '이메일 로그를 찾을 수 없습니다.',
+    deleted: '이메일 로그가 삭제되었습니다.',
   },
 
   analytics: {

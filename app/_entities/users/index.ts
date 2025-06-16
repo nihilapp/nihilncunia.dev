@@ -1,3 +1,8 @@
-export type { UserEx, CreateUser, UpdateUser, UpdateUserPassword, UpdateUserIamge } from './users.types';
+export type {
+  UserEx, CreateUser,
+  UpdateUser, UpdateUserPassword,
+  UpdateUserIamge, DeleteUser,
+  DeleteUsers, DeleteUsersResponse
+} from './users.types';
 
 export { usersKeys } from './users.keys';
