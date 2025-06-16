@@ -4,6 +4,7 @@ import type { CreateUser } from '@/_entities/users';
 import { DB } from '@/api/_libs';
 import { serverTools } from '@/api/_libs';
 import { createResponse } from '@/api/_libs';
+import { messageData } from '@/_data';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (findUser) {
       return createResponse({
         status: 409,
-        message: '이미 존재하는 이메일입니다.',
+        message: messageData.auth.emailInUse,
       });
     }
 
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     return createResponse({
       status: 201,
-      message: '회원가입이 완료되었습니다.',
+      message: messageData.auth.signUpSuccess,
       data: newUser,
     });
 
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     return createResponse({
       status: 500,
-      message: '회원가입 중 오류가 발생했습니다.',
+      message: messageData.auth.signUpError,
     });
   }
 }

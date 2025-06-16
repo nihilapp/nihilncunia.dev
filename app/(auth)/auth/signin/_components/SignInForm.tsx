@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
+import { messageData } from '@/_data';
+
 import { Button } from '@/(common)/_components/ui/button';
 
 export function SignInForm() {
@@ -26,13 +28,13 @@ export function SignInForm() {
       });
 
       if (result?.error) {
-        setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+        setError(messageData.auth.invalidCredentials);
       } else {
         router.push('/admin');
         router.refresh();
       }
     } catch (error) {
-      setError('로그인 중 오류가 발생했습니다.');
+      setError(messageData.auth.signInError);
     } finally {
       setIsLoading(false);
     }
