@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
+import { messageData } from '@/_data';
+
 import { Button } from '@/(common)/_components/ui/button';
 
 export function SignUpForm() {
@@ -44,7 +46,7 @@ export function SignUpForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || '회원가입 중 오류가 발생했습니다.');
+        setError(data.message || messageData.auth.signUpError);
         return;
       }
 
@@ -57,14 +59,14 @@ export function SignUpForm() {
 
       if (signInResult?.error) {
         // 회원가입은 성공했지만 로그인 실패 시 로그인 페이지로 이동
-        router.push('/auth/signin?message=회원가입이 완료되었습니다. 로그인해주세요.');
+        router.push('/auth/signin?message=' + messageData.auth.signUpSuccess);
       } else {
         // 로그인 성공 시 관리자 페이지로 이동
         router.push('/admin');
         router.refresh();
       }
     } catch (error) {
-      setError('회원가입 중 오류가 발생했습니다.');
+      setError(messageData.auth.signUpError);
     } finally {
       setIsLoading(false);
     }

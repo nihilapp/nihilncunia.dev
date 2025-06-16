@@ -26,14 +26,15 @@ export async function GET(request: NextRequest, { params, }: Params) {
     }
 
     return createResponse<User>({
-      message: '사용자 상세 정보 조회가 완료되었습니다.',
+      message: messageData.user.fetchSuccess,
       status: 200,
+      data: user,
     });
   } catch (error) {
     console.error(error, '사용자 상세 정보 조회 실패');
 
     return createResponse<null>({
-      message: '사용자 상세 정보 조회를 실패했습니다.',
+      message: messageData.user.fetchError,
       status: 500,
     });
   }

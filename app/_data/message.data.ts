@@ -12,6 +12,10 @@ export const messageData = {
 
   auth: {
     signUpSuccess: '관리자 계정이 성공적으로 생성되었습니다.',
+    signUpError: '회원가입 중 오류가 발생했습니다.',
+    signInSuccess: '성공적으로 로그인되었습니다.',
+    signInError: '로그인 중 오류가 발생했습니다.',
+    signOutSuccess: '성공적으로 로그아웃되었습니다.',
     emailInUse: '이미 등록된 이메일입니다.',
     invalidCredentials: '이메일 또는 비밀번호가 올바르지 않습니다.',
     sessionExpired: '세션이 만료되었습니다. 다시 로그인해주세요.',
@@ -22,6 +26,10 @@ export const messageData = {
     updateSuccess: '관리자 정보가 수정되었습니다.',
     passwordChangeSuccess: '비밀번호가 변경되었습니다.',
     imageChangeSuccess: '프로필 이미지가 변경되었습니다.',
+    listSuccess: '관리자 목록 조회가 완료되었습니다.',
+    listError: '관리자 목록 조회를 실패했습니다.',
+    fetchSuccess: '관리자 상세 정보 조회가 완료되었습니다.',
+    fetchError: '관리자 상세 정보 조회를 실패했습니다.',
     emailExists: '해당 이메일은 이미 사용 중입니다.',
     nameExists: '해당 이름은 이미 존재합니다.',
     deleteSuccess: '관리자가 삭제되었습니다.',
